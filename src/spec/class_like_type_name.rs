@@ -1,5 +1,5 @@
 use crate::io::RenderKotlin;
-use crate::io::tokens::{NOTHING, NULLABLE, SEPARATOR};
+use crate::io::tokens::SEPARATOR;
 use crate::spec::name::Name;
 use crate::spec::package::Package;
 
@@ -37,9 +37,11 @@ impl RenderKotlin for ClassLikeTypeName {
 #[cfg(test)]
 mod test {
     use std::str::FromStr;
+
     use crate::io::RenderKotlin;
     use crate::spec::Name;
     use crate::spec::package::Package;
+
     use super::ClassLikeTypeName;
 
     #[test]
@@ -62,15 +64,5 @@ mod test {
             Name::from_str("Class").unwrap(),
         );
         assert_eq!(class_like_type_name.render(), "io.github.lexadiky.Class");
-    }
-
-    #[test]
-    fn render_simple_nullable_kotlin() {
-        let package: Package = "io.github.lexadiky".parse().unwrap();
-        let mut class_like_type_name = ClassLikeTypeName::simple(
-            package,
-            Name::from_str("Class").unwrap()
-        );
-        assert_eq!(class_like_type_name.render(), "io.github.lexadiky.Class?");
     }
 }

@@ -1,12 +1,11 @@
 use std::str::FromStr;
 use crate::io::RenderKotlin;
+use crate::io::tokens::SEPARATOR;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Package {
     parts: Vec<String>
 }
-
-const SEPARATOR: &'static str = ".";
 
 impl FromStr for Package {
     type Err = ();

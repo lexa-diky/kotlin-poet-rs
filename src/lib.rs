@@ -1,17 +1,26 @@
-mod io;
-mod spec;
-
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
-}
+pub mod io;
+pub mod spec;
 
 #[cfg(test)]
 mod tests {
+    use crate::io::RenderKotlin;
+    use crate::spec::{ClassLikeTypeName, Import, Name, Package};
     use super::*;
 
     #[test]
     fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+        let my_import = Import::class_like(
+            ClassLikeTypeName::simple(
+                Package::from(
+                    vec![
+                        Name::from("com"),
+                        Name::from("example"),
+                    ]
+                ),
+                Name::from("Foo"),
+            )
+        );
+
+        println!("{}", my_import.render())
     }
 }

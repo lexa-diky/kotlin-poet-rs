@@ -7,6 +7,13 @@ pub struct Name {
     value: String,
 }
 
+impl Name {
+
+    pub fn from(str: &str) -> Name {
+        Name::from_str(str).unwrap()
+    }
+}
+
 impl FromStr for Name {
     type Err = ();
 

@@ -8,13 +8,20 @@ pub struct Package {
     parts: Vec<Name>,
 }
 
+impl Package {
+
+    pub fn from(names: Vec<Name>) -> Package {
+        Package { parts: names }
+    }
+}
+
 impl FromStr for Package {
     type Err = ();
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let parts = s.split(SEPARATOR)
             .map(|s| Name::from_str(s)).collect::<Result<Vec<_>, ()>>()?;
-        Ok(Package { parts })
+        Ok(Package::from(parts))
     }
 }
 

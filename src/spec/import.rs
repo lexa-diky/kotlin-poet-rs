@@ -2,9 +2,20 @@ use crate::io::RenderKotlin;
 use crate::io::tokens::{KW_IMPORT, PROJECTION};
 use crate::spec::{ClassLikeTypeName, Package};
 
+#[derive(Debug, PartialEq, Clone)]
 pub enum Import {
     ClassLikeType(ClassLikeTypeName),
     Projection(Package),
+}
+
+impl Import {
+    pub fn class_like(type_name: ClassLikeTypeName) -> Self {
+        Import::ClassLikeType(type_name)
+    }
+
+    pub fn projection(package: Package) -> Self {
+        Import::Projection(package)
+    }
 }
 
 impl RenderKotlin for Import {

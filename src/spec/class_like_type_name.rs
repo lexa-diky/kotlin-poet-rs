@@ -7,7 +7,6 @@ use crate::spec::package::Package;
 pub struct ClassLikeTypeName {
     package: Package,
     names: Vec<Name>,
-    nullable: bool,
 }
 
 impl ClassLikeTypeName {
@@ -15,7 +14,6 @@ impl ClassLikeTypeName {
         ClassLikeTypeName {
             package,
             names: vec![name],
-            nullable: false,
         }
     }
 
@@ -23,13 +21,7 @@ impl ClassLikeTypeName {
         ClassLikeTypeName {
             package,
             names,
-            nullable: false,
         }
-    }
-
-    pub fn nullable(mut self, flag: bool) -> Self {
-        self.nullable = flag;
-        self
     }
 }
 
@@ -38,8 +30,7 @@ impl RenderKotlin for ClassLikeTypeName {
         let package = self.package.render();
         let names = self.names.iter().map(|it| it.render())
             .collect::<Vec<_>>().join(SEPARATOR);
-        let nullability = if self.nullable { NULLABLE } else { NOTHING };
-        format!("{}.{}{}", package, names, nullability)
+        format!("{}.{}", package, names)
     }
 }
 
@@ -79,7 +70,7 @@ mod test {
         let mut class_like_type_name = ClassLikeTypeName::simple(
             package,
             Name::from_str("Class").unwrap()
-        ).nullable(true);
+        );
         assert_eq!(class_like_type_name.render(), "io.github.lexadiky.Class?");
     }
 }

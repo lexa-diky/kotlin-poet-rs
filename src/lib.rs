@@ -5,7 +5,6 @@ pub mod spec;
 mod tests {
     use crate::io::RenderKotlin;
     use crate::spec::{ClassLikeTypeName, Import, Name, Package};
-    use super::*;
 
     #[test]
     fn it_works() {

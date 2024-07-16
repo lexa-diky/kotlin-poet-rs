@@ -1,11 +1,12 @@
 use crate::io::RenderKotlin;
 use crate::io::tokens::{KW_IMPORT, PROJECTION};
-use crate::spec::{ClassLikeTypeName, Package};
+use crate::spec::{ClassLikeTypeName, Name, Package};
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum Import {
     ClassLikeType(ClassLikeTypeName),
     Projection(Package),
+    Function { package: Package, name: Name }
 }
 
 impl Import {
@@ -15,6 +16,13 @@ impl Import {
 
     pub fn projection(package: Package) -> Self {
         Import::Projection(package)
+    }
+
+    pub fn function(package: Package, name: Name) -> Self {
+        Import::Function {
+            package,
+            name
+        }
     }
 }
 
@@ -26,6 +34,9 @@ impl RenderKotlin for Import {
             }
             Import::Projection(package) => {
                 format!("{} {}.{}", KW_IMPORT, package.render(), PROJECTION)
+            }
+            Import::Function { package, name } => {
+                format!("{} {}.{}", KW_IMPORT, package.render(), name.render())
             }
         }
     }
@@ -52,5 +63,14 @@ mod test {
     fn test_import_projection() {
         let import = Import::Projection(Package::from_str("com.example").unwrap());
         assert_eq!(import.render(), "import com.example.*");
+    }
+
+    #[test]
+    fn test_import_function() {
+        let import = Import::Function {
+            package: Package::from_str("com.example").unwrap(),
+            name: Name::from_str("foo").unwrap(),
+        };
+        assert_eq!(import.render(), "import com.example.foo");
     }
 }

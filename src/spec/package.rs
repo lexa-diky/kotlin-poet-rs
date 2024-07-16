@@ -1,10 +1,11 @@
 use std::str::FromStr;
 use crate::io::RenderKotlin;
 use crate::io::tokens::SEPARATOR;
+use crate::spec::Name;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct Package {
-    parts: Vec<String>
+    parts: Vec<Name>,
 }
 
 impl FromStr for Package {
@@ -12,26 +13,33 @@ impl FromStr for Package {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let parts = s.split(SEPARATOR)
-            .map(|s| s.to_string()).collect();
+            .map(|s| Name::from_str(s)).collect::<Result<Vec<_>, ()>>()?;
         Ok(Package { parts })
     }
 }
 
 impl RenderKotlin for Package {
-
     fn render(&self) -> String {
-        self.parts.join(SEPARATOR)
+        self.parts.iter().map(|it| it.render())
+            .collect::<Vec<_>>()
+            .join(SEPARATOR)
     }
 }
 
 #[cfg(test)]
 mod test {
+    use std::str::FromStr;
     use crate::io::RenderKotlin;
+    use crate::spec::Name;
 
     #[test]
     fn parse_package() {
         let package: super::Package = "io.github.lexadiky".parse().unwrap();
-        assert_eq!(package.parts, vec!["io", "github", "lexadiky"]);
+        assert_eq!(package.parts, vec![
+            Name::from_str("io").unwrap(),
+            Name::from_str("github").unwrap(),
+            Name::from_str("lexadiky").unwrap(),
+        ]);
     }
 
     #[test]

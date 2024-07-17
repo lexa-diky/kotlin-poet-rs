@@ -4,7 +4,7 @@ pub mod spec;
 #[cfg(test)]
 mod tests {
     use crate::io::RenderKotlin;
-    use crate::spec::{AccessModifier, CodeBlock, Function, Name, Type};
+    use crate::spec::{AccessModifier, CodeBlock, Function, MemberInheritanceModifier, Name, Type};
 
     #[test]
     fn it_works() {
@@ -15,6 +15,7 @@ mod tests {
                 Type::array(Type::string())
             )
             .receiver(Type::unit())
+            .inheritance_modifier(MemberInheritanceModifier::Open)
             .body(
                 CodeBlock::empty()
                     .statement("val a = 5")

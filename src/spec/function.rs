@@ -1,6 +1,7 @@
 use std::sync::mpsc::Receiver;
 use crate::io::RenderKotlin;
-use crate::spec::{AccessModifier, CodeBlock, Name, Type};
+use crate::io::tokens::NOTHING;
+use crate::spec::{AccessModifier, CodeBlock, MemberInheritanceModifier, Name, Type};
 
 #[derive(Debug, Clone)]
 pub struct Function {
@@ -9,7 +10,8 @@ pub struct Function {
     parameters: Vec<(Name, Type)>,
     body: Option<CodeBlock>,
     returns: Type,
-    receiver: Option<Type>
+    receiver: Option<Type>,
+    inheritance_modifier: MemberInheritanceModifier,
 }
 
 impl Function {
@@ -20,7 +22,8 @@ impl Function {
             parameters: Vec::new(),
             body: None,
             returns: Type::unit(),
-            receiver: None
+            receiver: None,
+            inheritance_modifier: MemberInheritanceModifier::Default,
         }
     }
 
@@ -48,6 +51,11 @@ impl Function {
         self.receiver = Some(receiver);
         return self;
     }
+
+    pub fn inheritance_modifier(mut self, inheritance_modifier: MemberInheritanceModifier) -> Function {
+        self.inheritance_modifier = inheritance_modifier;
+        self
+    }
 }
 
 impl RenderKotlin for (Name, Type) {
@@ -71,7 +79,7 @@ impl RenderKotlin for Function {
         let content = if let Some(body) = &self.body {
             body.clone().wrap_in_scope().render()
         } else {
-            "{}".to_string()
+            NOTHING.to_string()
         };
         let returns = self.returns.render();
         let receiver = if let Some(receiver) = &self.receiver {
@@ -79,9 +87,10 @@ impl RenderKotlin for Function {
         } else {
             "".to_string()
         };
+        let inheritance = self.inheritance_modifier.render();
 
         format!(
-            "{access_modifier} fun {receiver}{}({}): {returns} {content}",
+            "{inheritance} {access_modifier} fun {receiver}{}({}): {returns} {content}",
             self.name.render(),
             render_parameters(&self.parameters),
         )

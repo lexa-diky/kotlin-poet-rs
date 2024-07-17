@@ -1,9 +1,15 @@
-#[derive(Debug, Default)]
+#[derive(Debug, Default, PartialEq)]
 pub struct CodeBuffer {
     buffer: String
 }
 
 impl CodeBuffer {
+
+    pub fn from(s: &str) -> CodeBuffer {
+        CodeBuffer {
+            buffer: s.to_string()
+        }
+    }
 
     pub fn push(&mut self, s: &str) {
         self.buffer.push_str(s);

@@ -4,21 +4,20 @@ pub mod spec;
 #[cfg(test)]
 mod tests {
     use crate::io::RenderKotlin;
-    use crate::spec::{ClassLikeTypeName, Import, Name, Package};
+    use crate::spec::CodeBlock;
 
     #[test]
     fn it_works() {
-        let my_import = Import::class_like(
-            ClassLikeTypeName::simple(
-                Package::from(
-                    vec![
-                        Name::from("com"),
-                        Name::from("example"),
-                    ]
-                ),
-                Name::from("Foo"),
+        let my_import = CodeBlock::empty()
+            .statement("val a = 5")
+            .indent()
+            .statement("val b = 10")
+            .nest(
+                CodeBlock::empty()
+                    .statement("println(\"Hello, world!\")")
             )
-        );
+            .unindent()
+            .statement("val c = a + b");
 
         println!("{}", my_import.render())
     }

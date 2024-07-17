@@ -1,3 +1,4 @@
+use std::sync::mpsc::Receiver;
 use crate::io::RenderKotlin;
 use crate::spec::{AccessModifier, CodeBlock, Name, Type};
 
@@ -8,6 +9,7 @@ pub struct Function {
     parameters: Vec<(Name, Type)>,
     body: Option<CodeBlock>,
     returns: Type,
+    receiver: Option<Type>
 }
 
 impl Function {
@@ -18,6 +20,7 @@ impl Function {
             parameters: Vec::new(),
             body: None,
             returns: Type::unit(),
+            receiver: None
         }
     }
 
@@ -33,6 +36,16 @@ impl Function {
 
     pub fn body(mut self, body: CodeBlock) -> Function {
         self.body = Some(body);
+        return self;
+    }
+
+    pub fn returns(mut self, returns: Type) -> Function {
+        self.returns = returns;
+        return self;
+    }
+
+    pub fn receiver(mut self, receiver: Type) -> Function {
+        self.receiver = Some(receiver);
         return self;
     }
 }
@@ -61,9 +74,14 @@ impl RenderKotlin for Function {
             "{}".to_string()
         };
         let returns = self.returns.render();
+        let receiver = if let Some(receiver) = &self.receiver {
+            format!("{}.", receiver.render())
+        } else {
+            "".to_string()
+        };
 
         format!(
-            "{access_modifier} fun {}({}) -> {returns} {content}",
+            "{access_modifier} fun {receiver}{}({}): {returns} {content}",
             self.name.render(),
             render_parameters(&self.parameters),
         )

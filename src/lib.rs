@@ -14,6 +14,7 @@ mod tests {
                 Name::from("args"),
                 Type::array(Type::string())
             )
+            .receiver(Type::unit())
             .body(
                 CodeBlock::empty()
                     .statement("val a = 5")

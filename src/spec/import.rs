@@ -1,5 +1,5 @@
 use std::fmt::format;
-use crate::io::RenderKotlin;
+use crate::io::{RenderContext, RenderKotlin};
 use crate::io::tokens::{KW_IMPORT, PROJECTION};
 use crate::spec::{ClassLikeTypeName, Name, Package};
 
@@ -38,20 +38,20 @@ impl Import {
 }
 
 impl RenderKotlin for Import {
-    fn render(&self) -> String {
+    fn render(&self, context: RenderContext) -> String {
         match self {
             Import::ClassLikeType { type_name, alias } => {
                 if let Some(alias) = alias {
-                    format!("{} {} as {}", KW_IMPORT, type_name.render(), alias.render())
+                    format!("{} {} as {}", KW_IMPORT, type_name.render(context), alias.render(context))
                 } else {
-                    format!("{} {}", KW_IMPORT, type_name.render())
+                    format!("{} {}", KW_IMPORT, type_name.render(context))
                 }
             }
             Import::Projection(package) => {
-                format!("{} {}.{}", KW_IMPORT, package.render(), PROJECTION)
+                format!("{} {}.{}", KW_IMPORT, package.render(context), PROJECTION)
             }
             Import::Function { package, name } => {
-                format!("{} {}.{}", KW_IMPORT, package.render(), name.render())
+                format!("{} {}.{}", KW_IMPORT, package.render(context), name.render(context))
             }
         }
     }
@@ -71,7 +71,7 @@ mod test {
                 Name::from_str("Foo").unwrap(),
             )
         );
-        assert_eq!(import.render(), "import com.example.Foo");
+        assert_eq!(import.render_without_context(), "import com.example.Foo");
     }
 
     #[test]
@@ -83,13 +83,13 @@ mod test {
             ),
             Name::from("Bar")
         );
-        assert_eq!(import.render(), "import com.example.Foo as Bar");
+        assert_eq!(import.render_without_context(), "import com.example.Foo as Bar");
     }
 
     #[test]
     fn test_import_projection() {
         let import = Import::Projection(Package::from_str("com.example").unwrap());
-        assert_eq!(import.render(), "import com.example.*");
+        assert_eq!(import.render_without_context(), "import com.example.*");
     }
 
     #[test]
@@ -98,6 +98,6 @@ mod test {
             package: Package::from_str("com.example").unwrap(),
             name: Name::from_str("foo").unwrap(),
         };
-        assert_eq!(import.render(), "import com.example.foo");
+        assert_eq!(import.render_without_context(), "import com.example.foo");
     }
 }

@@ -1,4 +1,4 @@
-use crate::io::RenderKotlin;
+use crate::io::{RenderContext, RenderKotlin};
 use crate::io::tokens::SEPARATOR;
 use crate::spec::name::Name;
 use crate::spec::package::Package;
@@ -26,9 +26,9 @@ impl ClassLikeTypeName {
 }
 
 impl RenderKotlin for ClassLikeTypeName {
-    fn render(&self) -> String {
-        let package = self.package.render();
-        let names = self.names.iter().map(|it| it.render())
+    fn render(&self, context: RenderContext) -> String {
+        let package = self.package.render(context);
+        let names = self.names.iter().map(|it| it.render(context))
             .collect::<Vec<_>>().join(SEPARATOR);
         format!("{}.{}", package, names)
     }
@@ -53,7 +53,7 @@ mod test {
                 Name::from_str("Class").unwrap(),
             ],
         );
-        assert_eq!(class_like_type_name.render(), "io.github.lexadiky.My.Class");
+        assert_eq!(class_like_type_name.render_without_context(), "io.github.lexadiky.My.Class");
     }
 
     #[test]
@@ -63,6 +63,6 @@ mod test {
             package,
             Name::from_str("Class").unwrap(),
         );
-        assert_eq!(class_like_type_name.render(), "io.github.lexadiky.Class");
+        assert_eq!(class_like_type_name.render_without_context(), "io.github.lexadiky.Class");
     }
 }

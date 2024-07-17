@@ -1,5 +1,5 @@
 use std::str::FromStr;
-use crate::io::RenderKotlin;
+use crate::io::{RenderContext, RenderKotlin};
 use crate::io::tokens::SEPARATOR;
 use crate::spec::Name;
 
@@ -26,8 +26,8 @@ impl FromStr for Package {
 }
 
 impl RenderKotlin for Package {
-    fn render(&self) -> String {
-        self.parts.iter().map(|it| it.render())
+    fn render(&self, context: RenderContext) -> String {
+        self.parts.iter().map(|it| it.render(context))
             .collect::<Vec<_>>()
             .join(SEPARATOR)
     }
@@ -52,6 +52,6 @@ mod test {
     #[test]
     fn render_kotlin() {
         let package: super::Package = "io.github.lexadiky".parse().unwrap();
-        assert_eq!(package.render(), "io.github.lexadiky");
+        assert_eq!(package.render_without_context(), "io.github.lexadiky");
     }
 }

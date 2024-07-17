@@ -1,4 +1,4 @@
-use crate::io::RenderKotlin;
+use crate::io::{RenderContext, RenderKotlin};
 
 #[derive(PartialEq, Debug, Clone)]
 pub enum AccessModifier {
@@ -9,7 +9,7 @@ pub enum AccessModifier {
 }
 
 impl RenderKotlin for AccessModifier {
-    fn render(&self) -> String {
+    fn render(&self, context: RenderContext) -> String {
         match self {
             AccessModifier::Public => "public".to_string(),
             AccessModifier::Internal => "internal".to_string(),

@@ -1,5 +1,6 @@
 use std::sync::mpsc::Receiver;
-use crate::io::RenderKotlin;
+use std::task::Context;
+use crate::io::{RenderContext, RenderKotlin};
 use crate::io::tokens::NOTHING;
 use crate::spec::{AccessModifier, CodeBlock, MemberInheritanceModifier, Name, Type};
 
@@ -59,40 +60,40 @@ impl Function {
 }
 
 impl RenderKotlin for (Name, Type) {
-    fn render(&self) -> String {
-        format!("{}: {}", self.0.render(), self.1.render())
+    fn render(&self, context: RenderContext) -> String {
+        format!("{}: {}", self.0.render(context), self.1.render(context))
     }
 }
 
 impl RenderKotlin for Function {
-    fn render(&self) -> String {
-        fn render_parameters(params: &Vec<(Name, Type)>) -> String {
+    fn render(&self, context: RenderContext) -> String {
+        fn render_parameters(params: &Vec<(Name, Type)>, context: RenderContext) -> String {
             let mut buf = String::new();
             for parameter in params {
-                buf.push_str(parameter.render().as_str())
+                buf.push_str(parameter.render(context).as_str())
             }
 
             buf
         }
 
-        let access_modifier = self.access_modifier.render();
+        let access_modifier = self.access_modifier.render(context);
         let content = if let Some(body) = &self.body {
-            body.clone().wrap_in_scope().render()
+            body.clone().wrap_in_scope().render(context)
         } else {
             NOTHING.to_string()
         };
-        let returns = self.returns.render();
+        let returns = self.returns.render(context);
         let receiver = if let Some(receiver) = &self.receiver {
-            format!("{}.", receiver.render())
+            format!("{}.", receiver.render(context))
         } else {
             "".to_string()
         };
-        let inheritance = self.inheritance_modifier.render();
+        let inheritance = self.inheritance_modifier.render(context);
 
         format!(
             "{inheritance} {access_modifier} fun {receiver}{}({}): {returns} {content}",
-            self.name.render(),
-            render_parameters(&self.parameters),
+            self.name.render(context),
+            render_parameters(&self.parameters, context),
         )
     }
 }

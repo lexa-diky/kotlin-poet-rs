@@ -1,4 +1,4 @@
-use crate::io::RenderKotlin;
+use crate::io::{RenderContext, RenderKotlin};
 use crate::spec::{ClassLikeTypeName, Type};
 
 #[derive(PartialEq, Debug, Clone)]
@@ -29,11 +29,11 @@ impl ClassLikeType {
 }
 
 impl RenderKotlin for ClassLikeType {
-    fn render(&self) -> String {
-        let type_name = self.type_name.render();
+    fn render(&self, context: RenderContext) -> String {
+        let type_name = self.type_name.render(context);
         let nullable = if self.nullable { "?" } else { "" };
         let generic_arguments = self.generic_arguments.iter()
-            .map(|it| it.render()).collect::<Vec<_>>().join(", ");
+            .map(|it| it.render(context)).collect::<Vec<_>>().join(", ");
         if generic_arguments.is_empty() {
             format!("{}{}", type_name, nullable)
         } else {
@@ -57,7 +57,7 @@ mod test {
             Name::from_str("Class").unwrap(),
         );
         let parameter = ClassLikeType::new(type_name);
-        assert_eq!(parameter.render(), "io.github.lexadiky.Class");
+        assert_eq!(parameter.render_without_context(), "io.github.lexadiky.Class");
     }
 
     #[test]
@@ -68,7 +68,7 @@ mod test {
             Name::from_str("Class").unwrap(),
         );
         let parameter = ClassLikeType::new(type_name).nullable(true);
-        assert_eq!(parameter.render(), "io.github.lexadiky.Class?");
+        assert_eq!(parameter.render_without_context(), "io.github.lexadiky.Class?");
     }
 
     #[test]
@@ -87,7 +87,7 @@ mod test {
                     )
                 )
             ));
-        assert_eq!(parameter.render(), "io.github.lexadiky.Class<io.github.lexadiky.Generic>");
+        assert_eq!(parameter.render_without_context(), "io.github.lexadiky.Class<io.github.lexadiky.Generic>");
     }
 
     #[test]
@@ -106,6 +106,6 @@ mod test {
                     )
                 )
             )).nullable(true);
-        assert_eq!(parameter.render(), "io.github.lexadiky.Class<io.github.lexadiky.Generic>?");
+        assert_eq!(parameter.render_without_context(), "io.github.lexadiky.Class<io.github.lexadiky.Generic>?");
     }
 }

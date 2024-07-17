@@ -1,4 +1,4 @@
-use crate::io::{CodeBuffer, RenderKotlin};
+use crate::io::{CodeBuffer, RenderContext, RenderKotlin};
 use crate::io::tokens::{CURLY_BRACE_LEFT, CURLY_BRACE_RIGHT, INDENT, NEW_LINE, NOTHING};
 
 #[derive(Debug, PartialEq, Clone)]
@@ -10,7 +10,7 @@ pub enum  CodeBlockNode {
 
 impl RenderKotlin for CodeBlockNode {
 
-    fn render(&self) -> String {
+    fn render(&self, context: RenderContext) -> String {
         match self {
             CodeBlockNode::Statement(statement) => {
                 statement.to_string()
@@ -75,7 +75,7 @@ impl CodeBlock {
 
 impl RenderKotlin for CodeBlock {
 
-    fn render(&self) -> String {
+    fn render(&self, context: RenderContext) -> String {
         pub fn mk_indent(value: usize) -> String {
             let mut buff = String::new();
             for _ in 0..value {
@@ -90,7 +90,7 @@ impl RenderKotlin for CodeBlock {
             match node {
                 CodeBlockNode::Statement(_) => {
                     buffer.push(mk_indent(indent).as_str());
-                    buffer.push(node.render().as_str());
+                    buffer.push(node.render(context).as_str());
                     buffer.push(NEW_LINE)
                 }
                 CodeBlockNode::Indent() => {

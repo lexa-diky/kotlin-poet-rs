@@ -1,4 +1,4 @@
-use crate::io::RenderKotlin;
+use crate::io::{RenderContext, RenderKotlin};
 use crate::spec::class_like_type::ClassLikeType;
 use crate::spec::{ClassLikeTypeName, Name, Package};
 
@@ -89,10 +89,10 @@ impl Type {
 }
 
 impl RenderKotlin for Type {
-    fn render(&self) -> String {
+    fn render(&self, context: RenderContext) -> String {
         match self {
-            Type::ClassLike(class_like) => class_like.render(),
-            Type::Generic(name) => name.render()
+            Type::ClassLike(class_like) => class_like.render(context),
+            Type::Generic(name) => name.render(context)
         }
     }
 }
@@ -108,6 +108,6 @@ mod test {
     fn render_generic_parameter() {
         let name = Name::from_str("T").unwrap();
         let parameter = Type::Generic(name);
-        assert_eq!(parameter.render(), "T");
+        assert_eq!(parameter.render_without_context(), "T");
     }
 }

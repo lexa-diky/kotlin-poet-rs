@@ -6,12 +6,16 @@ mod name;
 mod parameter;
 mod class_like_parameter;
 mod code_block;
+mod function;
+mod access_modifier;
 
 pub use package::Package;
 pub use type_name::TypeName;
 pub use class_like_type_name::ClassLikeTypeName;
 pub use import::Import;
 pub use name::Name;
-pub use parameter::Parameter;
+pub use parameter::ParameterType;
 pub use class_like_parameter::ClassLikeParameter;
 pub use code_block::{CodeBlockNode, CodeBlock};
+pub use function::Function;
+pub use access_modifier::AccessModifier;

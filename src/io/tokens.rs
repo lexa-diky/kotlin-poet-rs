@@ -9,3 +9,5 @@ pub const GENERIC_BRACE_LEFT: &'static str = "<";
 pub const GENERIC_BRACE_RIGHT: &'static str = ">";
 pub const NEW_LINE: &'static str = "\n";
 pub const INDENT: &'static str = "    ";
+pub const CURLY_BRACE_LEFT: &'static str = "{";
+pub const CURLY_BRACE_RIGHT: &'static str = "}";

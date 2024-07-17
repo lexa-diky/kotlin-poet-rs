@@ -1,8 +1,7 @@
-use std::rc::Rc;
 use crate::io::{CodeBuffer, RenderKotlin};
-use crate::io::tokens::{INDENT, NEW_LINE, NOTHING};
+use crate::io::tokens::{CURLY_BRACE_LEFT, CURLY_BRACE_RIGHT, INDENT, NEW_LINE, NOTHING};
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum  CodeBlockNode {
     Statement(CodeBuffer),
     Indent(),
@@ -26,7 +25,7 @@ impl RenderKotlin for CodeBlockNode {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct CodeBlock {
     pub nodes: Vec<CodeBlockNode>,
 }
@@ -63,6 +62,14 @@ impl CodeBlock {
     pub fn unindent(mut self) -> CodeBlock {
         self.nodes.push(CodeBlockNode::Unindent());
         return self
+    }
+
+    pub fn wrap_in_scope(mut self) -> CodeBlock {
+        self.nodes.insert(0, CodeBlockNode::Statement(CodeBuffer::from(CURLY_BRACE_LEFT)));
+        self.nodes.insert(1, CodeBlockNode::Indent());
+        self.nodes.push(CodeBlockNode::Unindent());
+        self.nodes.push(CodeBlockNode::Statement(CodeBuffer::from(CURLY_BRACE_RIGHT)));
+        self
     }
 }
 

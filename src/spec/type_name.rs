@@ -1,6 +1,7 @@
 use crate::io::RenderKotlin;
 use crate::spec::class_like_type_name::ClassLikeTypeName;
 
+#[derive(PartialEq, Debug, Clone)]
 pub enum TypeName {
     ClassLike(ClassLikeTypeName),
 }

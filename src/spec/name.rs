@@ -1,3 +1,4 @@
+use std::ops::Deref;
 use std::str::FromStr;
 use crate::io::RenderKotlin;
 use crate::io::tokens::NAME_PROHIBITED_TOKENS;
@@ -8,12 +9,12 @@ pub struct Name {
 }
 
 impl Name {
-
     pub fn from(str: &str) -> Name {
         Name::from_str(str).unwrap()
     }
 }
 
+const PROHIBITED_TOKENS: [&str; 2] = ["<", ">"];
 impl FromStr for Name {
     type Err = ();
 
@@ -27,13 +28,12 @@ impl FromStr for Name {
 }
 
 impl RenderKotlin for Name {
-
     fn render(&self) -> String {
         let contains_prohibited_token = NAME_PROHIBITED_TOKENS.iter().any(
             |it| self.value.contains(it)
         );
         if contains_prohibited_token {
-            return format!("`{}`", self.value)
+            return format!("`{}`", self.value);
         }
         return self.value.clone();
     }

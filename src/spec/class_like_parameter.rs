@@ -1,10 +1,11 @@
 use crate::io::RenderKotlin;
-use crate::spec::{Parameter, TypeName};
+use crate::spec::{ParameterType, TypeName};
 
+#[derive(PartialEq, Debug, Clone)]
 pub struct ClassLikeParameter {
     type_name: TypeName,
     nullable: bool,
-    generic_arguments: Vec<Parameter>,
+    generic_arguments: Vec<ParameterType>,
 }
 
 impl ClassLikeParameter {
@@ -21,7 +22,7 @@ impl ClassLikeParameter {
         self
     }
 
-    pub fn generic_argument(mut self, parameter: Parameter) -> ClassLikeParameter {
+    pub fn generic_argument(mut self, parameter: ParameterType) -> ClassLikeParameter {
         self.generic_arguments.push(parameter);
         self
     }
@@ -45,7 +46,7 @@ impl RenderKotlin for ClassLikeParameter {
 mod test {
     use std::str::FromStr;
     use crate::io::RenderKotlin;
-    use crate::spec::{ClassLikeParameter, ClassLikeTypeName, Parameter, TypeName};
+    use crate::spec::{ClassLikeParameter, ClassLikeTypeName, ParameterType, TypeName};
     use crate::spec::{Name, Package};
 
     #[test]
@@ -84,7 +85,7 @@ mod test {
             )
         );
         let parameter = ClassLikeParameter::new(type_name)
-            .generic_argument(Parameter::ClassLike(
+            .generic_argument(ParameterType::ClassLike(
                 ClassLikeParameter::new(
                     TypeName::ClassLike(
                         ClassLikeTypeName::simple(
@@ -107,7 +108,7 @@ mod test {
             )
         );
         let parameter = ClassLikeParameter::new(type_name)
-            .generic_argument(Parameter::ClassLike(
+            .generic_argument(ParameterType::ClassLike(
                 ClassLikeParameter::new(
                     TypeName::ClassLike(
                         ClassLikeTypeName::simple(

@@ -1,17 +1,28 @@
+use std::fmt::format;
 use crate::io::RenderKotlin;
 use crate::io::tokens::{KW_IMPORT, PROJECTION};
 use crate::spec::{ClassLikeTypeName, Name, Package};
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum Import {
-    ClassLikeType(ClassLikeTypeName),
+    ClassLikeType { type_name: ClassLikeTypeName, alias: Option<Name> },
     Projection(Package),
     Function { package: Package, name: Name }
 }
 
 impl Import {
     pub fn class_like(type_name: ClassLikeTypeName) -> Self {
-        Import::ClassLikeType(type_name)
+        Import::ClassLikeType {
+            type_name,
+            alias: None
+        }
+    }
+
+    pub fn class_like_alias(type_name: ClassLikeTypeName, alias: Name) -> Self {
+        Import::ClassLikeType {
+            type_name,
+            alias: Some(alias)
+        }
     }
 
     pub fn projection(package: Package) -> Self {
@@ -29,8 +40,12 @@ impl Import {
 impl RenderKotlin for Import {
     fn render(&self) -> String {
         match self {
-            Import::ClassLikeType(type_name) => {
-                format!("{} {}", KW_IMPORT, type_name.render())
+            Import::ClassLikeType { type_name, alias } => {
+                if let Some(alias) = alias {
+                    format!("{} {} as {}", KW_IMPORT, type_name.render(), alias.render())
+                } else {
+                    format!("{} {}", KW_IMPORT, type_name.render())
+                }
             }
             Import::Projection(package) => {
                 format!("{} {}.{}", KW_IMPORT, package.render(), PROJECTION)
@@ -50,13 +65,25 @@ mod test {
 
     #[test]
     fn test_import_class_like_type() {
-        let import = Import::ClassLikeType(
+        let import = Import::class_like(
             ClassLikeTypeName::simple(
                 Package::from_str("com.example").unwrap(),
                 Name::from_str("Foo").unwrap(),
             )
         );
         assert_eq!(import.render(), "import com.example.Foo");
+    }
+
+    #[test]
+    fn test_import_class_like_type_with_alias() {
+        let import = Import::class_like_alias(
+            ClassLikeTypeName::simple(
+                Package::from_str("com.example").unwrap(),
+                Name::from_str("Foo").unwrap(),
+            ),
+            Name::from("Bar")
+        );
+        assert_eq!(import.render(), "import com.example.Foo as Bar");
     }
 
     #[test]

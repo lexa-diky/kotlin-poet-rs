@@ -1,13 +1,13 @@
 use crate::io::RenderKotlin;
-use crate::spec::{AccessModifier, CodeBlock, Name, ParameterType};
+use crate::spec::{AccessModifier, CodeBlock, Name, Type};
 
 #[derive(Debug, Clone)]
 pub struct Function {
     name: Name,
     access_modifier: AccessModifier,
-    parameters: Vec<(Name, ParameterType)>,
+    parameters: Vec<(Name, Type)>,
     body: Option<CodeBlock>,
-    returns: ParameterType,
+    returns: Type,
 }
 
 impl Function {
@@ -17,7 +17,7 @@ impl Function {
             access_modifier: AccessModifier::Public,
             parameters: Vec::new(),
             body: None,
-            returns: ParameterType::unit(),
+            returns: Type::unit(),
         }
     }
 
@@ -26,7 +26,7 @@ impl Function {
         self
     }
 
-    pub fn parameter(mut self, name: Name, parameter: ParameterType) -> Function {
+    pub fn parameter(mut self, name: Name, parameter: Type) -> Function {
         self.parameters.push((name, parameter));
         return self;
     }
@@ -37,7 +37,7 @@ impl Function {
     }
 }
 
-impl RenderKotlin for (Name, ParameterType) {
+impl RenderKotlin for (Name, Type) {
     fn render(&self) -> String {
         format!("{}: {}", self.0.render(), self.1.render())
     }
@@ -45,7 +45,7 @@ impl RenderKotlin for (Name, ParameterType) {
 
 impl RenderKotlin for Function {
     fn render(&self) -> String {
-        fn render_parameters(params: &Vec<(Name, ParameterType)>) -> String {
+        fn render_parameters(params: &Vec<(Name, Type)>) -> String {
             let mut buf = String::new();
             for parameter in params {
                 buf.push_str(parameter.render().as_str())

@@ -24,22 +24,55 @@ impl Type {
         )
     }
 
-    pub fn unit() -> Type {
+    pub fn list(generic_argument: Type) -> Type {
         Type::ClassLike(
             ClassLikeType::new(
                 ClassLikeTypeName::simple(
                     Package::from(
                         vec![
-                            Name::from("kotlin")
+                            Name::from("kotlin"),
+                            Name::from("collections")
                         ]
                     ),
-                    Name::from("Unit"),
+                    Name::from("List"),
                 )
-            )
+            ).generic_argument(generic_argument)
         )
     }
 
+    pub fn unit() -> Type {
+        Self::basic_type("Unit")
+    }
+
     pub fn string() -> Type {
+        Self::basic_type("String")
+    }
+
+    pub fn int() -> Type {
+        Self::basic_type("Int")
+    }
+
+    pub fn double() -> Type {
+        Self::basic_type("Double")
+    }
+
+    pub fn float() -> Type {
+        Self::basic_type("Float")
+    }
+
+    pub fn byte() -> Type {
+        Self::basic_type("Byte")
+    }
+
+    pub fn short() -> Type {
+        Self::basic_type("Short")
+    }
+
+    pub fn boolean() -> Type {
+        Self::basic_type("Boolean")
+    }
+
+    fn basic_type(name: &str) -> Type {
         Type::ClassLike(
             ClassLikeType::new(
                 ClassLikeTypeName::simple(
@@ -48,12 +81,13 @@ impl Type {
                             Name::from("kotlin")
                         ]
                     ),
-                    Name::from("String"),
+                    Name::from(name),
                 )
             )
         )
     }
 }
+
 impl RenderKotlin for Type {
     fn render(&self) -> String {
         match self {

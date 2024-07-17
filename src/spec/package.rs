@@ -1,7 +1,7 @@
 use std::str::FromStr;
 use crate::io::{RenderContext, RenderKotlin};
 use crate::io::tokens::SEPARATOR;
-use crate::spec::Name;
+use crate::spec::{CodeBlock, Name};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct Package {
@@ -9,7 +9,6 @@ pub struct Package {
 }
 
 impl Package {
-
     pub fn from(names: Vec<Name>) -> Package {
         Package { parts: names }
     }
@@ -26,10 +25,13 @@ impl FromStr for Package {
 }
 
 impl RenderKotlin for Package {
-    fn render(&self, context: RenderContext) -> String {
-        self.parts.iter().map(|it| it.render(context))
+
+    fn render(&self, context: RenderContext) -> CodeBlock {
+        let text = self.parts.iter().map(|it| it.render(context).render())
             .collect::<Vec<_>>()
-            .join(SEPARATOR)
+            .join(SEPARATOR);
+
+        return CodeBlock::atom(text.as_str());
     }
 }
 

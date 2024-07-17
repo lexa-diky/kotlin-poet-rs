@@ -1,5 +1,5 @@
 use crate::io::{RenderContext, RenderKotlin};
-use crate::spec::{ClassLikeTypeName, Type};
+use crate::spec::{ClassLikeTypeName, CodeBlock, Type};
 
 #[derive(PartialEq, Debug, Clone)]
 pub struct ClassLikeType {
@@ -29,16 +29,14 @@ impl ClassLikeType {
 }
 
 impl RenderKotlin for ClassLikeType {
-    fn render(&self, context: RenderContext) -> String {
-        let type_name = self.type_name.render(context);
-        let nullable = if self.nullable { "?" } else { "" };
-        let generic_arguments = self.generic_arguments.iter()
-            .map(|it| it.render(context)).collect::<Vec<_>>().join(", ");
-        if generic_arguments.is_empty() {
-            format!("{}{}", type_name, nullable)
-        } else {
-            format!("{}<{}>{}", type_name, generic_arguments, nullable)
-        }
+
+    fn render(&self, context: RenderContext) -> CodeBlock {
+        let mut type_name = self.type_name.render(context);
+        if self.nullable {
+            type_name.with_atom("?");
+        };
+
+        type_name.clone()
     }
 }
 

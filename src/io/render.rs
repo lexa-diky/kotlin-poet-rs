@@ -1,16 +1,21 @@
 use crate::spec::{CodeBlock, CodeBlockNode};
 
 pub trait RenderKotlin {
-
     fn render_into(&self, context: RenderContext, buffer: &mut crate::io::CodeBuffer) {
-        let content = RenderKotlin::render(self, context);
+        let content = RenderKotlin::render_string(self, context);
         buffer.push(content.as_str())
     }
 
-    fn render(&self, context: RenderContext) -> String;
+    fn render(&self, context: RenderContext) -> CodeBlock {
+        CodeBlock::atom(RenderKotlin::render_string(self, context).as_str())
+    }
+
+    fn render_string(&self, context: RenderContext) -> String {
+        self.render(context).render()
+    }
 
     fn render_without_context(&self) -> String {
-        self.render(RenderContext::new())
+        self.render_string(RenderContext::new())
     }
 }
 
@@ -20,7 +25,6 @@ pub struct RenderContext {
 }
 
 impl RenderContext {
-
     pub fn new() -> RenderContext {
         RenderContext { indent_level: 0 }
     }

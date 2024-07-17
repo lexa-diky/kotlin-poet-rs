@@ -26,8 +26,14 @@ impl PropertyGetter {
 }
 
 impl RenderKotlin for PropertyGetter {
-    fn render(&self, context: RenderContext) -> String {
-        format!("get() {{\n{}{}}}\n", INDENT, self.code.render(context))
+    fn render(&self, context: RenderContext) -> CodeBlock {
+        let mut block = CodeBlock::from(context);
+        block.with_statement("get() {");
+        block.with_indent();
+        block.with_nested(self.code.clone());
+        block.with_unindent();
+        block.with_statement("}");
+        block
     }
 }
 
@@ -51,8 +57,15 @@ impl PropertySetter {
 }
 
 impl RenderKotlin for PropertySetter {
-    fn render(&self, context: RenderContext) -> String {
-        format!("set(value) {{\n{}{}}}\n", INDENT, self.code.render(context))
+
+    fn render(&self, context: RenderContext) -> CodeBlock {
+        let mut code = CodeBlock::from(context);
+        code.with_statement("set(value) {");
+        code.with_indent();
+        code.with_nested(self.code.clone());
+        code.with_unindent();
+        code.with_statement("}");
+        code
     }
 }
 
@@ -103,39 +116,36 @@ impl Property {
 }
 
 impl RenderKotlin for Property {
-    fn render(&self, context: RenderContext) -> String {
-        let mut result = String::new();
-        result.push_str(self.access_modifier.render(context).as_str());
-        result.push_str(" ");
+    fn render(&self, context: RenderContext) -> CodeBlock {
+        let mut block = CodeBlock::empty();
+        block.with_nested(self.access_modifier.render(context));
+        block.with_space();
+        block.with_nested(self.inheritance_modifier.render(context));
+        block.with_space();
 
-        result.push_str(self.inheritance_modifier.render(context).as_str());
-        if !matches!(self.inheritance_modifier, MemberInheritanceModifier::Default) {
-            result.push_str(" ")
+        if self.mutable {
+            block.with_atom("var");
+        } else {
+            block.with_atom("val");
         }
+        block.with_space();
 
-        match self.mutable {
-            true => result.push_str("var "),
-            false => result.push_str("val ")
-        }
-
-        result.push_str(self.name.render(context).as_str());
-
-        result.push_str(": ");
-        result.push_str(self.returns.render(context).as_str());
-
+        block.with_nested(self.name.render(context));
+        block.with_atom(":");
+        block.with_space();
+        block.with_nested(self.returns.render(context));
         if let Some(initializer) = &self.initializer {
-            result.push_str(" = ");
-            result.push_str(initializer.render(context).as_str());
+            block.with_space();
+            block.with_atom("=");
+            block.with_space();
+            block.with_nested(initializer.clone())
         }
-
-        if let Some(getter) = &self.getter {
-            result.push_str(getter.render(context.indent()).as_str());
-        }
-
         if let Some(setter) = &self.setter {
-            result.push_str(setter.render(context.indent()).as_str());
+            block.with_nested(setter.render(context.indent()));
         }
-
-        result
+        if let Some(getter) = &self.getter {
+            block.with_nested(getter.render(context.indent()));
+        }
+        block
     }
 }

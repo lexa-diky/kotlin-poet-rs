@@ -2,6 +2,7 @@ use std::ops::Deref;
 use std::str::FromStr;
 use crate::io::{RenderContext, RenderKotlin};
 use crate::io::tokens::NAME_PROHIBITED_TOKENS;
+use crate::spec::CodeBlock;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct Name {
@@ -28,14 +29,14 @@ impl FromStr for Name {
 }
 
 impl RenderKotlin for Name {
-    fn render(&self, context: RenderContext) -> String {
+    fn render(&self, context: RenderContext) -> CodeBlock {
         let contains_prohibited_token = NAME_PROHIBITED_TOKENS.iter().any(
             |it| self.value.contains(it)
         );
         if contains_prohibited_token {
-            return format!("`{}`", self.value);
+            return CodeBlock::atom(format!("`{}`", self.value).as_str());
         }
-        return self.value.clone();
+        return CodeBlock::atom(self.value.as_str());
     }
 }
 

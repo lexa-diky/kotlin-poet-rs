@@ -1,7 +1,4 @@
-use std::sync::mpsc::Receiver;
-use std::task::Context;
 use crate::io::{RenderContext, RenderKotlin};
-use crate::io::tokens::NOTHING;
 use crate::spec::{AccessModifier, CodeBlock, MemberInheritanceModifier, Name, Type};
 
 #[derive(Debug, Clone)]
@@ -60,40 +57,55 @@ impl Function {
 }
 
 impl RenderKotlin for (Name, Type) {
-    fn render(&self, context: RenderContext) -> String {
-        format!("{}: {}", self.0.render(context), self.1.render(context))
+    fn render(&self, context: RenderContext) -> CodeBlock {
+        return CodeBlock::atom(
+            format!("{}: {}", self.0.render_string(context), self.1.render_string(context)).as_str()
+        );
     }
 }
 
 impl RenderKotlin for Function {
-    fn render(&self, context: RenderContext) -> String {
-        fn render_parameters(params: &Vec<(Name, Type)>, context: RenderContext) -> String {
-            let mut buf = String::new();
-            for parameter in params {
-                buf.push_str(parameter.render(context).as_str())
-            }
+    fn render(&self, context: RenderContext) -> CodeBlock {
+        let mut block = CodeBlock::empty();
 
-            buf
+        if !matches!(self.inheritance_modifier, MemberInheritanceModifier::Default) {
+            block.with_nested(self.inheritance_modifier.render(context));
+            block.with_space();
+        }
+        block.with_nested(self.access_modifier.render(context));
+        block.with_space();
+
+        block.with_atom("fun");
+        block.with_space();
+
+        if let (Some(receiver)) = &self.receiver {
+            block.with_nested(receiver.render(context));
+            block.with_atom(".");
+        }
+        block.with_atom(self.name.render_string(context).as_str());
+        block.with_atom("(");
+
+        let total_parameters = self.parameters.len();
+        for (index, parameter) in self.parameters.iter().enumerate() {
+            block.with_nested(parameter.render(context));
+            if index != total_parameters - 1 {
+                block.with_atom(", ");
+            }
+        }
+        block.with_atom(")");
+
+        block.with_atom(": ");
+        block.with_nested(self.returns.render(context));
+
+        if let Some(body) = &self.body {
+            block.with_space();
+            block.with_statement("{");
+            block.with_indent();
+            block.with_nested(body.clone());
+            block.with_unindent();
+            block.with_atom("}");
         }
 
-        let access_modifier = self.access_modifier.render(context);
-        let content = if let Some(body) = &self.body {
-            body.clone().wrap_in_scope().render(context)
-        } else {
-            NOTHING.to_string()
-        };
-        let returns = self.returns.render(context);
-        let receiver = if let Some(receiver) = &self.receiver {
-            format!("{}.", receiver.render(context))
-        } else {
-            "".to_string()
-        };
-        let inheritance = self.inheritance_modifier.render(context);
-
-        format!(
-            "{inheritance} {access_modifier} fun {receiver}{}({}): {returns} {content}",
-            self.name.render(context),
-            render_parameters(&self.parameters, context),
-        )
+        block
     }
 }

@@ -1,27 +1,27 @@
 use std::fmt::format;
 use crate::io::{RenderContext, RenderKotlin};
 use crate::io::tokens::{KW_IMPORT, PROJECTION};
-use crate::spec::{ClassLikeTypeName, Name, Package};
+use crate::spec::{ClassLikeTypeName, CodeBlock, Name, Package};
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum Import {
     ClassLikeType { type_name: ClassLikeTypeName, alias: Option<Name> },
     Projection(Package),
-    Function { package: Package, name: Name }
+    Function { package: Package, name: Name },
 }
 
 impl Import {
     pub fn class_like(type_name: ClassLikeTypeName) -> Self {
         Import::ClassLikeType {
             type_name,
-            alias: None
+            alias: None,
         }
     }
 
     pub fn class_like_alias(type_name: ClassLikeTypeName, alias: Name) -> Self {
         Import::ClassLikeType {
             type_name,
-            alias: Some(alias)
+            alias: Some(alias),
         }
     }
 
@@ -32,28 +32,30 @@ impl Import {
     pub fn function(package: Package, name: Name) -> Self {
         Import::Function {
             package,
-            name
+            name,
         }
     }
 }
 
 impl RenderKotlin for Import {
-    fn render(&self, context: RenderContext) -> String {
-        match self {
+    fn render(&self, context: RenderContext) -> CodeBlock {
+        let text = match self {
             Import::ClassLikeType { type_name, alias } => {
                 if let Some(alias) = alias {
-                    format!("{} {} as {}", KW_IMPORT, type_name.render(context), alias.render(context))
+                    format!("{} {} as {}", KW_IMPORT, type_name.render_string(context), alias.render_string(context))
                 } else {
-                    format!("{} {}", KW_IMPORT, type_name.render(context))
+                    format!("{} {}", KW_IMPORT, type_name.render_string(context))
                 }
             }
             Import::Projection(package) => {
-                format!("{} {}.{}", KW_IMPORT, package.render(context), PROJECTION)
+                format!("{} {}.{}", KW_IMPORT, package.render_string(context), PROJECTION)
             }
             Import::Function { package, name } => {
-                format!("{} {}.{}", KW_IMPORT, package.render(context), name.render(context))
+                format!("{} {}.{}", KW_IMPORT, package.render_string(context), name.render_string(context))
             }
-        }
+        };
+
+        CodeBlock::statement(text.as_str())
     }
 }
 
@@ -81,7 +83,7 @@ mod test {
                 Package::from_str("com.example").unwrap(),
                 Name::from_str("Foo").unwrap(),
             ),
-            Name::from("Bar")
+            Name::from("Bar"),
         );
         assert_eq!(import.render_without_context(), "import com.example.Foo as Bar");
     }

@@ -1,18 +1,24 @@
 use crate::io::{RenderContext, RenderKotlin};
+use crate::spec::CodeBlock;
 
 #[derive(Debug, Clone)]
 pub enum MemberInheritanceModifier {
-    Open, Final, Default, Abstract
+    Open,
+    Final,
+    Default,
+    Abstract,
 }
 
 impl RenderKotlin for MemberInheritanceModifier {
-    fn render(&self, context: RenderContext) -> String {
-        match self {
-            MemberInheritanceModifier::Open => "open".to_string(),
-            MemberInheritanceModifier::Final => "final".to_string(),
-            MemberInheritanceModifier::Default => "".to_string(),
-            MemberInheritanceModifier::Abstract => "abstract".to_string()
-        }
+    fn render(&self, context: RenderContext) -> CodeBlock {
+        let text = match self {
+            MemberInheritanceModifier::Open => "open",
+            MemberInheritanceModifier::Final => "final",
+            MemberInheritanceModifier::Default => "",
+            MemberInheritanceModifier::Abstract => "abstract"
+        };
+
+        CodeBlock::atom(text)
     }
 }
 

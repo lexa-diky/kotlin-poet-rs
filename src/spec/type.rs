@@ -1,6 +1,6 @@
 use crate::io::{RenderContext, RenderKotlin};
 use crate::spec::class_like_type::ClassLikeType;
-use crate::spec::{ClassLikeTypeName, Name, Package};
+use crate::spec::{ClassLikeTypeName, CodeBlock, Name, Package};
 
 #[derive(PartialEq, Debug, Clone)]
 pub enum Type {
@@ -31,7 +31,7 @@ impl Type {
                     Package::from(
                         vec![
                             Name::from("kotlin"),
-                            Name::from("collections")
+                            Name::from("collections"),
                         ]
                     ),
                     Name::from("List"),
@@ -89,7 +89,7 @@ impl Type {
 }
 
 impl RenderKotlin for Type {
-    fn render(&self, context: RenderContext) -> String {
+    fn render(&self, context: RenderContext) -> CodeBlock {
         match self {
             Type::ClassLike(class_like) => class_like.render(context),
             Type::Generic(name) => name.render(context)

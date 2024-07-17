@@ -1,4 +1,5 @@
 use crate::io::{RenderContext, RenderKotlin};
+use crate::spec::CodeBlock;
 
 #[derive(PartialEq, Debug, Clone)]
 pub enum AccessModifier {
@@ -9,12 +10,15 @@ pub enum AccessModifier {
 }
 
 impl RenderKotlin for AccessModifier {
-    fn render(&self, context: RenderContext) -> String {
-        match self {
-            AccessModifier::Public => "public".to_string(),
-            AccessModifier::Internal => "internal".to_string(),
-            AccessModifier::Private => "private".to_string(),
-            AccessModifier::Protected => "protected".to_string()
-        }
+
+    fn render(&self, context: RenderContext) -> CodeBlock {
+        let keyword = match self {
+            AccessModifier::Public => "public",
+            AccessModifier::Internal => "internal",
+            AccessModifier::Private => "private",
+            AccessModifier::Protected => "protected"
+        };
+
+        return CodeBlock::atom(keyword)
     }
 }

@@ -1,4 +1,4 @@
-use crate::io::tokens::INDENT;
+use crate::spec::{CodeBlock, CodeBlockNode};
 
 pub trait RenderKotlin {
 
@@ -29,11 +29,7 @@ impl RenderContext {
         RenderContext { indent_level: self.indent_level + 1 }
     }
 
-    pub fn intent_str(&self) -> String {
-        let mut buff = String::new();
-        for _ in 0..self.indent_level {
-            buff.push_str(INDENT);
-        }
-        buff
+    pub fn level(&self) -> usize {
+        self.indent_level
     }
 }

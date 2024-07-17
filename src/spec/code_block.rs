@@ -4,8 +4,8 @@ use crate::io::tokens::{CURLY_BRACE_LEFT, CURLY_BRACE_RIGHT, INDENT, NEW_LINE, N
 #[derive(Debug, PartialEq, Clone)]
 pub enum  CodeBlockNode {
     Statement(CodeBuffer),
-    Indent(),
-    Unindent()
+    Indent(usize),
+    Unindent(usize)
 }
 
 impl RenderKotlin for CodeBlockNode {
@@ -15,10 +15,10 @@ impl RenderKotlin for CodeBlockNode {
             CodeBlockNode::Statement(statement) => {
                 statement.to_string()
             }
-            CodeBlockNode::Indent() => {
+            CodeBlockNode::Indent(size) => {
                 INDENT.to_string()
             }
-            CodeBlockNode::Unindent() => {
+            CodeBlockNode::Unindent(size) => {
                 NOTHING.to_string()
             }
         }
@@ -39,12 +39,16 @@ impl CodeBlock {
     }
 
     pub fn statement(mut self, text: &str) -> CodeBlock {
+        self.with_statement(text);
+        return self
+    }
+
+    pub fn with_statement(&mut self, text: &str) {
         self.nodes.push(
             CodeBlockNode::Statement(
                 CodeBuffer::from(text)
             )
         );
-        return self
     }
 
     pub fn nest(mut self, code_block: CodeBlock) -> CodeBlock {
@@ -55,49 +59,49 @@ impl CodeBlock {
     }
 
     pub fn indent(mut self) -> CodeBlock {
-        self.nodes.push(CodeBlockNode::Indent());
+        self.nodes.push(CodeBlockNode::Indent(1));
         return self
     }
 
     pub fn unindent(mut self) -> CodeBlock {
-        self.nodes.push(CodeBlockNode::Unindent());
+        self.nodes.push(CodeBlockNode::Unindent(1));
         return self
     }
 
     pub fn wrap_in_scope(mut self) -> CodeBlock {
         self.nodes.insert(0, CodeBlockNode::Statement(CodeBuffer::from(CURLY_BRACE_LEFT)));
-        self.nodes.insert(1, CodeBlockNode::Indent());
-        self.nodes.push(CodeBlockNode::Unindent());
+        self.nodes.insert(1, CodeBlockNode::Indent(1));
+        self.nodes.push(CodeBlockNode::Unindent(1));
         self.nodes.push(CodeBlockNode::Statement(CodeBuffer::from(CURLY_BRACE_RIGHT)));
         self
+    }
+
+    fn mk_indent(value: usize) -> String {
+        let mut buff = String::new();
+        for _ in 0..value {
+            buff.push_str(INDENT);
+        }
+        buff
     }
 }
 
 impl RenderKotlin for CodeBlock {
 
     fn render(&self, context: RenderContext) -> String {
-        pub fn mk_indent(value: usize) -> String {
-            let mut buff = String::new();
-            for _ in 0..value {
-                buff.push_str(INDENT);
-            }
-            buff
-        }
-
         let mut buffer = CodeBuffer::default();
-        let mut indent = 0;
+        let mut indent = context.level();
         for node in &self.nodes {
             match node {
                 CodeBlockNode::Statement(_) => {
-                    buffer.push(mk_indent(indent).as_str());
+                    buffer.push(Self::mk_indent(indent).as_str());
                     buffer.push(node.render(context).as_str());
                     buffer.push(NEW_LINE)
                 }
-                CodeBlockNode::Indent() => {
-                    indent += 1;
+                CodeBlockNode::Indent(size) => {
+                    indent += size;
                 }
-                CodeBlockNode::Unindent() => {
-                    indent -= 1;
+                CodeBlockNode::Unindent(size) => {
+                    indent -= size;
                 }
             }
         }

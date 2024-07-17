@@ -1,5 +1,5 @@
 use crate::io::RenderKotlin;
-use crate::spec::{ClassLikeTypeName, Type, TypeName};
+use crate::spec::{ClassLikeTypeName, Type};
 
 #[derive(PartialEq, Debug, Clone)]
 pub struct ClassLikeType {
@@ -46,7 +46,7 @@ impl RenderKotlin for ClassLikeType {
 mod test {
     use std::str::FromStr;
     use crate::io::RenderKotlin;
-    use crate::spec::{ClassLikeType, ClassLikeTypeName, Type, TypeName};
+    use crate::spec::{ClassLikeType, ClassLikeTypeName, Type};
     use crate::spec::{Name, Package};
 
     #[test]

@@ -42,10 +42,10 @@ impl LambdaType {
 }
 
 impl RenderKotlin for LambdaType {
-    fn render(&self, context: RenderContext) -> CodeBlock {
+    fn render(&self) -> CodeBlock {
         let mut lambda = CodeBlock::empty();
         if let Some(receiver) = &*self.receiver {
-            lambda.with_nested(receiver.render(context));
+            lambda.with_nested(receiver.render());
             lambda.with_atom(".")
         }
 
@@ -56,13 +56,13 @@ impl RenderKotlin for LambdaType {
 
         lambda.with_atom("(");
         for (idx, parameter) in self.parameters.iter().enumerate() {
-            lambda.with_nested(parameter.render(context));
+            lambda.with_nested(parameter.render());
             if idx != self.parameters.len() - 1 {
                 lambda.with_atom(", ");
             }
         }
         lambda.with_atom(") -> ");
-        lambda.with_nested(self.returns.render(context));
+        lambda.with_nested(self.returns.render());
         lambda
     }
 }

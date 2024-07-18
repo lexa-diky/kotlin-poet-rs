@@ -2,15 +2,15 @@ use crate::spec::CodeBlock;
 
 pub trait RenderKotlin {
 
-    fn render(&self, context: RenderContext) -> CodeBlock;
+    fn render(&self) -> CodeBlock;
 
-    fn render_string(&self, context: RenderContext) -> String {
-        self.render(context).render()
+    fn render_string(&self) -> String {
+        self.render().render()
     }
 
     #[cfg(test)]
     fn render_string_in_root(&self) -> String {
-        self.render_string(RenderContext::new())
+        self.render_string()
     }
 }
 

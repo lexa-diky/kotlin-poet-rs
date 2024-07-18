@@ -90,11 +90,11 @@ impl Type {
 }
 
 impl RenderKotlin for Type {
-    fn render(&self, context: RenderContext) -> CodeBlock {
+    fn render(&self) -> CodeBlock {
         match self {
-            Type::ClassLike(class_like) => class_like.render(context),
-            Type::Generic(name) => name.render(context),
-            Type::Lambda(lambda) => lambda.render(context)
+            Type::ClassLike(class_like) => class_like.render(),
+            Type::Generic(name) => name.render(),
+            Type::Lambda(lambda) => lambda.render()
         }
     }
 }

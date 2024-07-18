@@ -10,7 +10,7 @@ pub enum MemberInheritanceModifier {
 }
 
 impl RenderKotlin for MemberInheritanceModifier {
-    fn render(&self, context: RenderContext) -> CodeBlock {
+    fn render(&self) -> CodeBlock {
         let text = match self {
             MemberInheritanceModifier::Open => "open",
             MemberInheritanceModifier::Final => "final",

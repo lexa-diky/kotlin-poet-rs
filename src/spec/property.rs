@@ -1,5 +1,4 @@
-use crate::io::{RenderContext, RenderKotlin};
-use crate::io::tokens::INDENT;
+use crate::io::RenderKotlin;
 use crate::spec::{AccessModifier, CodeBlock, MemberInheritanceModifier, Name, Type};
 
 pub struct Property {
@@ -26,8 +25,8 @@ impl PropertyGetter {
 }
 
 impl RenderKotlin for PropertyGetter {
-    fn render(&self, context: RenderContext) -> CodeBlock {
-        let mut block = CodeBlock::from(context);
+    fn render(&self) -> CodeBlock {
+        let mut block = CodeBlock::empty();
         block.with_statement("get() {");
         block.with_indent();
         block.with_nested(self.code.clone());
@@ -58,8 +57,8 @@ impl PropertySetter {
 
 impl RenderKotlin for PropertySetter {
 
-    fn render(&self, context: RenderContext) -> CodeBlock {
-        let mut code = CodeBlock::from(context);
+    fn render(&self) -> CodeBlock {
+        let mut code = CodeBlock::empty();
         code.with_statement("set(value) {");
         code.with_indent();
         code.with_nested(self.code.clone());
@@ -116,11 +115,11 @@ impl Property {
 }
 
 impl RenderKotlin for Property {
-    fn render(&self, context: RenderContext) -> CodeBlock {
+    fn render(&self) -> CodeBlock {
         let mut block = CodeBlock::empty();
-        block.with_nested(self.access_modifier.render(context));
+        block.with_nested(self.access_modifier.render());
         block.with_space();
-        block.with_nested(self.inheritance_modifier.render(context));
+        block.with_nested(self.inheritance_modifier.render());
         block.with_space();
 
         if self.mutable {
@@ -130,10 +129,11 @@ impl RenderKotlin for Property {
         }
         block.with_space();
 
-        block.with_nested(self.name.render(context));
+        block.with_nested(self.name.render());
         block.with_atom(":");
         block.with_space();
-        block.with_nested(self.returns.render(context));
+        block.with_nested(self.returns.render());
+        block.with_indent();
         if let Some(initializer) = &self.initializer {
             block.with_space();
             block.with_atom("=");
@@ -141,11 +141,39 @@ impl RenderKotlin for Property {
             block.with_nested(initializer.clone())
         }
         if let Some(setter) = &self.setter {
-            block.with_nested(setter.render(context.indent()));
+            block.with_nested(setter.render());
         }
         if let Some(getter) = &self.getter {
-            block.with_nested(getter.render(context.indent()));
+            block.with_nested(getter.render());
         }
+        block.with_unindent();
         block
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn property_render() {
+        let property = Property::new(
+            Name::from("name"),
+            Type::string()
+        ).initializer(
+            CodeBlock::statement("\"\"")
+        ).getter(
+            PropertyGetter::new(
+                CodeBlock::statement("return field")
+            )
+        ).setter(
+            PropertySetter::new(
+                CodeBlock::statement("field = value")
+            )
+        );
+
+        let rendered = property.render().render();
+        let expected = "public  var name: kotlin.String = \"\"\n    set(value) {\n        field = value\n    }\n    get() {\n        return field\n    }\n";
+        assert_eq!(rendered, expected);
     }
 }

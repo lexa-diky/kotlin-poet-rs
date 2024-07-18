@@ -28,7 +28,7 @@ impl FromStr for Name {
 }
 
 impl RenderKotlin for Name {
-    fn render(&self, context: RenderContext) -> CodeBlock {
+    fn render(&self) -> CodeBlock {
         let contains_prohibited_token = NAME_PROHIBITED_TOKENS.iter().any(
             |it| self.value.contains(it)
         );

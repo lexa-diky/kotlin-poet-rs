@@ -11,7 +11,7 @@ pub enum AccessModifier {
 
 impl RenderKotlin for AccessModifier {
 
-    fn render(&self, context: RenderContext) -> CodeBlock {
+    fn render(&self) -> CodeBlock {
         let keyword = match self {
             AccessModifier::Public => "public",
             AccessModifier::Internal => "internal",

@@ -26,16 +26,16 @@ impl ClassLikeTypeName {
 }
 
 impl RenderKotlin for ClassLikeTypeName {
-    fn render(&self, context: RenderContext) -> CodeBlock {
+    fn render(&self) -> CodeBlock {
         let mut code = CodeBlock::empty();
 
-        let package = self.package.render(context);
+        let package = self.package.render();
         code.with_nested(package);
 
         code.with_atom(tokens::SEPARATOR);
 
         for (index, part) in self.names.iter().enumerate() {
-            code.with_nested(part.render(context));
+            code.with_nested(part.render());
             if index != self.names.len() - 1 {
                 code.with_atom(tokens::SEPARATOR);
             }

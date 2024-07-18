@@ -36,30 +36,30 @@ impl Import {
 }
 
 impl RenderKotlin for Import {
-    fn render(&self, context: RenderContext) -> CodeBlock {
+    fn render(&self) -> CodeBlock {
         let mut code = CodeBlock::empty();
         code.with_atom(tokens::KW_IMPORT);
         code.with_space();
 
         match self {
             Import::ClassLikeType { type_name, alias } => {
-                code.with_nested(type_name.render(context));
+                code.with_nested(type_name.render());
                 if let Some(alias) = alias {
                     code.with_space();
                     code.with_atom(tokens::KW_AS);
                     code.with_space();
-                    code.with_nested(alias.render(context));
+                    code.with_nested(alias.render());
                 }
             }
             Import::Projection(package) => {
-                code.with_nested(package.render(context));
+                code.with_nested(package.render());
                 code.with_atom(tokens::SEPARATOR);
                 code.with_atom(tokens::WILDCARD);
             }
             Import::Function { package, name } => {
-                code.with_nested(package.render(context));
+                code.with_nested(package.render());
                 code.with_atom(tokens::SEPARATOR);
-                code.with_nested(name.render(context));
+                code.with_nested(name.render());
             }
         }
 

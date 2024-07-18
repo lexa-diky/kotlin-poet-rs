@@ -71,25 +71,25 @@ impl Function {
 }
 
 impl RenderKotlin for (Name, Type) {
-    fn render(&self, context: RenderContext) -> CodeBlock {
+    fn render(&self) -> CodeBlock {
         let mut block = CodeBlock::empty();
-        block.with_nested(self.0.render(context));
+        block.with_nested(self.0.render());
         block.with_atom(tokens::TYPE_SEPARATOR);
         block.with_space();
-        block.with_nested(self.1.render(context));
+        block.with_nested(self.1.render());
         block
     }
 }
 
 impl RenderKotlin for Function {
-    fn render(&self, context: RenderContext) -> CodeBlock {
+    fn render(&self) -> CodeBlock {
         let mut block = CodeBlock::empty();
 
         if !matches!(self.inheritance_modifier, MemberInheritanceModifier::Default) {
-            block.with_nested(self.inheritance_modifier.render(context));
+            block.with_nested(self.inheritance_modifier.render());
             block.with_space();
         }
-        block.with_nested(self.access_modifier.render(context));
+        block.with_nested(self.access_modifier.render());
         block.with_space();
 
         if self.is_suspended {
@@ -106,15 +106,15 @@ impl RenderKotlin for Function {
         block.with_space();
 
         if let Some(receiver) = &self.receiver {
-            block.with_nested(receiver.render(context));
+            block.with_nested(receiver.render());
             block.with_atom(".");
         }
-        block.with_nested(self.name.render(context));
+        block.with_nested(self.name.render());
         block.with_atom("(");
 
         let total_parameters = self.parameters.len();
         for (index, parameter) in self.parameters.iter().enumerate() {
-            block.with_nested(parameter.render(context));
+            block.with_nested(parameter.render());
             if index != total_parameters - 1 {
                 block.with_atom(", ");
             }
@@ -122,7 +122,7 @@ impl RenderKotlin for Function {
         block.with_atom(")");
 
         block.with_atom(": ");
-        block.with_nested(self.returns.render(context));
+        block.with_nested(self.returns.render());
 
         if let Some(body) = &self.body {
             block.with_space();

@@ -26,10 +26,10 @@ impl FromStr for Package {
 
 impl RenderKotlin for Package {
 
-    fn render(&self, context: RenderContext) -> CodeBlock {
+    fn render(&self) -> CodeBlock {
         let mut code = CodeBlock::empty();
         for (index, part) in self.parts.iter().enumerate() {
-            code.with_nested(part.render(context));
+            code.with_nested(part.render());
             if index != self.parts.len() - 1 {
                 code.with_atom(SEPARATOR);
             }

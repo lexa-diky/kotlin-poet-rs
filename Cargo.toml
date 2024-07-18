@@ -1,6 +1,14 @@
 [package]
 name = "kotlin-poet-rs"
-version = "0.1.0"
+version = "0.0.1-indev"
 edition = "2021"
+license = "Apache-2.0"
+repository = "https://github.com/lexa-diky/kotlin-poet-rs"
+readme = "README.md"
+documentation = "https://github.com/lexa-diky/kotlin-poet-rs"
+homepage = "https://github.com/lexa-diky/kotlin-poet-rs"
+description = "Tiny binary writer utility, just enough for you"
+keywords = ["kotlin", "codegen"]
+categories = ["template-engine"]
 
 [dependencies]

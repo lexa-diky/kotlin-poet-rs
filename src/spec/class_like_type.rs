@@ -32,6 +32,19 @@ impl RenderKotlin for ClassLikeType {
 
     fn render(&self, context: RenderContext) -> CodeBlock {
         let mut type_name = self.type_name.render(context);
+        if !self.generic_arguments.is_empty() {
+            type_name.with_atom("<");
+
+            for (idx, generic_argument) in self.generic_arguments.iter().enumerate() {
+                type_name.with_nested(generic_argument.render(context));
+                if idx != self.generic_arguments.len() - 1 {
+                    type_name.with_atom(", ");
+                }
+            }
+
+            type_name.with_atom(">");
+        }
+
         if self.nullable {
             type_name.with_atom("?");
         };
@@ -80,12 +93,23 @@ mod test {
             .generic_argument(Type::ClassLike(
                 ClassLikeType::new(
                     ClassLikeTypeName::simple(
+                        package.clone(),
+                        Name::from_str("Generic1").unwrap(),
+                    )
+                )
+            ))
+            .generic_argument(Type::ClassLike(
+                ClassLikeType::new(
+                    ClassLikeTypeName::simple(
                         package,
-                        Name::from_str("Generic").unwrap(),
+                        Name::from_str("Generic2").unwrap(),
                     )
                 )
             ));
-        assert_eq!(parameter.render_without_context(), "io.github.lexadiky.Class<io.github.lexadiky.Generic>");
+        assert_eq!(
+            parameter.render_without_context(),
+            "io.github.lexadiky.Class<io.github.lexadiky.Generic1, io.github.lexadiky.Generic2>"
+        );
     }
 
     #[test]

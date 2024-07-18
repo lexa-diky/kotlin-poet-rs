@@ -73,7 +73,7 @@ mod test {
                 Name::from_str("Foo").unwrap(),
             )
         );
-        assert_eq!(import.render_without_context(), "import com.example.Foo");
+        assert_eq!(import.render_without_context(), "import com.example.Foo\n");
     }
 
     #[test]
@@ -85,13 +85,13 @@ mod test {
             ),
             Name::from("Bar"),
         );
-        assert_eq!(import.render_without_context(), "import com.example.Foo as Bar");
+        assert_eq!(import.render_without_context(), "import com.example.Foo as Bar\n");
     }
 
     #[test]
     fn test_import_projection() {
         let import = Import::Projection(Package::from_str("com.example").unwrap());
-        assert_eq!(import.render_without_context(), "import com.example.*");
+        assert_eq!(import.render_without_context(), "import com.example.*\n");
     }
 
     #[test]
@@ -100,6 +100,6 @@ mod test {
             package: Package::from_str("com.example").unwrap(),
             name: Name::from_str("foo").unwrap(),
         };
-        assert_eq!(import.render_without_context(), "import com.example.foo");
+        assert_eq!(import.render_without_context(), "import com.example.foo\n");
     }
 }

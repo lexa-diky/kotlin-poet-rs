@@ -15,7 +15,6 @@ impl Name {
     }
 }
 
-const PROHIBITED_TOKENS: [&str; 2] = ["<", ">"];
 impl FromStr for Name {
     type Err = ();
 

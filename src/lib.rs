@@ -3,8 +3,8 @@ pub mod spec;
 
 #[cfg(test)]
 mod tests {
-    use crate::io::{RenderContext, RenderKotlin};
-    use crate::spec::{CodeBlock, CodeBlockNode, Function, Name, Property, PropertyGetter, PropertySetter, Type};
+    use crate::io::RenderKotlin;
+    use crate::spec::{CodeBlock, Name, Property, PropertyGetter, PropertySetter, Type};
 
     #[test]
     fn it_works() {

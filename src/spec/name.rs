@@ -1,6 +1,7 @@
 use std::ops::Deref;
 use std::str::FromStr;
-use crate::io::{RenderContext, RenderKotlin};
+
+use crate::io::RenderKotlin;
 use crate::io::tokens::NAME_PROHIBITED_TOKENS;
 use crate::spec::CodeBlock;
 
@@ -9,9 +10,9 @@ pub struct Name {
     value: String,
 }
 
-impl Name {
-    pub fn from(str: &str) -> Name {
-        Name::from_str(str).unwrap()
+impl From<&str> for Name {
+    fn from(value: &str) -> Self {
+        return Name::from_str(value).unwrap()
     }
 }
 
@@ -42,6 +43,7 @@ impl RenderKotlin for Name {
 #[cfg(test)]
 mod test {
     use std::str::FromStr;
+
     use super::*;
 
     #[test]

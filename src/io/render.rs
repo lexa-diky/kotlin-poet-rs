@@ -5,7 +5,7 @@ pub trait RenderKotlin {
     fn render(&self) -> CodeBlock;
 
     fn render_string(&self) -> String {
-        self.render().render()
+        self.render().to_string()
     }
 
     #[cfg(test)]

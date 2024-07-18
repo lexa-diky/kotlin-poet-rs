@@ -23,6 +23,6 @@ mod tests {
             )
         );
 
-        println!("{}", property.render().render())
+        println!("{}", property.render().to_string())
     }
 }

@@ -1,4 +1,4 @@
-use crate::io::{CodeBuffer, RenderContext, tokens};
+use crate::io::{CodeBuffer, tokens};
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum  CodeBlockNode {
@@ -11,8 +11,7 @@ pub enum  CodeBlockNode {
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct CodeBlock {
-    pub nodes: Vec<CodeBlockNode>,
-    pub default_indent: usize
+    nodes: Vec<CodeBlockNode>,
 }
 
 impl CodeBlock {
@@ -20,14 +19,6 @@ impl CodeBlock {
     pub fn empty() -> CodeBlock {
         return CodeBlock {
             nodes: vec![],
-            default_indent: 0
-        }
-    }
-
-    pub fn from(context: RenderContext) -> CodeBlock {
-        return CodeBlock {
-            nodes: vec![],
-            default_indent: context.level()
         }
     }
 
@@ -38,7 +29,6 @@ impl CodeBlock {
                     CodeBuffer::from(text)
                 )
             ],
-            default_indent: 0
         }
     }
 
@@ -54,7 +44,6 @@ impl CodeBlock {
     }
 
     pub fn with_nested(&mut self, code_block: CodeBlock) {
-        self.with_indent_value(code_block.default_indent);
         for node in code_block.nodes {
             if let CodeBlockNode::Atom(buffer) = node {
                 self.with_atom(buffer.to_string().as_str());
@@ -62,7 +51,6 @@ impl CodeBlock {
             };
             self.nodes.push(node);
         }
-        self.with_indent_value(code_block.default_indent);
     }
 
     pub fn with_indent(&mut self) {
@@ -98,7 +86,7 @@ impl CodeBlock {
         self.nodes.push(CodeBlockNode::Space);
     }
 
-    pub fn render(&self) -> String {
+    fn render(&self) -> String {
         let mut root_buffer = CodeBuffer::default();
         let mut indent = 0;
         let mut last_rendered: Option<&CodeBlockNode> = None;
@@ -135,5 +123,12 @@ impl CodeBlock {
             buff.push_str(tokens::INDENT);
         }
         buff
+    }
+}
+
+impl ToString for CodeBlock {
+
+    fn to_string(&self) -> String {
+        self.render()
     }
 }

@@ -12,6 +12,7 @@ pub struct Function {
     inheritance_modifier: MemberInheritanceModifier,
     is_suspended: bool,
     is_inline: bool,
+    is_operator: bool
 }
 
 impl Function {
@@ -26,11 +27,17 @@ impl Function {
             inheritance_modifier: MemberInheritanceModifier::Default,
             is_suspended: false,
             is_inline: false,
+            is_operator: false
         }
     }
 
     pub fn access_modifier(mut self, access_modifier: AccessModifier) -> Function {
         self.access_modifier = access_modifier;
+        self
+    }
+
+    pub fn operator(mut self, flag: bool) -> Function {
+        self.is_operator = flag;
         self
     }
 
@@ -93,21 +100,26 @@ impl RenderKotlin for Function {
         block.with_space();
 
         if self.is_suspended {
-            block.with_atom("suspend");
+            block.with_atom(tokens::KW_SUSPEND);
             block.with_space();
         }
 
         if self.is_inline {
-            block.with_atom("inline");
+            block.with_atom(tokens::KW_INLINE);
             block.with_space();
         }
 
-        block.with_atom("fun");
+        if self.is_operator {
+            block.with_atom(tokens::KW_OPERATOR);
+            block.with_space();
+        }
+
+        block.with_atom(tokens::KW_FUN);
         block.with_space();
 
         if let Some(receiver) = &self.receiver {
             block.with_nested(receiver.render());
-            block.with_atom(".");
+            block.with_atom(tokens::SEPARATOR);
         }
         block.with_nested(self.name.render());
         block.with_atom("(");
@@ -116,7 +128,8 @@ impl RenderKotlin for Function {
         for (index, parameter) in self.parameters.iter().enumerate() {
             block.with_nested(parameter.render());
             if index != total_parameters - 1 {
-                block.with_atom(", ");
+                block.with_atom(tokens::COMMA);
+                block.with_space()
             }
         }
         block.with_atom(")");
@@ -126,12 +139,12 @@ impl RenderKotlin for Function {
 
         if let Some(body) = &self.body {
             block.with_space();
-            block.with_atom("{");
+            block.with_atom(tokens::CURLY_BRACE_LEFT);
             block.with_new_line();
             block.with_indent();
             block.with_nested(body.clone());
             block.with_unindent();
-            block.with_atom("}");
+            block.with_atom(tokens::CURLY_BRACE_RIGHT);
         }
 
         block
@@ -151,12 +164,13 @@ mod test {
             .parameter(Name::from("args"), Type::array(Type::string()))
             .parameter(Name::from("args2"), Type::array(Type::int()))
             .body(CodeBlock::statement("return 23"))
+            .operator(true)
             .suspended(true)
             .inline(true);
 
 
         assert_eq!(
-            "public suspend inline fun kotlin.Short.main(args: kotlin.Array<kotlin.String>, args2: kotlin.Array<kotlin.Int>): kotlin.Unit {\n    return 23\n}",
+            "public suspend inline operator fun kotlin.Short.main(args: kotlin.Array<kotlin.String>, args2: kotlin.Array<kotlin.Int>): kotlin.Unit {\n    return 23\n}",
             block.render_string_in_root()
         )
     }

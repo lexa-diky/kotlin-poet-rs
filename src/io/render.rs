@@ -1,10 +1,6 @@
-use crate::spec::{CodeBlock, CodeBlockNode};
+use crate::spec::CodeBlock;
 
 pub trait RenderKotlin {
-    fn render_into(&self, context: RenderContext, buffer: &mut crate::io::CodeBuffer) {
-        let content = RenderKotlin::render_string(self, context);
-        buffer.push(content.as_str())
-    }
 
     fn render(&self, context: RenderContext) -> CodeBlock;
 

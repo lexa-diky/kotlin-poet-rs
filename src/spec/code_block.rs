@@ -1,12 +1,12 @@
 use crate::io::{CodeBuffer, tokens};
 
 #[derive(Debug, PartialEq, Clone)]
-pub enum  CodeBlockNode {
+pub enum CodeBlockNode {
     Atom(CodeBuffer),
     Space,
     NewLine,
     Indent(usize),
-    Unindent(usize)
+    Unindent(usize),
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -15,7 +15,6 @@ pub struct CodeBlock {
 }
 
 impl CodeBlock {
-
     pub fn empty() -> CodeBlock {
         CodeBlock {
             nodes: vec![],
@@ -46,7 +45,7 @@ impl CodeBlock {
     pub fn with_nested(&mut self, code_block: CodeBlock) {
         for node in code_block.nodes {
             if let CodeBlockNode::Atom(buffer) = node {
-                self.with_atom(buffer.to_string().as_str());
+                self.with_atom(buffer.as_string().as_str());
                 continue;
             };
             self.nodes.push(node);
@@ -59,7 +58,7 @@ impl CodeBlock {
 
     fn with_indent_value(&mut self, value: usize) {
         if value == 0 {
-            return
+            return;
         }
         self.nodes.push(CodeBlockNode::Indent(value));
     }
@@ -73,11 +72,9 @@ impl CodeBlock {
     }
 
     pub fn with_atom(&mut self, text: &str) {
-        if let Some(last) = self.nodes.last_mut() {
-            if let CodeBlockNode::Atom(inner_buffer) = last {
-                inner_buffer.push(text);
-                return;
-            }
+        if let Some(CodeBlockNode::Atom(inner_buffer)) = self.nodes.last_mut() {
+            inner_buffer.push(text);
+            return;
         }
         self.nodes.push(CodeBlockNode::Atom(CodeBuffer::from(text)));
     }
@@ -89,7 +86,6 @@ impl CodeBlock {
     fn render(&self) -> String {
         let mut root_buffer = CodeBuffer::default();
         let mut indent = 0;
-        let mut last_rendered: Option<&CodeBlockNode> = None;
 
         for node in &self.nodes {
             match node {
@@ -97,7 +93,7 @@ impl CodeBlock {
                     if matches!(root_buffer.last_char(), Some(tokens::NEW_LINE_CH)) {
                         root_buffer.push(CodeBlock::mk_indent(indent).as_str());
                     }
-                    root_buffer.push(buffer.to_string().as_str());
+                    root_buffer.push(buffer.as_string().as_str());
                 }
                 CodeBlockNode::Indent(size) => {
                     indent += size;
@@ -112,9 +108,8 @@ impl CodeBlock {
                     root_buffer.push(tokens::NEW_LINE);
                 }
             }
-            last_rendered = Some(node)
         }
-        root_buffer.to_string()
+        root_buffer.as_string()
     }
 
     fn mk_indent(value: usize) -> String {
@@ -126,8 +121,8 @@ impl CodeBlock {
     }
 }
 
+#[allow(clippy::to_string_trait_impl)]
 impl ToString for CodeBlock {
-
     fn to_string(&self) -> String {
         self.render()
     }

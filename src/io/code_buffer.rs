@@ -15,7 +15,7 @@ impl CodeBuffer {
         self.buffer.push_str(s);
     }
 
-    pub fn to_string(&self) -> String {
+    pub fn as_string(&self) -> String {
         self.buffer.clone()
     }
 

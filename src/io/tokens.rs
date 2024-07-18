@@ -1,4 +1,6 @@
 pub const SEPARATOR: &'static str = ".";
+pub const WILDCARD: &'static str = "*";
+pub const KW_AS: &'static str = "as";
 pub const NULLABLE: &'static str = "?";
 pub const NOTHING: &'static str = "";
 pub const SPACE: &'static str = " ";

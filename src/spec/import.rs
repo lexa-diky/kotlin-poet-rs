@@ -1,6 +1,4 @@
-use std::fmt::format;
-use crate::io::{RenderContext, RenderKotlin};
-use crate::io::tokens::{KW_IMPORT, PROJECTION};
+use crate::io::{RenderContext, RenderKotlin, tokens};
 use crate::spec::{ClassLikeTypeName, CodeBlock, Name, Package};
 
 #[derive(Debug, PartialEq, Clone)]
@@ -39,23 +37,35 @@ impl Import {
 
 impl RenderKotlin for Import {
     fn render(&self, context: RenderContext) -> CodeBlock {
-        let text = match self {
+        let mut code = CodeBlock::empty();
+        code.with_atom(tokens::KW_IMPORT);
+        code.with_space();
+
+        match self {
             Import::ClassLikeType { type_name, alias } => {
+                code.with_nested(type_name.render(context));
                 if let Some(alias) = alias {
-                    format!("{} {} as {}", KW_IMPORT, type_name.render_string(context), alias.render_string(context))
-                } else {
-                    format!("{} {}", KW_IMPORT, type_name.render_string(context))
+                    code.with_space();
+                    code.with_atom(tokens::KW_AS);
+                    code.with_space();
+                    code.with_nested(alias.render(context));
                 }
             }
             Import::Projection(package) => {
-                format!("{} {}.{}", KW_IMPORT, package.render_string(context), PROJECTION)
+                code.with_nested(package.render(context));
+                code.with_atom(tokens::SEPARATOR);
+                code.with_atom(tokens::WILDCARD);
             }
             Import::Function { package, name } => {
-                format!("{} {}.{}", KW_IMPORT, package.render_string(context), name.render_string(context))
+                code.with_nested(package.render(context));
+                code.with_atom(tokens::SEPARATOR);
+                code.with_nested(name.render(context));
             }
-        };
+        }
 
-        CodeBlock::statement(text.as_str())
+        code.with_new_line();
+
+        code
     }
 }
 

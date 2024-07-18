@@ -1,5 +1,4 @@
-use crate::io::{RenderContext, RenderKotlin};
-use crate::io::tokens::SEPARATOR;
+use crate::io::{RenderContext, RenderKotlin, tokens};
 use crate::spec::CodeBlock;
 use crate::spec::name::Name;
 use crate::spec::package::Package;
@@ -28,12 +27,21 @@ impl ClassLikeTypeName {
 
 impl RenderKotlin for ClassLikeTypeName {
     fn render(&self, context: RenderContext) -> CodeBlock {
-        let package = self.package.render_string(context);
-        let names = self.names.iter().map(|it| it.render_string(context))
-            .collect::<Vec<_>>().join(SEPARATOR);
-        CodeBlock::atom(
-            format!("{}.{}", package, names).as_str()
-        )
+        let mut code = CodeBlock::empty();
+
+        let package = self.package.render(context);
+        code.with_nested(package);
+
+        code.with_atom(tokens::SEPARATOR);
+
+        for (index, part) in self.names.iter().enumerate() {
+            code.with_nested(part.render(context));
+            if index != self.names.len() - 1 {
+                code.with_atom(tokens::SEPARATOR);
+            }
+        }
+
+        code
     }
 }
 

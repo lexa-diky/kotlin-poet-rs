@@ -11,7 +11,7 @@ pub struct Function {
     receiver: Option<Type>,
     inheritance_modifier: MemberInheritanceModifier,
     is_suspended: bool,
-    is_inline: bool
+    is_inline: bool,
 }
 
 impl Function {
@@ -25,7 +25,7 @@ impl Function {
             receiver: None,
             inheritance_modifier: MemberInheritanceModifier::Default,
             is_suspended: false,
-            is_inline: false
+            is_inline: false,
         }
     }
 
@@ -131,5 +131,29 @@ impl RenderKotlin for Function {
         }
 
         block
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::io::RenderKotlin;
+    use crate::spec::{CodeBlock, Function, Name, Type};
+
+    #[test]
+    fn it_works() {
+        let mut block = Function::new(Name::from("main"))
+            .receiver(Type::short())
+            .access_modifier(crate::spec::AccessModifier::Public)
+            .parameter(Name::from("args"), Type::array(Type::string()))
+            .parameter(Name::from("args2"), Type::array(Type::int()))
+            .body(CodeBlock::statement("return 23"))
+            .suspended(true)
+            .inline(true);
+
+
+        assert_eq!(
+            "public suspend inline fun kotlin.Short.main(args: kotlin.Array<kotlin.String>, args2: kotlin.Array<kotlin.Int>): kotlin.Unit {\n    return 23\n}",
+            block.render_without_context()
+        )
     }
 }

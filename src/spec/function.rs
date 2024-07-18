@@ -154,7 +154,7 @@ mod test {
 
         assert_eq!(
             "public suspend inline fun kotlin.Short.main(args: kotlin.Array<kotlin.String>, args2: kotlin.Array<kotlin.Int>): kotlin.Unit {\n    return 23\n}",
-            block.render_without_context()
+            block.render_string_in_root()
         )
     }
 }

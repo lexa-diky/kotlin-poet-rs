@@ -8,7 +8,7 @@ pub trait RenderKotlin {
         self.render(context).render()
     }
 
-    fn render_without_context(&self) -> String {
+    fn render_string_in_root(&self) -> String {
         self.render_string(RenderContext::new())
     }
 }

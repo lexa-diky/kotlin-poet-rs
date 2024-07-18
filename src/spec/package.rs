@@ -58,6 +58,6 @@ mod test {
     #[test]
     fn render_kotlin() {
         let package: super::Package = "io.github.lexadiky".parse().unwrap();
-        assert_eq!(package.render_without_context(), "io.github.lexadiky");
+        assert_eq!(package.render_string_in_root(), "io.github.lexadiky");
     }
 }

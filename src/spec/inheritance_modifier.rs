@@ -29,8 +29,8 @@ mod test {
 
     #[test]
     fn test_render() {
-        assert_eq!(MemberInheritanceModifier::Open.render_without_context(), "open");
-        assert_eq!(MemberInheritanceModifier::Final.render_without_context(), "final");
-        assert_eq!(MemberInheritanceModifier::Default.render_without_context(), "");
+        assert_eq!(MemberInheritanceModifier::Open.render_string_in_root(), "open");
+        assert_eq!(MemberInheritanceModifier::Final.render_string_in_root(), "final");
+        assert_eq!(MemberInheritanceModifier::Default.render_string_in_root(), "");
     }
 }

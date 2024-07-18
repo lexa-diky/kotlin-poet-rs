@@ -26,6 +26,6 @@ mod tests {
             println!("{:?}", x);
         }
 
-        println!("{}", block.render_without_context());
+        println!("{}", block.render_string_in_root());
     }
 }

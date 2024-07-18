@@ -51,7 +51,7 @@ impl Function {
 
     pub fn receiver(mut self, receiver: Type) -> Function {
         self.receiver = Some(receiver);
-        return self;
+        self
     }
 
     pub fn inheritance_modifier(mut self, inheritance_modifier: MemberInheritanceModifier) -> Function {

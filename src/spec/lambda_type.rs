@@ -4,7 +4,7 @@ use crate::spec::{CodeBlock, Type};
 #[derive(PartialEq, Debug, Clone)]
 pub struct LambdaType {
     receiver: Box<Option<Type>>,
-    parameters: Box<Vec<Type>>,
+    parameters: Vec<Type>,
     returns: Box<Type>,
     is_suspended: bool
 }
@@ -14,7 +14,7 @@ impl LambdaType {
     pub fn new(returns: Type) -> Self {
         LambdaType {
             receiver: Box::new(None),
-            parameters: Box::new(Vec::new()),
+            parameters: Vec::new(),
             returns: Box::new(returns),
             is_suspended: false
         }

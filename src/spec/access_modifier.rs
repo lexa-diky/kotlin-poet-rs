@@ -19,6 +19,6 @@ impl RenderKotlin for AccessModifier {
             AccessModifier::Protected => "protected"
         };
 
-        return CodeBlock::atom(keyword)
+        CodeBlock::atom(keyword)
     }
 }

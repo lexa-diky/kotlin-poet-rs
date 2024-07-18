@@ -123,7 +123,8 @@ impl RenderKotlin for Function {
 
         if let Some(body) = &self.body {
             block.with_space();
-            block.with_statement("{");
+            block.with_atom("{");
+            block.with_new_line();
             block.with_indent();
             block.with_nested(body.clone());
             block.with_unindent();

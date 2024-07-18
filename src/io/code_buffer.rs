@@ -18,4 +18,8 @@ impl CodeBuffer {
     pub fn to_string(&self) -> String {
         self.buffer.clone()
     }
+
+    pub fn last_char(&self) -> Option<char> {
+        return self.buffer.chars().last()
+    }
 }

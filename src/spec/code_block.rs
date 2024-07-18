@@ -1,11 +1,10 @@
-use crate::io::{CodeBuffer, RenderContext};
-use crate::io::tokens::{CURLY_BRACE_LEFT, CURLY_BRACE_RIGHT, INDENT, NEW_LINE};
+use crate::io::{CodeBuffer, RenderContext, tokens};
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum  CodeBlockNode {
-    Statement(CodeBuffer),
     Atom(CodeBuffer),
     Space,
+    NewLine,
     Indent(usize),
     Unindent(usize)
 }
@@ -44,41 +43,54 @@ impl CodeBlock {
     }
 
     pub fn statement(text: &str) -> CodeBlock {
-        return CodeBlock {
-            nodes: vec![
-                CodeBlockNode::Statement(
-                    CodeBuffer::from(text)
-                )
-            ],
-            default_indent: 0
-        }
+        let mut cb = CodeBlock::empty();
+        cb.with_statement(text);
+        return cb
     }
 
     pub fn with_statement(&mut self, text: &str) {
-        self.nodes.push(
-            CodeBlockNode::Statement(
-                CodeBuffer::from(text)
-            )
-        );
+        self.with_atom(text);
+        self.with_new_line();
     }
 
     pub fn with_nested(&mut self, code_block: CodeBlock) {
-        self.nodes.push(CodeBlockNode::Indent(code_block.default_indent));
+        self.with_indent_value(code_block.default_indent);
         for node in code_block.nodes {
+            if let CodeBlockNode::Atom(buffer) = node {
+                self.with_atom(buffer.to_string().as_str());
+                continue;
+            };
             self.nodes.push(node);
         }
-        self.nodes.push(CodeBlockNode::Unindent(code_block.default_indent));
+        self.with_indent_value(code_block.default_indent);
     }
 
     pub fn with_indent(&mut self) {
-        self.nodes.push(CodeBlockNode::Indent(1));
+        self.with_indent_value(1);
+    }
+
+    fn with_indent_value(&mut self, value: usize) {
+        if value == 0 {
+            return
+        }
+        self.nodes.push(CodeBlockNode::Indent(value));
     }
 
     pub fn with_unindent(&mut self) {
         self.nodes.push(CodeBlockNode::Unindent(1));
     }
 
+    pub fn with_new_line(&mut self) {
+        self.nodes.push(CodeBlockNode::NewLine);
+    }
+
     pub fn with_atom(&mut self, text: &str) {
+        if let Some(last) = self.nodes.last_mut() {
+            if let CodeBlockNode::Atom(inner_buffer) = last {
+                inner_buffer.push(text);
+                return;
+            }
+        }
         self.nodes.push(CodeBlockNode::Atom(CodeBuffer::from(text)));
     }
 
@@ -86,25 +98,17 @@ impl CodeBlock {
         self.nodes.push(CodeBlockNode::Space);
     }
 
-    pub fn wrap_in_scope(mut self) -> CodeBlock {
-        self.nodes.insert(0, CodeBlockNode::Statement(CodeBuffer::from(CURLY_BRACE_LEFT)));
-        self.nodes.insert(1, CodeBlockNode::Indent(1));
-        self.nodes.push(CodeBlockNode::Unindent(1));
-        self.nodes.push(CodeBlockNode::Statement(CodeBuffer::from(CURLY_BRACE_RIGHT)));
-        self
-    }
-
     pub fn render(&self) -> String {
         let mut root_buffer = CodeBuffer::default();
         let mut indent = 0;
+        let mut last_rendered: Option<&CodeBlockNode> = None;
+
         for node in &self.nodes {
             match node {
-                CodeBlockNode::Statement(buf) => {
-                    root_buffer.push(Self::mk_indent(indent).as_str());
-                    root_buffer.push(buf.to_string().as_str());
-                    root_buffer.push(NEW_LINE)
-                }
                 CodeBlockNode::Atom(buffer) => {
+                    if matches!(root_buffer.last_char(), Some(tokens::NEW_LINE_CH)) {
+                        root_buffer.push(CodeBlock::mk_indent(indent).as_str());
+                    }
                     root_buffer.push(buffer.to_string().as_str());
                 }
                 CodeBlockNode::Indent(size) => {
@@ -114,9 +118,13 @@ impl CodeBlock {
                     indent -= size;
                 }
                 CodeBlockNode::Space => {
-                    root_buffer.push(" ")
+                    root_buffer.push(tokens::SPACE)
+                }
+                CodeBlockNode::NewLine => {
+                    root_buffer.push(tokens::NEW_LINE);
                 }
             }
+            last_rendered = Some(node)
         }
         return root_buffer.to_string()
     }
@@ -124,7 +132,7 @@ impl CodeBlock {
     fn mk_indent(value: usize) -> String {
         let mut buff = String::new();
         for _ in 0..value {
-            buff.push_str(INDENT);
+            buff.push_str(tokens::INDENT);
         }
         buff
     }

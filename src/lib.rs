@@ -13,7 +13,9 @@ mod tests {
             .access_modifier(crate::spec::AccessModifier::Public)
             .parameter(Name::from("args"), Type::array(Type::string()))
             .parameter(Name::from("args2"), Type::array(Type::int()))
-            .body(CodeBlock::statement("return 23"));
+            .body(CodeBlock::statement("return 23"))
+            .suspended(true)
+            .inline(true);
 
         println!("{}", block.render_without_context());
     }

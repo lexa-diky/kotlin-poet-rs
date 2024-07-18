@@ -6,6 +6,7 @@ pub struct LambdaType {
     receiver: Box<Option<Type>>,
     parameters: Box<Vec<Type>>,
     returns: Box<Type>,
+    is_suspended: bool
 }
 
 impl LambdaType {
@@ -15,6 +16,7 @@ impl LambdaType {
             receiver: Box::new(None),
             parameters: Box::new(Vec::new()),
             returns: Box::new(returns),
+            is_suspended: false
         }
     }
 
@@ -27,6 +29,16 @@ impl LambdaType {
         self.parameters.push(parameters);
         self
     }
+
+    pub fn returns(mut self, returns: Type) -> Self {
+        *self.returns = returns;
+        self
+    }
+
+    pub fn suspended(mut self, flag: bool) -> Self {
+        self.is_suspended = flag;
+        self
+    }
 }
 
 impl RenderKotlin for LambdaType {
@@ -36,6 +48,12 @@ impl RenderKotlin for LambdaType {
             lambda.with_nested(receiver.render(context));
             lambda.with_atom(".")
         }
+
+        if self.is_suspended {
+            lambda.with_atom("suspend");
+            lambda.with_space()
+        }
+
         lambda.with_atom("(");
         for (idx, parameter) in self.parameters.iter().enumerate() {
             lambda.with_nested(parameter.render(context));
@@ -69,5 +87,14 @@ mod test {
             .receiver(Type::string())
             .parameter(Type::boolean());
         assert_eq!(lambda_type.render_without_context(), "kotlin.String.(kotlin.Boolean) -> kotlin.Int");
+    }
+
+    #[test]
+    fn render_lambda_type_with_suspended() {
+        let lambda_type = LambdaType::new(Type::int())
+            .parameter(Type::string())
+            .parameter(Type::boolean())
+            .suspended(true);
+        assert_eq!(lambda_type.render_without_context(), "suspend (kotlin.String, kotlin.Boolean) -> kotlin.Int");
     }
 }

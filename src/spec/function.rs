@@ -10,6 +10,8 @@ pub struct Function {
     returns: Type,
     receiver: Option<Type>,
     inheritance_modifier: MemberInheritanceModifier,
+    is_suspended: bool,
+    is_inline: bool
 }
 
 impl Function {
@@ -22,6 +24,8 @@ impl Function {
             returns: Type::unit(),
             receiver: None,
             inheritance_modifier: MemberInheritanceModifier::Default,
+            is_suspended: false,
+            is_inline: false
         }
     }
 
@@ -54,6 +58,16 @@ impl Function {
         self.inheritance_modifier = inheritance_modifier;
         self
     }
+
+    pub fn suspended(mut self, flag: bool) -> Function {
+        self.is_suspended = flag;
+        self
+    }
+
+    pub fn inline(mut self, flag: bool) -> Function {
+        self.is_inline = flag;
+        self
+    }
 }
 
 impl RenderKotlin for (Name, Type) {
@@ -74,6 +88,16 @@ impl RenderKotlin for Function {
         }
         block.with_nested(self.access_modifier.render(context));
         block.with_space();
+
+        if self.is_suspended {
+            block.with_atom("suspend");
+            block.with_space();
+        }
+
+        if self.is_inline {
+            block.with_atom("inline");
+            block.with_space();
+        }
 
         block.with_atom("fun");
         block.with_space();

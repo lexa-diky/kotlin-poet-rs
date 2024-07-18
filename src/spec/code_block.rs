@@ -17,13 +17,13 @@ pub struct CodeBlock {
 impl CodeBlock {
 
     pub fn empty() -> CodeBlock {
-        return CodeBlock {
+        CodeBlock {
             nodes: vec![],
         }
     }
 
     pub fn atom(text: &str) -> CodeBlock {
-        return CodeBlock {
+        CodeBlock {
             nodes: vec![
                 CodeBlockNode::Atom(
                     CodeBuffer::from(text)
@@ -35,7 +35,7 @@ impl CodeBlock {
     pub fn statement(text: &str) -> CodeBlock {
         let mut cb = CodeBlock::empty();
         cb.with_statement(text);
-        return cb
+        cb
     }
 
     pub fn with_statement(&mut self, text: &str) {
@@ -114,7 +114,7 @@ impl CodeBlock {
             }
             last_rendered = Some(node)
         }
-        return root_buffer.to_string()
+        root_buffer.to_string()
     }
 
     fn mk_indent(value: usize) -> String {

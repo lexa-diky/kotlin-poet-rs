@@ -1,5 +1,5 @@
 use std::str::FromStr;
-use crate::io::{RenderContext, RenderKotlin};
+use crate::io::{RenderKotlin};
 use crate::io::tokens::SEPARATOR;
 use crate::spec::{CodeBlock, Name};
 
@@ -19,7 +19,7 @@ impl FromStr for Package {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let parts = s.split(SEPARATOR)
-            .map(|s| Name::from_str(s)).collect::<Result<Vec<_>, ()>>()?;
+            .map(Name::from_str).collect::<Result<Vec<_>, ()>>()?;
         Ok(Package::from(parts))
     }
 }
@@ -35,7 +35,7 @@ impl RenderKotlin for Package {
             }
         }
 
-        return code;
+        code
     }
 }
 

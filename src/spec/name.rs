@@ -1,4 +1,3 @@
-use std::ops::Deref;
 use std::str::FromStr;
 
 use crate::io::RenderKotlin;
@@ -12,7 +11,7 @@ pub struct Name {
 
 impl From<&str> for Name {
     fn from(value: &str) -> Self {
-        return Name::from_str(value).unwrap()
+        Name::from_str(value).unwrap()
     }
 }
 
@@ -20,11 +19,11 @@ impl FromStr for Name {
     type Err = ();
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        return Ok(
+        Ok(
             Name {
                 value: s.to_string()
             }
-        );
+        )
     }
 }
 

@@ -1,4 +1,4 @@
-use crate::io::{RenderContext, RenderKotlin, tokens};
+use crate::io::{RenderKotlin, tokens};
 use crate::spec::{ClassLikeTypeName, CodeBlock, Name, Package};
 
 #[derive(Debug, PartialEq, Clone)]

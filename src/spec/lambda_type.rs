@@ -1,4 +1,4 @@
-use crate::io::{RenderContext, RenderKotlin};
+use crate::io::{RenderKotlin};
 use crate::spec::{CodeBlock, Type};
 
 #[derive(PartialEq, Debug, Clone)]

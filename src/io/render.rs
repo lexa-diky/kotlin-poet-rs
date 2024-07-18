@@ -19,6 +19,12 @@ pub struct RenderContext {
     indent_level: usize,
 }
 
+impl Default for RenderContext {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl RenderContext {
     pub fn new() -> RenderContext {
         RenderContext { indent_level: 0 }

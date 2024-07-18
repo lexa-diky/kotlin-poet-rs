@@ -1,4 +1,4 @@
-use crate::io::{RenderContext, RenderKotlin};
+use crate::io::{RenderKotlin};
 use crate::spec::class_like_type::ClassLikeType;
 use crate::spec::{ClassLikeTypeName, CodeBlock, LambdaType, Name, Package};
 

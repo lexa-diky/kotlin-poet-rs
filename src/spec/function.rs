@@ -1,4 +1,4 @@
-use crate::io::{RenderContext, RenderKotlin, tokens};
+use crate::io::{RenderKotlin, tokens};
 use crate::spec::{AccessModifier, CodeBlock, MemberInheritanceModifier, Name, Type};
 
 #[derive(Debug, Clone)]
@@ -36,17 +36,17 @@ impl Function {
 
     pub fn parameter(mut self, name: Name, parameter: Type) -> Function {
         self.parameters.push((name, parameter));
-        return self;
+        self
     }
 
     pub fn body(mut self, body: CodeBlock) -> Function {
         self.body = Some(body);
-        return self;
+        self
     }
 
     pub fn returns(mut self, returns: Type) -> Function {
         self.returns = returns;
-        return self;
+        self
     }
 
     pub fn receiver(mut self, receiver: Type) -> Function {
@@ -145,7 +145,7 @@ mod test {
 
     #[test]
     fn it_works() {
-        let mut block = Function::new(Name::from("main"))
+        let block = Function::new(Name::from("main"))
             .receiver(Type::short())
             .access_modifier(crate::spec::AccessModifier::Public)
             .parameter(Name::from("args"), Type::array(Type::string()))

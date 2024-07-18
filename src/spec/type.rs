@@ -73,6 +73,10 @@ impl Type {
         Self::basic_type("Boolean")
     }
 
+    pub fn generic(name: &str) -> Type {
+        Type::Generic(Name::from(name))
+    }
+
     fn basic_type(name: &str) -> Type {
         Type::ClassLike(
             ClassLikeType::new(

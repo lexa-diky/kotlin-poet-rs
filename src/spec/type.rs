@@ -1,10 +1,11 @@
 use crate::io::{RenderContext, RenderKotlin};
 use crate::spec::class_like_type::ClassLikeType;
-use crate::spec::{ClassLikeTypeName, CodeBlock, Name, Package};
+use crate::spec::{ClassLikeTypeName, CodeBlock, LambdaType, Name, Package};
 
 #[derive(PartialEq, Debug, Clone)]
 pub enum Type {
     ClassLike(ClassLikeType),
+    Lambda(LambdaType),
     Generic(Name),
 }
 
@@ -92,7 +93,8 @@ impl RenderKotlin for Type {
     fn render(&self, context: RenderContext) -> CodeBlock {
         match self {
             Type::ClassLike(class_like) => class_like.render(context),
-            Type::Generic(name) => name.render(context)
+            Type::Generic(name) => name.render(context),
+            Type::Lambda(lambda) => lambda.render(context)
         }
     }
 }

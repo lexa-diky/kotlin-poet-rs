@@ -6,9 +6,7 @@ pub trait RenderKotlin {
         buffer.push(content.as_str())
     }
 
-    fn render(&self, context: RenderContext) -> CodeBlock {
-        CodeBlock::atom(RenderKotlin::render_string(self, context).as_str())
-    }
+    fn render(&self, context: RenderContext) -> CodeBlock;
 
     fn render_string(&self, context: RenderContext) -> String {
         self.render(context).render()

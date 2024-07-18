@@ -78,7 +78,7 @@ impl RenderKotlin for Function {
         block.with_atom("fun");
         block.with_space();
 
-        if let (Some(receiver)) = &self.receiver {
+        if let Some(receiver) = &self.receiver {
             block.with_nested(receiver.render(context));
             block.with_atom(".");
         }

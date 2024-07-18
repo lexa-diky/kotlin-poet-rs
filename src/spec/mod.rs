@@ -9,6 +9,7 @@ mod function;
 mod access_modifier;
 mod inheritance_modifier;
 mod property;
+mod lambda_type;
 
 pub use package::Package;
 pub use class_like_type_name::ClassLikeTypeName;
@@ -21,3 +22,4 @@ pub use function::Function;
 pub use access_modifier::AccessModifier;
 pub use inheritance_modifier::MemberInheritanceModifier;
 pub use property::{Property, PropertyGetter, PropertySetter};
+pub use lambda_type::LambdaType;

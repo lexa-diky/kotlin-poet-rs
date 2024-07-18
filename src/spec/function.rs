@@ -1,4 +1,4 @@
-use crate::io::{RenderContext, RenderKotlin};
+use crate::io::{RenderContext, RenderKotlin, tokens};
 use crate::spec::{AccessModifier, CodeBlock, MemberInheritanceModifier, Name, Type};
 
 #[derive(Debug, Clone)]
@@ -72,9 +72,12 @@ impl Function {
 
 impl RenderKotlin for (Name, Type) {
     fn render(&self, context: RenderContext) -> CodeBlock {
-        return CodeBlock::atom(
-            format!("{}: {}", self.0.render_string(context), self.1.render_string(context)).as_str()
-        );
+        let mut block = CodeBlock::empty();
+        block.with_nested(self.0.render(context));
+        block.with_atom(tokens::TYPE_SEPARATOR);
+        block.with_space();
+        block.with_nested(self.1.render(context));
+        block
     }
 }
 
@@ -106,7 +109,7 @@ impl RenderKotlin for Function {
             block.with_nested(receiver.render(context));
             block.with_atom(".");
         }
-        block.with_atom(self.name.render_string(context).as_str());
+        block.with_nested(self.name.render(context));
         block.with_atom("(");
 
         let total_parameters = self.parameters.len();

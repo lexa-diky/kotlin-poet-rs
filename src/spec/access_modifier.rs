@@ -1,4 +1,4 @@
-use crate::io::{RenderKotlin};
+use crate::io::{RenderKotlin, tokens};
 use crate::spec::CodeBlock;
 
 #[derive(PartialEq, Debug, Clone)]
@@ -13,10 +13,10 @@ impl RenderKotlin for AccessModifier {
 
     fn render(&self) -> CodeBlock {
         let keyword = match self {
-            AccessModifier::Public => "public",
-            AccessModifier::Internal => "internal",
-            AccessModifier::Private => "private",
-            AccessModifier::Protected => "protected"
+            AccessModifier::Public => tokens::KW_PUBLIC,
+            AccessModifier::Internal => tokens::KW_INTERNAL,
+            AccessModifier::Private => tokens::KW_PRIVATE,
+            AccessModifier::Protected => tokens::KW_PROTECTED
         };
 
         CodeBlock::atom(keyword)

@@ -1,4 +1,4 @@
-use crate::io::{RenderKotlin};
+use crate::io::{RenderKotlin, tokens};
 use crate::spec::{ClassLikeTypeName, CodeBlock, Type};
 
 #[derive(PartialEq, Debug, Clone)]
@@ -33,20 +33,21 @@ impl RenderKotlin for ClassLikeType {
     fn render(&self) -> CodeBlock {
         let mut type_name = self.type_name.render();
         if !self.generic_arguments.is_empty() {
-            type_name.with_atom("<");
+            type_name.with_atom(tokens::GENERIC_BRACE_LEFT);
 
             for (idx, generic_argument) in self.generic_arguments.iter().enumerate() {
                 type_name.with_nested(generic_argument.render());
                 if idx != self.generic_arguments.len() - 1 {
-                    type_name.with_atom(", ");
+                    type_name.with_atom(tokens::COMMA);
+                    type_name.with_space();
                 }
             }
 
-            type_name.with_atom(">");
+            type_name.with_atom(tokens::GENERIC_BRACE_RIGHT);
         }
 
         if self.nullable {
-            type_name.with_atom("?");
+            type_name.with_atom(tokens::NULLABLE);
         };
 
         type_name.clone()

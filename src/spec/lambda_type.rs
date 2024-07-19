@@ -1,4 +1,4 @@
-use crate::io::{RenderKotlin};
+use crate::io::{RenderKotlin, tokens};
 use crate::spec::{CodeBlock, Type};
 
 #[derive(PartialEq, Debug, Clone)]
@@ -46,22 +46,26 @@ impl RenderKotlin for LambdaType {
         let mut lambda = CodeBlock::empty();
         if let Some(receiver) = &*self.receiver {
             lambda.with_nested(receiver.render());
-            lambda.with_atom(".")
+            lambda.with_atom(tokens::SEPARATOR)
         }
 
         if self.is_suspended {
-            lambda.with_atom("suspend");
+            lambda.with_atom(tokens::KW_SUSPEND);
             lambda.with_space()
         }
 
-        lambda.with_atom("(");
+        lambda.with_atom(tokens::ROUND_BRACE_LEFT);
         for (idx, parameter) in self.parameters.iter().enumerate() {
             lambda.with_nested(parameter.render());
             if idx != self.parameters.len() - 1 {
-                lambda.with_atom(", ");
+                lambda.with_atom(tokens::COMMA);
+                lambda.with_space()
             }
         }
-        lambda.with_atom(") -> ");
+        lambda.with_atom(tokens::ROUND_BRACE_RIGHT);
+        lambda.with_space();
+        lambda.with_atom(tokens::ARROW);
+        lambda.with_space();
         lambda.with_nested(self.returns.render());
         lambda
     }

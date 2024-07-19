@@ -84,7 +84,7 @@ impl Property {
         Property {
             name,
             returns,
-            inheritance_modifier: MemberInheritanceModifier::Default,
+            inheritance_modifier: MemberInheritanceModifier::Final,
             access_modifier: AccessModifier::Public,
             initializer: None,
             getter: None,
@@ -184,7 +184,7 @@ mod test {
         );
 
         let rendered = property.render().to_string();
-        let expected = "public  var name: kotlin.String = \"\"\n    set(value) {\n        field = value\n    }\n    get() {\n        return field\n    }\n";
+        let expected = "public final var name: kotlin.String = \"\"\n    set(value) {\n        field = value\n    }\n    get() {\n        return field\n    }\n";
         assert_eq!(rendered, expected);
     }
 }

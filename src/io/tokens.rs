@@ -1,6 +1,7 @@
 pub const SEPARATOR: &str = ".";
 pub const WILDCARD: &str = "*";
 pub const TYPE_SEPARATOR: &str = ":";
+pub const KW_CLASS: &str = "class";
 pub const KW_AS: &str = "as";
 pub const KW_OPERATOR: &str = "operator";
 pub const KW_OVERRIDE: &str = "override";
@@ -15,6 +16,7 @@ pub const KW_INTERNAL: &str = "internal";
 pub const KW_PRIVATE: &str = "private";
 pub const KW_PROTECTED: &str = "protected";
 pub const KW_OPEN: &str = "open";
+pub const KW_SEALED: &str = "sealed";
 pub const KW_FINAL: &str = "final";
 pub const KW_ABSTRACT: &str = "abstract";
 pub const KW_VAL: &str = "val";

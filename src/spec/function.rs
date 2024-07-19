@@ -24,7 +24,7 @@ impl Function {
             body: None,
             returns: Type::unit(),
             receiver: None,
-            inheritance_modifier: MemberInheritanceModifier::Default,
+            inheritance_modifier: MemberInheritanceModifier::Final,
             is_suspended: false,
             is_inline: false,
             is_operator: false
@@ -91,11 +91,6 @@ impl RenderKotlin for (Name, Type) {
 impl RenderKotlin for Function {
     fn render(&self) -> CodeBlock {
         let mut block = CodeBlock::empty();
-
-        if !matches!(self.inheritance_modifier, MemberInheritanceModifier::Default) {
-            block.with_nested(self.inheritance_modifier.render());
-            block.with_space();
-        }
         block.with_nested(self.access_modifier.render());
         block.with_space();
 

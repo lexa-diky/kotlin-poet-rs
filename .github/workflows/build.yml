@@ -25,7 +25,7 @@ jobs:
         with:
           cache-all-crates: true
           save-if: ${{ github.ref == 'refs/heads/master' }}
-      - name: Run tests
+      - name: Run test
         run: cargo test --verbose
 
   benchmark:

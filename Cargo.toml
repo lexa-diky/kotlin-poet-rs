@@ -12,3 +12,10 @@ keywords = ["kotlin", "codegen"]
 categories = ["template-engine"]
 
 [dependencies]
+
+[dev-dependencies]
+criterion = { version = "0.4", features = ["html_reports"] }
+
+[[bench]]
+name = "file_rendering_bencharmk"
+harness = false

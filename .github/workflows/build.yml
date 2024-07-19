@@ -1,0 +1,86 @@
+name: build
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        name: Checkout repository
+      - uses: actions-rs/toolchain@v1
+        name: Setup rust toolchain
+        with:
+          toolchain: nightly
+          override: true
+      - uses: Swatinem/rust-cache@v2
+        name: Cache dependencies
+        with:
+          cache-all-crates: true
+          save-if: ${{ github.ref == 'refs/heads/master' }}
+      - name: Run tests
+        run: cargo test --verbose
+
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        name: Checkout repository
+      - uses: actions-rs/toolchain@v1
+        name: Setup rust toolchain
+        with:
+          toolchain: nightly
+          override: true
+      - uses: Swatinem/rust-cache@v2
+        name: Cache dependencies
+        with:
+          cache-all-crates: true
+          save-if: ${{ github.ref == 'refs/heads/master' }}
+      - name: Run benchmarks
+        run: cargo bench --verbose
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        name: Checkout repository
+      - uses: Swatinem/rust-cache@v2
+        name: Cache dependencies
+        with:
+          cache-all-crates: true
+          save-if: ${{ github.ref == 'refs/heads/master' }}
+      - name: Run Clippy
+        continue-on-error: true
+        run: cargo clippy -- -Dwarnings
+
+  publish:
+    runs-on: ubuntu-latest
+    needs:
+      - test
+
+    steps:
+      - uses: actions/checkout@v3
+        name: Checkout repository
+      - uses: actions-rs/toolchain@v1
+        name: Setup rust toolchain
+        with:
+          toolchain: nightly
+          override: true
+      - uses: Swatinem/rust-cache@v2
+        name: Cache dependencies
+        with:
+          cache-all-crates: true
+          save-if: ${{ github.ref == 'refs/heads/master' }}
+      - name: Publish to crates.io
+        uses: katyo/publish-crates@v2
+        with:
+          dry-run: ${{ github.event_name != 'push' }}
+          registry-token: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+          ignore-unpublished-changes: true

@@ -80,6 +80,9 @@ impl CodeBlock {
     }
 
     pub fn with_space(&mut self) {
+        if matches!(self.nodes.last(), Some(CodeBlockNode::Space)) {
+            return; // no double spaces
+        }
         self.nodes.push(CodeBlockNode::Space);
     }
 

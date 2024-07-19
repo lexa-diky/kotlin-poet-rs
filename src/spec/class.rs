@@ -1,11 +1,19 @@
 use crate::io::{RenderKotlin, tokens};
-use crate::spec::{AccessModifier, ClassLikeInheritanceModifier, CodeBlock, Name};
+use crate::spec::{AccessModifier, ClassInheritanceModifier, CodeBlock, Function, Name, Property};
+
+#[derive(Debug, Clone)]
+enum ClassMemberNode {
+    Property(Property),
+    Function(Function),
+    Subclass(Class)
+}
 
 #[derive(Debug, Clone)]
 pub struct Class {
     name: Name,
     access_modifier: AccessModifier,
-    inheritance_modifier: ClassLikeInheritanceModifier
+    inheritance_modifier: ClassInheritanceModifier,
+    member_nodes: Vec<ClassMemberNode>
 }
 
 impl Class {
@@ -14,7 +22,8 @@ impl Class {
         Class {
             name,
             access_modifier: AccessModifier::Public,
-            inheritance_modifier: ClassLikeInheritanceModifier::Final
+            inheritance_modifier: ClassInheritanceModifier::Final,
+            member_nodes: Vec::new()
         }
     }
 
@@ -23,8 +32,23 @@ impl Class {
         self
     }
 
-    pub fn inheritance_modifier(mut self, inheritance_modifier: ClassLikeInheritanceModifier) -> Self {
+    pub fn inheritance_modifier(mut self, inheritance_modifier: ClassInheritanceModifier) -> Self {
         self.inheritance_modifier = inheritance_modifier;
+        self
+    }
+
+    pub fn property(mut self, property: Property) -> Self {
+        self.member_nodes.push(ClassMemberNode::Property(property));
+        self
+    }
+
+    pub fn function(mut self, function: Function) -> Self {
+        self.member_nodes.push(ClassMemberNode::Function(function));
+        self
+    }
+
+    pub fn subclass(mut self, subclass: Class) -> Self {
+        self.member_nodes.push(ClassMemberNode::Subclass(subclass));
         self
     }
 }
@@ -44,8 +68,24 @@ impl RenderKotlin for Class {
         code.with_atom(tokens::CURLY_BRACE_LEFT);
         code.with_new_line();
         code.with_indent();
+        code.with_new_line();
 
-        // content
+        for node in &self.member_nodes {
+            match node {
+                ClassMemberNode::Property(property) => {
+                    code.with_nested(property.render());
+                    code.with_new_line();
+                },
+                ClassMemberNode::Function(function) => {
+                    code.with_nested(function.render());
+                    code.with_new_line();
+                },
+                ClassMemberNode::Subclass(subclass) => {
+                    code.with_nested(subclass.render());
+                    code.with_new_line();
+                }
+            }
+        }
 
         code.with_unindent();
         code.with_atom(tokens::CURLY_BRACE_RIGHT);
@@ -63,6 +103,6 @@ mod tests {
         let class = Class::new(Name::from("Person"));
         let code = class.render();
 
-        assert_eq!(code.to_string(), "public final class Person {\n}");
+        assert_eq!(code.to_string(), "public final class Person {\n\n}");
     }
 }

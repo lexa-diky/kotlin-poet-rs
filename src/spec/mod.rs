@@ -12,7 +12,7 @@ mod property;
 mod lambda_type;
 mod type_alias;
 mod class;
-mod class_like_inheritance_modifier;
+mod class_inheritance_modifier;
 mod file;
 
 pub use package::Package;
@@ -29,5 +29,5 @@ pub use property::{Property, PropertyGetter, PropertySetter};
 pub use lambda_type::LambdaType;
 pub use type_alias::TypeAlias;
 pub use class::Class;
-pub use class_like_inheritance_modifier::ClassLikeInheritanceModifier;
+pub use class_inheritance_modifier::ClassInheritanceModifier;
 pub use file::KotlinFile;

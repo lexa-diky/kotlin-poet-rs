@@ -1,6 +1,7 @@
 use crate::io::{RenderKotlin, tokens};
 use crate::spec::{CodeBlock, Name, Type};
 
+#[derive(Debug, Clone)]
 pub struct TypeAlias {
     pub name: Name,
     pub generic_parameters: Vec<Name>,

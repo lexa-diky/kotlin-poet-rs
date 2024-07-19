@@ -1,6 +1,7 @@
 use crate::io::{RenderKotlin, tokens};
 use crate::spec::{AccessModifier, ClassLikeInheritanceModifier, CodeBlock, Name};
 
+#[derive(Debug, Clone)]
 pub struct Class {
     name: Name,
     access_modifier: AccessModifier,

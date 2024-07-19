@@ -3,8 +3,9 @@ pub mod spec;
 
 #[cfg(test)]
 mod tests {
+    use std::str::FromStr;
     use crate::io::RenderKotlin;
-    use crate::spec::{CodeBlock, Name, Property, PropertyGetter, PropertySetter, Type};
+    use crate::spec::{CodeBlock, KotlinFile, Name, Package, Property, PropertyGetter, PropertySetter, Type};
 
     #[test]
     fn it_works() {
@@ -23,6 +24,11 @@ mod tests {
             )
         );
 
-        println!("{}", property.render().to_string())
+        let file = KotlinFile::new(
+            Package::from_str("a.b.c").unwrap(),
+            Name::from("Test")
+        ).property(property);
+
+        println!("{}", file.render().to_string())
     }
 }

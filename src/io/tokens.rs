@@ -9,6 +9,7 @@ pub const KW_INLINE: &str = "inline";
 pub const KW_SUSPEND: &str = "suspend";
 pub const KW_SET: &str = "set";
 pub const KW_GET: &str = "get";
+pub const KW_PACKAGE: &str = "package";
 pub const KW_FUN: &str = "fun";
 pub const KW_TYPEALIAS: &str = "typealias";
 pub const KW_PUBLIC: &str = "public";

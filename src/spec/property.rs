@@ -1,6 +1,7 @@
 use crate::io::{RenderKotlin, tokens};
 use crate::spec::{AccessModifier, CodeBlock, MemberInheritanceModifier, Name, Type};
 
+#[derive(Debug, Clone)]
 pub struct Property {
     name: Name,
     returns: Type,
@@ -12,6 +13,7 @@ pub struct Property {
     mutable: bool,
 }
 
+#[derive(Debug, Clone)]
 pub struct PropertyGetter {
     code: CodeBlock,
 }
@@ -41,6 +43,7 @@ impl RenderKotlin for PropertyGetter {
     }
 }
 
+#[derive(Debug, Clone)]
 pub struct PropertySetter {
     code: CodeBlock,
     access_modifier: AccessModifier,

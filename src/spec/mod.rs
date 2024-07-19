@@ -13,6 +13,7 @@ mod lambda_type;
 mod type_alias;
 mod class;
 mod class_like_inheritance_modifier;
+mod file;
 
 pub use package::Package;
 pub use class_like_type_name::ClassLikeTypeName;
@@ -29,3 +30,4 @@ pub use lambda_type::LambdaType;
 pub use type_alias::TypeAlias;
 pub use class::Class;
 pub use class_like_inheritance_modifier::ClassLikeInheritanceModifier;
+pub use file::KotlinFile;

@@ -60,11 +60,26 @@ impl CodeBlock {
         if value == 0 {
             return;
         }
+        if let Some(CodeBlockNode::Indent(last_value)) = self.nodes.last_mut() {
+            *last_value += value;
+            return;
+        }
         self.nodes.push(CodeBlockNode::Indent(value));
     }
 
     pub fn with_unindent(&mut self) {
-        self.nodes.push(CodeBlockNode::Unindent(1));
+        self.with_unindent_value(1);
+    }
+
+    fn with_unindent_value(&mut self, value: usize) {
+        if value == 0 {
+            return;
+        }
+        if let Some(CodeBlockNode::Unindent(last_value)) = self.nodes.last_mut() {
+            *last_value += value;
+            return;
+        }
+        self.nodes.push(CodeBlockNode::Unindent(value));
     }
 
     pub fn with_new_line(&mut self) {
@@ -116,14 +131,11 @@ impl CodeBlock {
     }
 
     fn mk_indent(value: usize) -> String {
-        let mut buff = String::new();
-        for _ in 0..value {
-            buff.push_str(tokens::INDENT);
-        }
-        buff
+        tokens::INDENT.repeat(value)
     }
 }
 
+//noinspection RsImplToString
 #[allow(clippy::to_string_trait_impl)]
 impl ToString for CodeBlock {
     fn to_string(&self) -> String {

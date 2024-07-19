@@ -1,7 +1,8 @@
+use std::path::Path;
 use std::str::FromStr;
+
 use kotlin_poet_rs::io::RenderKotlin;
 use kotlin_poet_rs::spec::{AccessModifier, CodeBlock, Function, KotlinFile, MemberInheritanceModifier, Name, Package, Property, PropertyGetter, PropertySetter, Type};
-
 
 #[test]
 fn generic_test() {
@@ -38,5 +39,27 @@ fn generic_test() {
         .property(property)
         .function(function);
 
-    println!("{}", file.render().to_string())
+    assert_rendered(
+        "tests/samples/generic_file.kt",
+        &file.render(),
+    )
+}
+
+pub fn assert_rendered(
+    expected_path: &str,
+    code: &CodeBlock,
+) {
+    let expected_path = Path::new(expected_path);
+    if !expected_path.exists() {
+        std::fs::write(
+            expected_path,
+            code.to_string(),
+        ).unwrap();
+    } else {
+        let expected_code = std::fs::read_to_string(expected_path);
+        assert_eq!(
+            expected_code.unwrap(),
+            code.to_string(),
+        );
+    }
 }

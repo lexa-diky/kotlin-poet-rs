@@ -38,7 +38,7 @@ impl RenderKotlin for TypeAlias {
         }
 
         code.with_space();
-        code.with_atom(tokens::EQUALS);
+        code.with_atom(tokens::ASSIGN);
         code.with_space();
         code.with_nested(self.actual.render());
         code

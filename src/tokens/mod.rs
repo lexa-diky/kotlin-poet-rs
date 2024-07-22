@@ -1,22 +1,38 @@
 #![doc = include_str!("README.md")]
 
 // SPACES
+
+/// Empty string
 pub const EMPTY: &str = "";
+/// Single space
 pub const SPACE: &str = " ";
+/// New line string
 pub const NEW_LINE: &str = "\n";
+/// New line character
 pub const NEW_LINE_CH: char = '\n';
+/// Default indentation value
 pub const INDENT: &str = "    ";
 
 // SYMBOLS
+/// '.' used to separate qualifiers
 pub const DOT: &str = ".";
+/// '*' symbol used for star projections
 pub const STAR: &str = "*";
+/// ':' separates parameter / property name and type
 pub const COLON: &str = ":";
-pub const EQUALS: &str = "=";
+/// `=` assign operator
+pub const ASSIGN: &str = "=";
+/// ',' separates list of values
 pub const COMMA: &str = ",";
+/// '?' denotes nullability
 pub const QUESTION_MARK: &str = "?";
+/// '`' used to escape non JVM compatible identifiers
 pub const TICK: &str = "`";
+/// `<` start of generic parameters
 pub const ANGLE_BRACKET_LEFT: &str = "<";
+/// `>` end of generic parameters
 pub const ANGLE_BRACKET_RIGHT: &str = ">";
+/// '->' separates lambda arguments from body
 pub const ARROW: &str = "->";
 pub const CURLY_BRACKET_LEFT: &str = "{";
 pub const CURLY_BRACKET_RIGHT: &str = "}";

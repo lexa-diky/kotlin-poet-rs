@@ -31,7 +31,7 @@ impl RenderKotlin for Argument {
         if let Some(name) = &self.name {
             block.with_nested(name.render());
             block.with_space();
-            block.with_atom(tokens::EQUALS);
+            block.with_atom(tokens::ASSIGN);
             block.with_space();
         }
         block.with_atom(self.value.to_string().as_str());

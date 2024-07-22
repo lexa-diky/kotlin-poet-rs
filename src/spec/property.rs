@@ -160,7 +160,7 @@ impl RenderKotlin for Property {
         block.with_indent();
         if let Some(initializer) = &self.initializer {
             block.with_space();
-            block.with_atom(tokens::EQUALS);
+            block.with_atom(tokens::ASSIGN);
             block.with_space();
             block.with_nested(initializer.clone())
         }

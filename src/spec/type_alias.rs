@@ -27,7 +27,7 @@ impl TypeAlias {
 impl RenderKotlin for TypeAlias {
     fn render(&self) -> CodeBlock {
         let mut code = CodeBlock::empty();
-        code.with_atom(tokens::KW_TYPEALIAS);
+        code.with_atom(tokens::keyword::TYPEALIAS);
         code.with_space();
         code.with_nested(self.name.render());
         if !self.generic_parameters.is_empty() {

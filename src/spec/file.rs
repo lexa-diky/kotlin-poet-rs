@@ -81,7 +81,7 @@ impl RenderKotlin for KotlinFile {
         let mut code = CodeBlock::empty();
 
         if let Some(package) = &self.package {
-            code.with_atom(tokens::KW_PACKAGE);
+            code.with_atom(tokens::keyword::PACKAGE);
             code.with_space();
             code.with_nested(package.render());
             code.with_new_line();

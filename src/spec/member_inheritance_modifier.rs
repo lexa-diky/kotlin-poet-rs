@@ -11,9 +11,9 @@ pub enum MemberInheritanceModifier {
 impl RenderKotlin for MemberInheritanceModifier {
     fn render(&self) -> CodeBlock {
         let text = match self {
-            MemberInheritanceModifier::Open => tokens::KW_OPEN,
-            MemberInheritanceModifier::Final => tokens::KW_FINAL,
-            MemberInheritanceModifier::Abstract => tokens::KW_ABSTRACT
+            MemberInheritanceModifier::Open => tokens::keyword::OPEN,
+            MemberInheritanceModifier::Final => tokens::keyword::FINAL,
+            MemberInheritanceModifier::Abstract => tokens::keyword::ABSTRACT
         };
 
         CodeBlock::atom(text)

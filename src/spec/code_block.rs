@@ -101,6 +101,21 @@ impl CodeBlock {
         self.nodes.push(CodeBlockNode::Space);
     }
 
+    pub fn with_scope<F>(&mut self, block: F)
+    where
+        F: FnOnce(&mut CodeBlock),
+    {
+        let mut inner_code = CodeBlock::empty();
+
+        self.with_atom(tokens::CURLY_BRACKET_LEFT);
+        self.with_new_line();
+        self.with_indent();
+        block(&mut inner_code);
+        self.with_nested(inner_code);
+        self.with_unindent();
+        self.with_atom(tokens::CURLY_BRACKET_RIGHT);
+    }
+
     fn render(&self) -> String {
         let mut root_buffer = CodeBuffer::default();
         let mut indent = 0;

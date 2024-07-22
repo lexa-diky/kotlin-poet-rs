@@ -50,7 +50,7 @@ impl RenderKotlin for LambdaType {
         }
 
         if self.is_suspended {
-            lambda.with_atom(tokens::KW_SUSPEND);
+            lambda.with_atom(tokens::keyword::SUSPEND);
             lambda.with_space()
         }
 

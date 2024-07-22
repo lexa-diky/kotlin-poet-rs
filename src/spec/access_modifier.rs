@@ -13,10 +13,10 @@ impl RenderKotlin for AccessModifier {
 
     fn render(&self) -> CodeBlock {
         let keyword = match self {
-            AccessModifier::Public => tokens::KW_PUBLIC,
-            AccessModifier::Internal => tokens::KW_INTERNAL,
-            AccessModifier::Private => tokens::KW_PRIVATE,
-            AccessModifier::Protected => tokens::KW_PROTECTED
+            AccessModifier::Public => tokens::keyword::PUBLIC,
+            AccessModifier::Internal => tokens::keyword::INTERNAL,
+            AccessModifier::Private => tokens::keyword::PRIVATE,
+            AccessModifier::Protected => tokens::keyword::PROTECTED
         };
 
         CodeBlock::atom(keyword)

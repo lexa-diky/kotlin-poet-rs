@@ -29,16 +29,16 @@ impl PropertyGetter {
 impl RenderKotlin for PropertyGetter {
     fn render(&self) -> CodeBlock {
         let mut block = CodeBlock::empty();
-        block.with_atom(tokens::KW_GET);
+        block.with_atom(tokens::keyword::GET);
         block.with_atom(tokens::ROUND_BRACE_LEFT);
         block.with_atom(tokens::ROUND_BRACE_RIGHT);
         block.with_space();
-        block.with_atom(tokens::CURLY_BRACE_LEFT);
+        block.with_atom(tokens::CURLY_BRACKET_LEFT);
         block.with_new_line();
         block.with_indent();
         block.with_nested(self.code.clone());
         block.with_unindent();
-        block.with_statement(tokens::CURLY_BRACE_RIGHT);
+        block.with_statement(tokens::CURLY_BRACKET_RIGHT);
         block
     }
 }
@@ -67,17 +67,17 @@ impl RenderKotlin for PropertySetter {
 
     fn render(&self) -> CodeBlock {
         let mut code = CodeBlock::empty();
-        code.with_atom(tokens::KW_SET);
+        code.with_atom(tokens::keyword::SET);
         code.with_atom(tokens::ROUND_BRACE_LEFT);
         code.with_atom(tokens::CONV_VAR_VALUE);
         code.with_atom(tokens::ROUND_BRACE_RIGHT);
         code.with_space();
-        code.with_atom(tokens::CURLY_BRACE_LEFT);
+        code.with_atom(tokens::CURLY_BRACKET_LEFT);
         code.with_new_line();
         code.with_indent();
         code.with_nested(self.code.clone());
         code.with_unindent();
-        code.with_statement(tokens::CURLY_BRACE_RIGHT);
+        code.with_statement(tokens::CURLY_BRACKET_RIGHT);
         code
     }
 }
@@ -137,9 +137,9 @@ impl RenderKotlin for Property {
         block.with_space();
 
         if self.mutable {
-            block.with_atom(tokens::KW_VAR);
+            block.with_atom(tokens::keyword::VAR);
         } else {
-            block.with_atom(tokens::KW_VAL);
+            block.with_atom(tokens::keyword::VAL);
         }
         block.with_space();
 

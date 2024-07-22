@@ -95,21 +95,21 @@ impl RenderKotlin for Function {
         block.with_space();
 
         if self.is_suspended {
-            block.with_atom(tokens::KW_SUSPEND);
+            block.with_atom(tokens::keyword::SUSPEND);
             block.with_space();
         }
 
         if self.is_inline {
-            block.with_atom(tokens::KW_INLINE);
+            block.with_atom(tokens::keyword::INLINE);
             block.with_space();
         }
 
         if self.is_operator {
-            block.with_atom(tokens::KW_OPERATOR);
+            block.with_atom(tokens::keyword::OPERATOR);
             block.with_space();
         }
 
-        block.with_atom(tokens::KW_FUN);
+        block.with_atom(tokens::keyword::FUN);
         block.with_space();
 
         if let Some(receiver) = &self.receiver {
@@ -134,12 +134,9 @@ impl RenderKotlin for Function {
 
         if let Some(body) = &self.body {
             block.with_space();
-            block.with_atom(tokens::CURLY_BRACE_LEFT);
-            block.with_new_line();
-            block.with_indent();
-            block.with_nested(body.clone());
-            block.with_unindent();
-            block.with_atom(tokens::CURLY_BRACE_RIGHT);
+            block.with_scope(|inner| {
+                inner.with_nested(body.clone());
+            });
         }
 
         block

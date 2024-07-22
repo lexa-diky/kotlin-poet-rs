@@ -38,7 +38,7 @@ impl Import {
 impl RenderKotlin for Import {
     fn render(&self) -> CodeBlock {
         let mut code = CodeBlock::empty();
-        code.with_atom(tokens::KW_IMPORT);
+        code.with_atom(tokens::keyword::IMPORT);
         code.with_space();
 
         match self {
@@ -46,7 +46,7 @@ impl RenderKotlin for Import {
                 code.with_nested(type_name.render());
                 if let Some(alias) = alias {
                     code.with_space();
-                    code.with_atom(tokens::KW_AS);
+                    code.with_atom(tokens::keyword::AS);
                     code.with_space();
                     code.with_nested(alias.render());
                 }

@@ -15,13 +15,13 @@ pub enum ClassInheritanceModifier {
 impl RenderKotlin for ClassInheritanceModifier {
     fn render(&self) -> CodeBlock {
         let text = match self {
-            ClassInheritanceModifier::Open => tokens::KW_OPEN,
-            ClassInheritanceModifier::Final => tokens::KW_FINAL,
-            ClassInheritanceModifier::Abstract => tokens::KW_ABSTRACT,
-            ClassInheritanceModifier::Sealed => tokens::KW_SEALED,
-            ClassInheritanceModifier::Interface => tokens::KW_INTERFACE,
-            ClassInheritanceModifier::Object => tokens::KW_OBJECT,
-            ClassInheritanceModifier::Enum => tokens::KW_ENUM
+            ClassInheritanceModifier::Open => tokens::keyword::OPEN,
+            ClassInheritanceModifier::Final => tokens::keyword::FINAL,
+            ClassInheritanceModifier::Abstract => tokens::keyword::ABSTRACT,
+            ClassInheritanceModifier::Sealed => tokens::keyword::SEALED,
+            ClassInheritanceModifier::Interface => tokens::keyword::INTERFACE,
+            ClassInheritanceModifier::Object => tokens::keyword::OBJECT,
+            ClassInheritanceModifier::Enum => tokens::keyword::ENUM
         };
 
         CodeBlock::atom(text)

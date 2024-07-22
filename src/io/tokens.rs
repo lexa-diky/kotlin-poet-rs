@@ -49,5 +49,5 @@ pub mod keyword {
     pub const FINAL: &str = "final";
     pub const ABSTRACT: &str = "abstract";
     pub const IMPORT: &str = "import";
-
+    pub const CONST: &str = "const";
 }

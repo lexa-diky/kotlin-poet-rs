@@ -10,7 +10,8 @@ pub struct Property {
     initializer: Option<CodeBlock>,
     getter: Option<PropertyGetter>,
     setter: Option<PropertySetter>,
-    mutable: bool,
+    is_mutable: bool,
+    is_const: bool
 }
 
 #[derive(Debug, Clone)]
@@ -89,7 +90,8 @@ impl Property {
             initializer: None,
             getter: None,
             setter: None,
-            mutable: false,
+            is_mutable: false,
+            is_const: false
         }
     }
 
@@ -115,12 +117,17 @@ impl Property {
 
     pub fn setter(mut self, setter: PropertySetter) -> Property {
         self.setter = Some(setter);
-        self.mutable = true;
+        self.is_mutable = true;
         self
     }
 
     pub fn mutable(mut self, flag: bool) -> Property {
-        self.mutable = flag;
+        self.is_mutable = flag;
+        self
+    }
+
+    pub fn constant(mut self, flag: bool) -> Property {
+        self.is_const = flag;
         self
     }
 }
@@ -133,7 +140,12 @@ impl RenderKotlin for Property {
         block.with_nested(self.inheritance_modifier.render());
         block.with_space();
 
-        if self.mutable {
+        if self.is_const {
+            block.with_atom(tokens::keyword::CONST);
+            block.with_space()
+        }
+
+        if self.is_mutable {
             block.with_atom(tokens::keyword::VAR);
         } else {
             block.with_atom(tokens::keyword::VAL);
@@ -186,5 +198,19 @@ mod test {
         let rendered = property.render().to_string();
         let expected = "public final var name: kotlin.String = \"\"\n    set(value) {\n        field = value\n    }\n    get() {\n        return field\n    }\n";
         assert_eq!(rendered, expected);
+    }
+
+    #[test]
+    fn test_constant() {
+        let property = Property::new(
+            Name::from("name"),
+            Type::string()
+        ).constant(true)
+            .initializer(CodeBlock::atom("\"Alex\""));
+
+        assert_eq!(
+            "public final const val name: kotlin.String = \"Alex\"",
+            property.render().to_string()
+        )
     }
 }

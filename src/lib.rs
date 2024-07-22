@@ -1,5 +1,6 @@
 pub mod io;
 pub mod spec;
+mod util;
 
 #[cfg(test)]
 mod tests {

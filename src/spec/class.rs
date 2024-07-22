@@ -27,6 +27,42 @@ impl Class {
         }
     }
 
+    pub fn new_interface(name: Name) -> Self {
+        Class {
+            name,
+            access_modifier: AccessModifier::Public,
+            inheritance_modifier: ClassInheritanceModifier::Interface,
+            member_nodes: Vec::new()
+        }
+    }
+
+    pub fn new_abstract(name: Name) -> Self {
+        Class {
+            name,
+            access_modifier: AccessModifier::Public,
+            inheritance_modifier: ClassInheritanceModifier::Abstract,
+            member_nodes: Vec::new()
+        }
+    }
+
+    pub fn new_object(name: Name) -> Self {
+        Class {
+            name,
+            access_modifier: AccessModifier::Public,
+            inheritance_modifier: ClassInheritanceModifier::Object,
+            member_nodes: Vec::new()
+        }
+    }
+
+    pub fn new_sealed(name: Name) -> Self {
+        Class {
+            name,
+            access_modifier: AccessModifier::Public,
+            inheritance_modifier: ClassInheritanceModifier::Sealed,
+            member_nodes: Vec::new()
+        }
+    }
+
     pub fn access_modifier(mut self, access_modifier: AccessModifier) -> Self {
         self.access_modifier = access_modifier;
         self
@@ -61,8 +97,14 @@ impl RenderKotlin for Class {
         code.with_space();
         code.with_nested(self.inheritance_modifier.render());
         code.with_space();
-        code.with_atom(tokens::KW_CLASS);
-        code.with_space();
+        if !matches!(
+            self.inheritance_modifier,
+            ClassInheritanceModifier::Interface |
+            ClassInheritanceModifier::Object
+        ) {
+            code.with_atom(tokens::KW_CLASS);
+            code.with_space();
+        }
         code.with_nested(self.name.render());
         code.with_space();
         code.with_atom(tokens::CURLY_BRACE_LEFT);

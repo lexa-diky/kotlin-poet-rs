@@ -1,5 +1,6 @@
 use crate::io::{RenderKotlin, tokens};
-use crate::spec::{Class, CodeBlock, Function, Import, Name, Package, Property, TypeAlias};
+use crate::spec::{Class, ClassLikeTypeName, CodeBlock, Function, Import, Name, Package, Property, TypeAlias};
+use crate::util::SemanticConversionError;
 
 #[derive(Debug, Clone)]
 enum KotlinFileNode {
@@ -51,6 +52,27 @@ impl KotlinFile {
     pub fn class(mut self, class: Class) -> Self {
         self.nodes.push(KotlinFileNode::Class(class));
         self
+    }
+}
+
+impl TryFrom<ClassLikeTypeName> for KotlinFile {
+    type Error = SemanticConversionError;
+
+    fn try_from(value: ClassLikeTypeName) -> Result<Self, Self::Error> {
+        let package = value.package;
+        let names = value.names;
+
+        if names.len() != 1 {
+            return Err(
+                SemanticConversionError::new(
+                    "ClassLikeTypeName that is converted to Kotlin file name must have exactly one name"
+                )
+            )
+        }
+
+        Ok(
+            KotlinFile::new(package, names.first().unwrap().clone())
+        )
     }
 }
 

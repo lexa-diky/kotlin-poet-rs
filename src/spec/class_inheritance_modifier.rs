@@ -5,8 +5,10 @@ use crate::spec::CodeBlock;
 pub enum ClassInheritanceModifier {
     Open,
     Final,
+    Interface,
     Abstract,
-    Sealed
+    Sealed,
+    Object
 }
 
 impl RenderKotlin for ClassInheritanceModifier {
@@ -15,7 +17,9 @@ impl RenderKotlin for ClassInheritanceModifier {
             ClassInheritanceModifier::Open => tokens::KW_OPEN,
             ClassInheritanceModifier::Final => tokens::KW_FINAL,
             ClassInheritanceModifier::Abstract => tokens::KW_ABSTRACT,
-            ClassInheritanceModifier::Sealed => tokens::KW_SEALED
+            ClassInheritanceModifier::Sealed => tokens::KW_SEALED,
+            ClassInheritanceModifier::Interface => tokens::KW_INTERFACE,
+            ClassInheritanceModifier::Object => tokens::KW_OBJECT
         };
 
         CodeBlock::atom(text)

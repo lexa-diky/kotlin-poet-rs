@@ -5,8 +5,8 @@ use crate::spec::package::Package;
 
 #[derive(PartialEq, Debug, Clone)]
 pub struct ClassLikeTypeName {
-    package: Package,
-    names: Vec<Name>,
+    pub package: Package,
+    pub names: Vec<Name>,
 }
 
 impl ClassLikeTypeName {

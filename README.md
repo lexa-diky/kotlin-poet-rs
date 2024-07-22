@@ -1,5 +1,6 @@
 # KotlinPoet-RS
 
+![docs.rs](https://img.shields.io/docsrs/kotlin-poet-rs?link=https%3A%2F%2Fdocs.rs%2Fkotlin-poet-rs%2Flatest%2Fkotlin_poet_rs%2F)
 ![Crates.io Total Downloads](https://img.shields.io/crates/v/kotlin-poet-rs?label=version)
 ![Crates.io Total Downloads](https://img.shields.io/crates/d/kotlin-poet-rs?logo=rust&label=crates.io%20downloads)
 ![GitHub top language](https://img.shields.io/github/languages/top/lexa-diky/kotlin-poet-rs?logo=rust)
@@ -7,7 +8,7 @@
 ![Crates.io License](https://img.shields.io/crates/l/kotlin-poet-rs?logo=apache)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/lexa-diky/kotlin-poet-rs?logo=github)
 
-
+https://lexa-diky.github.io/kotlin-poet-rs/kotlin_poet_rs/index.html
 > Currently, this project is in heavy development and not ready for any serious use.
 
 ## Get Started
@@ -17,6 +18,11 @@
 ```shell
 cargo add kotlin-poet-rs
 ```
+
+### Read documentation
+
+- Stable version: [docs.rs](https://docs.rs/kotlin-poet-rs/latest/kotlin_poet_rs/)
+- Most recent: [github.io](https://lexa-diky.github.io/kotlin-poet-rs/kotlin_poet_rs/index.html)
 
 ### Start writing poetry
 

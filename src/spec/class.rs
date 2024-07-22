@@ -138,43 +138,44 @@ impl RenderKotlin for Class {
         code.with_nested(self.name.render());
         code.with_space();
 
-        code.with_scope(|inner_code| {
-            inner_code.with_new_line();
+        code.with_scope(|class_body_code| {
+            class_body_code.with_new_line();
 
             if !self.enum_instances.is_empty() {
                 for (inst_idx, instance) in self.enum_instances.iter().enumerate() {
-                    inner_code.with_nested(instance.name.render());
-                    inner_code.with_atom(tokens::ROUND_BRACE_LEFT);
-                    for (index, argument) in instance.arguments.iter().enumerate() {
-                        inner_code.with_nested(argument.render());
-                        if index != instance.arguments.len() - 1 {
-                            inner_code.with_atom(tokens::COMMA);
-                            inner_code.with_space();
+                    class_body_code.with_nested(instance.name.render());
+                    class_body_code.with_round_brackets(|arg_code| {
+                        for (index, argument) in instance.arguments.iter().enumerate() {
+                            arg_code.with_nested(argument.render());
+                            if index != instance.arguments.len() - 1 {
+                                arg_code.with_atom(tokens::COMMA);
+                                arg_code.with_space();
+                            }
                         }
-                    }
-                    inner_code.with_atom(tokens::ROUND_BRACE_RIGHT);
+                    });
+
                     if inst_idx != self.enum_instances.len() - 1 {
-                        inner_code.with_atom(tokens::COMMA);
-                        inner_code.with_new_line();
+                        class_body_code.with_atom(tokens::COMMA);
+                        class_body_code.with_new_line();
                     }
                 }
 
-                inner_code.with_atom(tokens::SEMICOLON);
+                class_body_code.with_atom(tokens::SEMICOLON);
             }
 
             for node in &self.member_nodes {
                 match node {
                     ClassMemberNode::Property(property) => {
-                        inner_code.with_nested(property.render());
-                        inner_code.with_new_line();
+                        class_body_code.with_nested(property.render());
+                        class_body_code.with_new_line();
                     },
                     ClassMemberNode::Function(function) => {
-                        inner_code.with_nested(function.render());
-                        inner_code.with_new_line();
+                        class_body_code.with_nested(function.render());
+                        class_body_code.with_new_line();
                     },
                     ClassMemberNode::Subclass(subclass) => {
-                        inner_code.with_nested(subclass.render());
-                        inner_code.with_new_line();
+                        class_body_code.with_nested(subclass.render());
+                        class_body_code.with_new_line();
                     }
                 }
             }

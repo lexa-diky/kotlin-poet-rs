@@ -117,19 +117,20 @@ impl RenderKotlin for Function {
             block.with_atom(tokens::SEPARATOR);
         }
         block.with_nested(self.name.render());
-        block.with_atom("(");
 
-        let total_parameters = self.parameters.len();
-        for (index, parameter) in self.parameters.iter().enumerate() {
-            block.with_nested(parameter.render());
-            if index != total_parameters - 1 {
-                block.with_atom(tokens::COMMA);
-                block.with_space()
+        block.with_round_brackets(|parameters_code| {
+            let total_parameters = self.parameters.len();
+            for (index, parameter) in self.parameters.iter().enumerate() {
+                parameters_code.with_nested(parameter.render());
+                if index != total_parameters - 1 {
+                    parameters_code.with_atom(tokens::COMMA);
+                    parameters_code.with_space()
+                }
             }
-        }
-        block.with_atom(")");
+        });
 
-        block.with_atom(": ");
+        block.with_atom(tokens::TYPE_SEPARATOR);
+        block.with_space();
         block.with_nested(self.returns.render());
 
         if let Some(body) = &self.body {

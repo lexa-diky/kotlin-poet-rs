@@ -30,8 +30,7 @@ impl RenderKotlin for PropertyGetter {
     fn render(&self) -> CodeBlock {
         let mut block = CodeBlock::empty();
         block.with_atom(tokens::keyword::GET);
-        block.with_atom(tokens::ROUND_BRACE_LEFT);
-        block.with_atom(tokens::ROUND_BRACE_RIGHT);
+        block.with_round_brackets(|block| {});
         block.with_space();
         block.with_atom(tokens::CURLY_BRACKET_LEFT);
         block.with_new_line();
@@ -68,9 +67,9 @@ impl RenderKotlin for PropertySetter {
     fn render(&self) -> CodeBlock {
         let mut code = CodeBlock::empty();
         code.with_atom(tokens::keyword::SET);
-        code.with_atom(tokens::ROUND_BRACE_LEFT);
-        code.with_atom(tokens::CONV_VAR_VALUE);
-        code.with_atom(tokens::ROUND_BRACE_RIGHT);
+        code.with_round_brackets(|parameters_code| {
+            parameters_code.with_atom(tokens::CONV_VAR_VALUE);
+        });
         code.with_space();
         code.with_atom(tokens::CURLY_BRACKET_LEFT);
         code.with_new_line();

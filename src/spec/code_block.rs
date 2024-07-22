@@ -116,6 +116,18 @@ impl CodeBlock {
         self.with_atom(tokens::CURLY_BRACKET_RIGHT);
     }
 
+    pub fn with_round_brackets<F>(&mut self, block: F)
+    where
+        F: FnOnce(&mut CodeBlock),
+    {
+        let mut inner_code = CodeBlock::empty();
+
+        self.with_atom(tokens::ROUND_BRACKET_LEFT);
+        block(&mut inner_code);
+        self.with_nested(inner_code);
+        self.with_atom(tokens::ROUND_BRACKET_RIGHT);
+    }
+
     fn render(&self) -> String {
         let mut root_buffer = CodeBuffer::default();
         let mut indent = 0;

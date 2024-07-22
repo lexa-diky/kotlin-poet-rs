@@ -23,11 +23,16 @@ cargo add kotlin-poet-rs
 Constant property with initializer:
 
 ```rust
-let property = Property::new(Name::from("name"), Type::string())
-.constant(true)
-.initializer(CodeBlock::atom("\"Alex\""));
+use kotlin_poet_rs::spec::{CodeBlock, Name, Property, Type};
+use kotlin_poet_rs::io::RenderKotlin;
 
-println!("{}", property.to_string());
+fn main() {
+    let property = Property::new(Name::from("name"), Type::string())
+        .constant(true)
+        .initializer(CodeBlock::atom("\"Alex\""));
+
+    println!("{}", property.render_string());
+}
 ```
 
 Will print:

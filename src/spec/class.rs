@@ -138,20 +138,14 @@ impl RenderKotlin for Class {
         code.with_nested(self.name.render());
         code.with_space();
 
-        code.with_scope(|class_body_code| {
+        code.with_curly_brackets(|class_body_code| {
             class_body_code.with_new_line();
 
             if !self.enum_instances.is_empty() {
                 for (inst_idx, instance) in self.enum_instances.iter().enumerate() {
                     class_body_code.with_nested(instance.name.render());
                     class_body_code.with_round_brackets(|arg_code| {
-                        for (index, argument) in instance.arguments.iter().enumerate() {
-                            arg_code.with_nested(argument.render());
-                            if index != instance.arguments.len() - 1 {
-                                arg_code.with_atom(tokens::COMMA);
-                                arg_code.with_space();
-                            }
-                        }
+                        arg_code.with_comma_separated(&instance.arguments);
                     });
 
                     if inst_idx != self.enum_instances.len() - 1 {

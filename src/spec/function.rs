@@ -135,7 +135,7 @@ impl RenderKotlin for Function {
 
         if let Some(body) = &self.body {
             block.with_space();
-            block.with_scope(|inner| {
+            block.with_curly_brackets(|inner| {
                 inner.with_nested(body.clone());
             });
         }

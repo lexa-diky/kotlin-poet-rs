@@ -71,12 +71,10 @@ impl RenderKotlin for PropertySetter {
             parameters_code.with_atom(tokens::CONV_VAR_VALUE);
         });
         code.with_space();
-        code.with_atom(tokens::CURLY_BRACKET_LEFT);
+        code.with_curly_brackets(|set_body| {
+            set_body.with_nested(self.code.clone());
+        });
         code.with_new_line();
-        code.with_indent();
-        code.with_nested(self.code.clone());
-        code.with_unindent();
-        code.with_statement(tokens::CURLY_BRACKET_RIGHT);
         code
     }
 }

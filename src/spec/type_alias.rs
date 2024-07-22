@@ -31,15 +31,9 @@ impl RenderKotlin for TypeAlias {
         code.with_space();
         code.with_nested(self.name.render());
         if !self.generic_parameters.is_empty() {
-            code.with_atom(tokens::GENERIC_BRACE_LEFT);
-            for (index, parameter) in self.generic_parameters.iter().enumerate() {
-                code.with_nested(parameter.render());
-                if index < self.generic_parameters.len() - 1 {
-                    code.with_atom(tokens::COMMA);
-                    code.with_space();
-                }
-            }
-            code.with_atom(tokens::GENERIC_BRACE_RIGHT);
+            code.with_atom(tokens::ANGLE_BRACKET_LEFT);
+            code.with_comma_separated(&self.generic_parameters);
+            code.with_atom(tokens::ANGLE_BRACKET_RIGHT);
         }
 
         code.with_space();

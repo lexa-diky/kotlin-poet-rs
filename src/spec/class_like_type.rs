@@ -33,7 +33,7 @@ impl RenderKotlin for ClassLikeType {
     fn render(&self) -> CodeBlock {
         let mut type_name = self.type_name.render();
         if !self.generic_arguments.is_empty() {
-            type_name.with_atom(tokens::GENERIC_BRACE_LEFT);
+            type_name.with_atom(tokens::ANGLE_BRACKET_LEFT);
 
             for (idx, generic_argument) in self.generic_arguments.iter().enumerate() {
                 type_name.with_nested(generic_argument.render());
@@ -43,7 +43,7 @@ impl RenderKotlin for ClassLikeType {
                 }
             }
 
-            type_name.with_atom(tokens::GENERIC_BRACE_RIGHT);
+            type_name.with_atom(tokens::ANGLE_BRACKET_RIGHT);
         }
 
         if self.nullable {

@@ -55,13 +55,9 @@ impl RenderKotlin for LambdaType {
         }
 
         lambda.with_round_brackets(|parameters_code| {
-            for (idx, parameter) in self.parameters.iter().enumerate() {
-                parameters_code.with_nested(parameter.render());
-                if idx != self.parameters.len() - 1 {
-                    parameters_code.with_atom(tokens::COMMA);
-                    parameters_code.with_space()
-                }
-            }
+            parameters_code.with_comma_separated(
+                &self.parameters
+            );
         });
 
         lambda.with_space();

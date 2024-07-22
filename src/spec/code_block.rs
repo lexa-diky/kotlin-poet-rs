@@ -1,4 +1,4 @@
-use crate::io::{CodeBuffer, tokens};
+use crate::io::{CodeBuffer, RenderKotlin, tokens};
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum CodeBlockNode {
@@ -101,7 +101,7 @@ impl CodeBlock {
         self.nodes.push(CodeBlockNode::Space);
     }
 
-    pub fn with_scope<F>(&mut self, block: F)
+    pub fn with_curly_brackets<F>(&mut self, block: F)
     where
         F: FnOnce(&mut CodeBlock),
     {
@@ -126,6 +126,23 @@ impl CodeBlock {
         block(&mut inner_code);
         self.with_nested(inner_code);
         self.with_atom(tokens::ROUND_BRACKET_RIGHT);
+    }
+
+    pub fn with_comma_separated<F>(&mut self, elements: &Vec<F>)
+    where
+        F: RenderKotlin,
+    {
+        let mut code = CodeBlock::empty();
+        let len = elements.len();
+        for (index, renderable) in elements.iter().enumerate() {
+            code.with_nested(renderable.render());
+            if index != len - 1 {
+                code.with_atom(tokens::COMMA);
+                code.with_space();
+            }
+        }
+
+        self.with_nested(code);
     }
 
     fn render(&self) -> String {

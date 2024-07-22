@@ -1,6 +1,6 @@
 [package]
 name = "kotlin-poet-rs"
-version = "0.1.0-indev"
+version = "0.2.0-indev"
 edition = "2021"
 license = "Apache-2.0"
 repository = "https://github.com/lexa-diky/kotlin-poet-rs"
@@ -14,7 +14,7 @@ categories = ["template-engine"]
 [dependencies]
 
 [dev-dependencies]
-criterion = { version = "0.4", features = ["html_reports"] }
+criterion = { version = "0.5.1", features = ["html_reports"] }
 
 [[bench]]
 name = "file_rendering_bencharmk"

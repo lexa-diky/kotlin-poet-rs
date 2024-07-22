@@ -1,5 +1,6 @@
-use crate::io::{RenderKotlin, tokens};
+use crate::io::RenderKotlin;
 use crate::spec::{Class, ClassLikeTypeName, CodeBlock, Function, Import, Name, Package, Property, TypeAlias};
+use crate::tokens;
 use crate::util::SemanticConversionError;
 
 #[derive(Debug, Clone)]

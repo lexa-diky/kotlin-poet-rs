@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use crate::io::RenderKotlin;
-use crate::io::tokens::NAME_PROHIBITED_TOKENS;
+use crate::tokens::NAME_PROHIBITED_TOKENS;
 use crate::spec::CodeBlock;
 
 #[derive(Debug, PartialEq, Clone)]

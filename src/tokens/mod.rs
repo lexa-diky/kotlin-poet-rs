@@ -1,3 +1,5 @@
+#![doc = include_str!("README.md")]
+
 // SPACES
 pub const EMPTY: &str = "";
 pub const SPACE: &str = " ";

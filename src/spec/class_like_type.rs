@@ -1,5 +1,6 @@
-use crate::io::{RenderKotlin, tokens};
+use crate::io::RenderKotlin;
 use crate::spec::{ClassLikeTypeName, CodeBlock, Type};
+use crate::tokens;
 
 #[derive(PartialEq, Debug, Clone)]
 pub struct ClassLikeType {

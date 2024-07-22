@@ -1,6 +1,6 @@
 use std::str::FromStr;
 use crate::io::{RenderKotlin};
-use crate::io::tokens::DOT;
+use crate::tokens::DOT;
 use crate::spec::{CodeBlock, Name};
 
 #[derive(Debug, PartialEq, Clone)]

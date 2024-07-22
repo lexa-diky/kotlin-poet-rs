@@ -1,5 +1,6 @@
-use crate::io::{RenderKotlin, tokens};
+use crate::io::RenderKotlin;
 use crate::spec::{ClassLikeTypeName, CodeBlock, Name, Package};
+use crate::tokens;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum Import {

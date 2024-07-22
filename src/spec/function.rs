@@ -1,5 +1,6 @@
-use crate::io::{RenderKotlin, tokens};
+use crate::io::RenderKotlin;
 use crate::spec::{AccessModifier, CodeBlock, MemberInheritanceModifier, Name, Type};
+use crate::tokens;
 
 #[derive(Debug, Clone)]
 pub struct Function {

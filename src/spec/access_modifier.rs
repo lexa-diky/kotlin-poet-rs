@@ -1,5 +1,6 @@
-use crate::io::{RenderKotlin, tokens};
+use crate::io::RenderKotlin;
 use crate::spec::CodeBlock;
+use crate::tokens;
 
 #[derive(PartialEq, Debug, Clone)]
 pub enum AccessModifier {

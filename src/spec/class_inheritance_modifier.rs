@@ -8,7 +8,8 @@ pub enum ClassInheritanceModifier {
     Interface,
     Abstract,
     Sealed,
-    Object
+    Object,
+    Enum,
 }
 
 impl RenderKotlin for ClassInheritanceModifier {
@@ -19,7 +20,8 @@ impl RenderKotlin for ClassInheritanceModifier {
             ClassInheritanceModifier::Abstract => tokens::KW_ABSTRACT,
             ClassInheritanceModifier::Sealed => tokens::KW_SEALED,
             ClassInheritanceModifier::Interface => tokens::KW_INTERFACE,
-            ClassInheritanceModifier::Object => tokens::KW_OBJECT
+            ClassInheritanceModifier::Object => tokens::KW_OBJECT,
+            ClassInheritanceModifier::Enum => tokens::KW_ENUM
         };
 
         CodeBlock::atom(text)

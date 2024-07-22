@@ -14,6 +14,7 @@ mod type_alias;
 mod class;
 mod class_inheritance_modifier;
 mod file;
+mod argument;
 
 pub use package::Package;
 pub use class_like_type_name::ClassLikeTypeName;
@@ -31,3 +32,4 @@ pub use type_alias::TypeAlias;
 pub use class::Class;
 pub use class_inheritance_modifier::ClassInheritanceModifier;
 pub use file::KotlinFile;
+pub use argument::Argument;

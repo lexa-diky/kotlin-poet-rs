@@ -202,10 +202,8 @@ mod test {
 
     #[test]
     fn test_constant() {
-        let property = Property::new(
-            Name::from("name"),
-            Type::string()
-        ).constant(true)
+        let property = Property::new(Name::from("name"), Type::string())
+            .constant(true)
             .initializer(CodeBlock::atom("\"Alex\""));
 
         assert_eq!(

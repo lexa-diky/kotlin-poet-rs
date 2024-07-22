@@ -161,6 +161,10 @@ impl CodeBlock {
                     indent += size;
                 }
                 CodeBlockNode::Unindent(size) => {
+                    if *size > indent {
+                        indent = 0;
+                        continue
+                    }
                     indent -= size;
                 }
                 CodeBlockNode::Space => {

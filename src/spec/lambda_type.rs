@@ -46,7 +46,7 @@ impl RenderKotlin for LambdaType {
         let mut lambda = CodeBlock::empty();
         if let Some(receiver) = &*self.receiver {
             lambda.with_nested(receiver.render());
-            lambda.with_atom(tokens::SEPARATOR)
+            lambda.with_atom(tokens::DOT)
         }
 
         if self.is_suspended {

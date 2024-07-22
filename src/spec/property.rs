@@ -31,7 +31,7 @@ impl RenderKotlin for PropertyGetter {
     fn render(&self) -> CodeBlock {
         let mut block = CodeBlock::empty();
         block.with_atom(tokens::keyword::GET);
-        block.with_round_brackets(|block| {});
+        block.with_round_brackets(|_| {});
         block.with_space();
         block.with_atom(tokens::CURLY_BRACKET_LEFT);
         block.with_new_line();
@@ -153,7 +153,7 @@ impl RenderKotlin for Property {
         block.with_space();
 
         block.with_nested(self.name.render());
-        block.with_atom(tokens::TYPE_SEPARATOR);
+        block.with_atom(tokens::COLON);
         block.with_space();
         block.with_nested(self.returns.render());
         block.with_indent();

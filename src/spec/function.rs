@@ -81,7 +81,7 @@ impl RenderKotlin for (Name, Type) {
     fn render(&self) -> CodeBlock {
         let mut block = CodeBlock::empty();
         block.with_nested(self.0.render());
-        block.with_atom(tokens::TYPE_SEPARATOR);
+        block.with_atom(tokens::COLON);
         block.with_space();
         block.with_nested(self.1.render());
         block
@@ -114,7 +114,7 @@ impl RenderKotlin for Function {
 
         if let Some(receiver) = &self.receiver {
             block.with_nested(receiver.render());
-            block.with_atom(tokens::SEPARATOR);
+            block.with_atom(tokens::DOT);
         }
         block.with_nested(self.name.render());
 
@@ -129,7 +129,7 @@ impl RenderKotlin for Function {
             }
         });
 
-        block.with_atom(tokens::TYPE_SEPARATOR);
+        block.with_atom(tokens::COLON);
         block.with_space();
         block.with_nested(self.returns.render());
 

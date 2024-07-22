@@ -32,12 +32,12 @@ impl RenderKotlin for ClassLikeTypeName {
         let package = self.package.render();
         code.with_nested(package);
 
-        code.with_atom(tokens::SEPARATOR);
+        code.with_atom(tokens::DOT);
 
         for (index, part) in self.names.iter().enumerate() {
             code.with_nested(part.render());
             if index != self.names.len() - 1 {
-                code.with_atom(tokens::SEPARATOR);
+                code.with_atom(tokens::DOT);
             }
         }
 

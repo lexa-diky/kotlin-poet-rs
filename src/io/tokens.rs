@@ -1,19 +1,20 @@
-pub const SEPARATOR: &str = ".";
-pub const WILDCARD: &str = "*";
-pub const TYPE_SEPARATOR: &str = ":";
-pub const EQUALS: &str = "=";
-pub const COMMA: &str = ",";
-pub const NULLABLE: &str = "?";
-pub const NOTHING: &str = "";
+// SPACES
+pub const EMPTY: &str = "";
 pub const SPACE: &str = " ";
-pub const TICK: &str = "`";
-pub const PROJECTION: &str = "*";
-pub const NAME_PROHIBITED_TOKENS: [&str; 1] = [" "];
-pub const ANGLE_BRACKET_LEFT: &str = "<";
-pub const ANGLE_BRACKET_RIGHT: &str = ">";
 pub const NEW_LINE: &str = "\n";
 pub const NEW_LINE_CH: char = '\n';
 pub const INDENT: &str = "    ";
+
+// SYMBOLS
+pub const DOT: &str = ".";
+pub const STAR: &str = "*";
+pub const COLON: &str = ":";
+pub const EQUALS: &str = "=";
+pub const COMMA: &str = ",";
+pub const QUESTION_MARK: &str = "?";
+pub const TICK: &str = "`";
+pub const ANGLE_BRACKET_LEFT: &str = "<";
+pub const ANGLE_BRACKET_RIGHT: &str = ">";
 pub const ARROW: &str = "->";
 pub const CURLY_BRACKET_LEFT: &str = "{";
 pub const CURLY_BRACKET_RIGHT: &str = "}";
@@ -22,6 +23,9 @@ pub const ROUND_BRACKET_RIGHT: &str = ")";
 pub const CONV_VAR_VALUE: &str = "value";
 pub const CONV_VAR_FIELD: &str = "field";
 pub const SEMICOLON: &str = ";";
+
+// CATEGORY
+pub const NAME_PROHIBITED_TOKENS: [&str; 1] = [SPACE];
 
 pub mod keyword {
     pub const CLASS: &str = "class";

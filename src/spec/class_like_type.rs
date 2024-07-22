@@ -47,7 +47,7 @@ impl RenderKotlin for ClassLikeType {
         }
 
         if self.nullable {
-            type_name.with_atom(tokens::NULLABLE);
+            type_name.with_atom(tokens::QUESTION_MARK);
         };
 
         type_name.clone()

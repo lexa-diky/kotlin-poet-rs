@@ -32,7 +32,6 @@ impl RenderKotlin for ClassInheritanceModifier {
 mod test {
     use crate::io::RenderKotlin;
     use crate::spec::ClassInheritanceModifier;
-    use crate::spec::member_inheritance_modifier::MemberInheritanceModifier;
 
     #[test]
     fn test_render() {

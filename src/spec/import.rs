@@ -53,12 +53,12 @@ impl RenderKotlin for Import {
             }
             Import::Projection(package) => {
                 code.with_nested(package.render());
-                code.with_atom(tokens::SEPARATOR);
-                code.with_atom(tokens::WILDCARD);
+                code.with_atom(tokens::DOT);
+                code.with_atom(tokens::STAR);
             }
             Import::Function { package, name } => {
                 code.with_nested(package.render());
-                code.with_atom(tokens::SEPARATOR);
+                code.with_atom(tokens::DOT);
                 code.with_nested(name.render());
             }
         }

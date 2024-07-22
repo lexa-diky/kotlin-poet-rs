@@ -1,6 +1,6 @@
 use std::str::FromStr;
 use crate::io::{RenderKotlin};
-use crate::io::tokens::SEPARATOR;
+use crate::io::tokens::DOT;
 use crate::spec::{CodeBlock, Name};
 
 #[derive(Debug, PartialEq, Clone)]
@@ -18,7 +18,7 @@ impl FromStr for Package {
     type Err = ();
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let parts = s.split(SEPARATOR)
+        let parts = s.split(DOT)
             .map(Name::from_str).collect::<Result<Vec<_>, ()>>()?;
         Ok(Package::from(parts))
     }
@@ -31,7 +31,7 @@ impl RenderKotlin for Package {
         for (index, part) in self.parts.iter().enumerate() {
             code.with_nested(part.render());
             if index != self.parts.len() - 1 {
-                code.with_atom(SEPARATOR);
+                code.with_atom(DOT);
             }
         }
 

@@ -58,6 +58,8 @@ pub const NAME_PROHIBITED_TOKENS: [&str; 1] = [SPACE];
 
 pub mod keyword {
     pub const CLASS: &str = "class";
+    /// 'this' keyword, refers to current context parameter or parent constructor
+    pub const THIS: &str = "this";
     pub const AS: &str = "as";
     pub const OPERATOR: &str = "operator";
     pub const INLINE: &str = "inline";

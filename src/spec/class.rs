@@ -1,5 +1,5 @@
 use crate::io::RenderKotlin;
-use crate::spec::{AccessModifier, Argument, ClassInheritanceModifier, CodeBlock, Function, Name, PrimaryConstructor, Property};
+use crate::spec::{AccessModifier, Argument, ClassInheritanceModifier, CodeBlock, Function, Name, PrimaryConstructor, Property, SecondaryConstructor};
 use crate::tokens;
 
 #[derive(Debug, Clone)]
@@ -7,6 +7,7 @@ enum ClassMemberNode {
     Property(Property),
     Function(Function),
     Subclass(Class),
+    SecondaryConstructor(SecondaryConstructor)
 }
 
 #[derive(Debug, Clone)]
@@ -22,7 +23,7 @@ pub struct Class {
     inheritance_modifier: ClassInheritanceModifier,
     member_nodes: Vec<ClassMemberNode>,
     enum_instances: Vec<EnumInstance>,
-    primary_constructor: Option<PrimaryConstructor>
+    primary_constructor: Option<PrimaryConstructor>,
 }
 
 impl Class {
@@ -141,6 +142,11 @@ impl Class {
         self.primary_constructor = Some(primary_constructor);
         self
     }
+
+    pub fn secondary_constructor(mut self, secondary_constructor: SecondaryConstructor) -> Self {
+        self.member_nodes.push(ClassMemberNode::SecondaryConstructor(secondary_constructor));
+        self
+    }
 }
 
 impl RenderKotlin for Class {
@@ -198,6 +204,10 @@ impl RenderKotlin for Class {
                     },
                     ClassMemberNode::Subclass(subclass) => {
                         class_body_code.with_nested(subclass.render());
+                        class_body_code.with_new_line();
+                    }
+                    ClassMemberNode::SecondaryConstructor(secondary_constructor) => {
+                        class_body_code.with_nested(secondary_constructor.render());
                         class_body_code.with_new_line();
                     }
                 }
@@ -323,6 +333,53 @@ mod tests {
         assert_eq!(
             class.render().to_string(),
             "public data class Person public constructor(public final val name: kotlin.String = \"\") {\n\n}"
+        );
+    }
+
+    #[test]
+    fn test_data_class_with_secondary_constructor() {
+        let class = Class::new_data_class(Name::from("Person"))
+            .primary_constructor(
+                PrimaryConstructor::new()
+                    .property(
+                        Property::new(
+                            Name::from("name"),
+                            Type::string()
+                        )
+                    )
+                    .property(
+                        Property::new(
+                            Name::from("age"),
+                            Type::int()
+                        )
+                    )
+            )
+            .secondary_constructor(
+                SecondaryConstructor::new()
+                    .parameter(
+                        FunctionParameter::new(
+                            Name::from("name"),
+                            Type::string()
+                        )
+                    )
+                    .delegate_argument(
+                        Argument::new(
+                            CodeBlock::atom("name")
+                        )
+                    )
+                    .delegate_argument(
+                        Argument::new(
+                            CodeBlock::atom("23")
+                        )
+                    )
+                    .body(
+                        CodeBlock::statement("println(42)")
+                    )
+            );
+
+        assert_eq!(
+            class.render().to_string(),
+            "public data class Person public constructor(public final val name: kotlin.String, public final val age: kotlin.Int) {\n\n    public constructor(name: kotlin.String) : this(name, 23) {\n        println(42)\n    }\n}"
         );
     }
 }

@@ -16,6 +16,7 @@ mod class_inheritance_modifier;
 mod file;
 mod argument;
 mod primary_constructor;
+mod secondary_constructor;
 
 pub use package::Package;
 pub use class_like_type_name::ClassLikeTypeName;
@@ -35,3 +36,4 @@ pub use class_inheritance_modifier::ClassInheritanceModifier;
 pub use file::KotlinFile;
 pub use argument::Argument;
 pub use primary_constructor::PrimaryConstructor;
+pub use secondary_constructor::SecondaryConstructor;

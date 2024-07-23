@@ -78,11 +78,15 @@ pub mod keyword {
     pub const SEALED: &str = "sealed";
     pub const OBJECT: &str = "object";
     pub const ENUM: &str = "enum";
+    /// 'data' class keyword
+    pub const DATA: &str = "data";
     pub const INTERFACE: &str = "interface";
     pub const FINAL: &str = "final";
     pub const ABSTRACT: &str = "abstract";
     pub const IMPORT: &str = "import";
     pub const CONST: &str = "const";
-    // 'by' keyword
+    /// 'by' keyword
     pub const BY: &str = "by";
+    /// 'constructor' keyword
+    pub const CONSTRUCTOR: &str = "constructor";
 }

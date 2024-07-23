@@ -1,5 +1,5 @@
 use crate::io::RenderKotlin;
-use crate::spec::{AccessModifier, Argument, ClassInheritanceModifier, CodeBlock, Function, Name, Property};
+use crate::spec::{AccessModifier, Argument, ClassInheritanceModifier, CodeBlock, Function, Name, PrimaryConstructor, Property};
 use crate::tokens;
 
 #[derive(Debug, Clone)]
@@ -21,7 +21,8 @@ pub struct Class {
     access_modifier: AccessModifier,
     inheritance_modifier: ClassInheritanceModifier,
     member_nodes: Vec<ClassMemberNode>,
-    enum_instances: Vec<EnumInstance>
+    enum_instances: Vec<EnumInstance>,
+    primary_constructor: Option<PrimaryConstructor>
 }
 
 impl Class {
@@ -32,7 +33,8 @@ impl Class {
             access_modifier: AccessModifier::Public,
             inheritance_modifier: ClassInheritanceModifier::Final,
             member_nodes: Vec::new(),
-            enum_instances: Vec::new()
+            enum_instances: Vec::new(),
+            primary_constructor: None
         }
     }
 
@@ -42,7 +44,8 @@ impl Class {
             access_modifier: AccessModifier::Public,
             inheritance_modifier: ClassInheritanceModifier::Interface,
             member_nodes: Vec::new(),
-            enum_instances: Vec::new()
+            enum_instances: Vec::new(),
+            primary_constructor: None
         }
     }
 
@@ -52,7 +55,8 @@ impl Class {
             access_modifier: AccessModifier::Public,
             inheritance_modifier: ClassInheritanceModifier::Abstract,
             member_nodes: Vec::new(),
-            enum_instances: Vec::new()
+            enum_instances: Vec::new(),
+            primary_constructor: None
         }
     }
 
@@ -62,7 +66,8 @@ impl Class {
             access_modifier: AccessModifier::Public,
             inheritance_modifier: ClassInheritanceModifier::Object,
             member_nodes: Vec::new(),
-            enum_instances: Vec::new()
+            enum_instances: Vec::new(),
+            primary_constructor: None
         }
     }
 
@@ -72,7 +77,8 @@ impl Class {
             access_modifier: AccessModifier::Public,
             inheritance_modifier: ClassInheritanceModifier::Sealed,
             member_nodes: Vec::new(),
-            enum_instances: Vec::new()
+            enum_instances: Vec::new(),
+            primary_constructor: None
         }
     }
 
@@ -82,7 +88,19 @@ impl Class {
             access_modifier: AccessModifier::Public,
             inheritance_modifier: ClassInheritanceModifier::Enum,
             member_nodes: Vec::new(),
-            enum_instances: Vec::new()
+            enum_instances: Vec::new(),
+            primary_constructor: None
+        }
+    }
+
+    pub fn new_data_class(name: Name) -> Self {
+        Class {
+            name,
+            access_modifier: AccessModifier::Public,
+            inheritance_modifier: ClassInheritanceModifier::Data,
+            member_nodes: Vec::new(),
+            enum_instances: Vec::new(),
+            primary_constructor: None
         }
     }
 
@@ -118,6 +136,11 @@ impl Class {
         });
         self
     }
+
+    pub fn primary_constructor(mut self, primary_constructor: PrimaryConstructor) -> Self {
+        self.primary_constructor = Some(primary_constructor);
+        self
+    }
 }
 
 impl RenderKotlin for Class {
@@ -138,6 +161,11 @@ impl RenderKotlin for Class {
         }
         code.with_nested(self.name.render());
         code.with_space();
+
+        if let Some(primary_constructor) = &self.primary_constructor {
+            code.with_nested(primary_constructor.render());
+            code.with_space();
+        }
 
         code.with_curly_brackets(|class_body_code| {
             class_body_code.with_new_line();
@@ -182,7 +210,7 @@ impl RenderKotlin for Class {
 
 #[cfg(test)]
 mod tests {
-    use crate::spec::{PropertyGetter, PropertySetter, Type};
+    use crate::spec::{FunctionParameter, PropertyGetter, PropertySetter, Type};
     use super::*;
 
     #[test]
@@ -236,6 +264,65 @@ mod tests {
         assert_eq!(
             code.to_string(),
             "public enum class Person {\n\n    Alex(23),\n    Vova(23);}"
+        );
+    }
+
+    #[test]
+    fn test_with_constructor() {
+        let class = Class::new(Name::from("Person"))
+            .primary_constructor(
+                PrimaryConstructor::new()
+                    .property(
+                        Property::new(
+                            Name::from("name"),
+                            Type::string()
+                        )
+                    )
+                    .parameter(
+                        FunctionParameter::new(
+                            Name::from("age"),
+                            Type::int()
+                        )
+                    )
+            );
+
+        assert_eq!(
+            class.render().to_string(),
+            "public final class Person constructor(public final val name: kotlin.String, age: kotlin.Int) {\n\n}"
+        );
+    }
+
+    #[test]
+    fn test_with_empty_constructor() {
+        let class = Class::new(Name::from("Person"))
+            .primary_constructor(
+                PrimaryConstructor::new()
+            );
+
+        assert_eq!(
+            class.render().to_string(),
+            "public final class Person constructor() {\n\n}"
+        );
+    }
+
+    #[test]
+    fn test_data_class() {
+        let class = Class::new_data_class(Name::from("Person"))
+            .primary_constructor(
+                PrimaryConstructor::new()
+                    .property(
+                        Property::new(
+                            Name::from("name"),
+                            Type::string()
+                        ).initializer(
+                            CodeBlock::atom("\"\"")
+                        )
+                    )
+            );
+
+        assert_eq!(
+            class.render().to_string(),
+            "public data class Person constructor(public final val name: kotlin.String = \"\") {\n\n}"
         );
     }
 }

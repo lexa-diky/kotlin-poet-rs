@@ -11,6 +11,7 @@ pub enum ClassInheritanceModifier {
     Sealed,
     Object,
     Enum,
+    Data
 }
 
 impl RenderKotlin for ClassInheritanceModifier {
@@ -22,7 +23,8 @@ impl RenderKotlin for ClassInheritanceModifier {
             ClassInheritanceModifier::Sealed => tokens::keyword::SEALED,
             ClassInheritanceModifier::Interface => tokens::keyword::INTERFACE,
             ClassInheritanceModifier::Object => tokens::keyword::OBJECT,
-            ClassInheritanceModifier::Enum => tokens::keyword::ENUM
+            ClassInheritanceModifier::Enum => tokens::keyword::ENUM,
+            ClassInheritanceModifier::Data => tokens::keyword::DATA
         };
 
         CodeBlock::atom(text)

@@ -2,7 +2,7 @@ use std::path::Path;
 use std::str::FromStr;
 
 use kotlin_poet_rs::io::RenderKotlin;
-use kotlin_poet_rs::spec::{AccessModifier, Class, ClassInheritanceModifier, CodeBlock, Function, KotlinFile, MemberInheritanceModifier, Name, Package, Property, PropertyGetter, PropertySetter, Type};
+use kotlin_poet_rs::spec::{AccessModifier, Class, ClassInheritanceModifier, CodeBlock, Function, FunctionParameter, KotlinFile, MemberInheritanceModifier, Name, Package, Property, PropertyGetter, PropertySetter, Type};
 
 #[test]
 fn generic_test() {
@@ -26,7 +26,7 @@ fn generic_test() {
         .inline(true)
         .access_modifier(AccessModifier::Private)
         .inheritance_modifier(MemberInheritanceModifier::Abstract)
-        .parameter(Name::from("text"), Type::string())
+        .parameter(FunctionParameter::new(Name::from("args"), Type::array(Type::string())))
         .returns(Type::array(Type::string()))
         .receiver(Type::int())
         .body(CodeBlock::statement("val a = 2"));

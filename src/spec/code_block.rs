@@ -15,7 +15,7 @@ pub enum CodeBlockNode {
 /// Plain list of nodes that can be rendered to a Kotlin code.
 #[derive(Debug, PartialEq, Clone)]
 pub struct CodeBlock {
-    nodes: Vec<CodeBlockNode>,
+    pub(crate) nodes: Vec<CodeBlockNode>,
 }
 
 impl CodeBlock {

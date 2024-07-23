@@ -3,17 +3,57 @@ use crate::spec::{AccessModifier, CodeBlock, MemberInheritanceModifier, Name, Ty
 use crate::tokens;
 
 #[derive(Debug, Clone)]
+pub struct FunctionParameter {
+    name: Name,
+    parameter_type: Type,
+    default_value: Option<CodeBlock>,
+}
+
+impl RenderKotlin for FunctionParameter {
+    fn render(&self) -> CodeBlock {
+        let mut block = CodeBlock::empty();
+        block.with_nested(self.name.render());
+        block.with_atom(tokens::COLON);
+        block.with_space();
+        block.with_nested(self.parameter_type.render());
+        if let Some(default_value) = &self.default_value {
+            block.with_space();
+            block.with_atom(tokens::ASSIGN);
+            block.with_space();
+            block.with_nested(default_value.clone());
+        }
+
+        block
+    }
+}
+
+impl FunctionParameter {
+    pub fn new(name: Name, parameter_type: Type) -> FunctionParameter {
+        FunctionParameter {
+            name,
+            parameter_type,
+            default_value: None,
+        }
+    }
+
+    pub fn default_value(mut self, default_value: CodeBlock) -> FunctionParameter {
+        self.default_value = Some(default_value);
+        self
+    }
+}
+
+#[derive(Debug, Clone)]
 pub struct Function {
     name: Name,
     access_modifier: AccessModifier,
-    parameters: Vec<(Name, Type)>,
+    parameters: Vec<FunctionParameter>,
     body: Option<CodeBlock>,
     returns: Type,
     receiver: Option<Type>,
     inheritance_modifier: MemberInheritanceModifier,
     is_suspended: bool,
     is_inline: bool,
-    is_operator: bool
+    is_operator: bool,
 }
 
 impl Function {
@@ -28,7 +68,7 @@ impl Function {
             inheritance_modifier: MemberInheritanceModifier::Final,
             is_suspended: false,
             is_inline: false,
-            is_operator: false
+            is_operator: false,
         }
     }
 
@@ -42,8 +82,8 @@ impl Function {
         self
     }
 
-    pub fn parameter(mut self, name: Name, parameter: Type) -> Function {
-        self.parameters.push((name, parameter));
+    pub fn parameter(mut self, parameter: FunctionParameter) -> Function {
+        self.parameters.push(parameter);
         self
     }
 
@@ -75,17 +115,6 @@ impl Function {
     pub fn inline(mut self, flag: bool) -> Function {
         self.is_inline = flag;
         self
-    }
-}
-
-impl RenderKotlin for (Name, Type) {
-    fn render(&self) -> CodeBlock {
-        let mut block = CodeBlock::empty();
-        block.with_nested(self.0.render());
-        block.with_atom(tokens::COLON);
-        block.with_space();
-        block.with_nested(self.1.render());
-        block
     }
 }
 
@@ -149,14 +178,15 @@ impl RenderKotlin for Function {
 mod test {
     use crate::io::RenderKotlin;
     use crate::spec::{CodeBlock, Function, Name, Type};
+    use crate::spec::function::FunctionParameter;
 
     #[test]
-    fn it_works() {
+    fn test_function_with_multiple_parameters() {
         let block = Function::new(Name::from("main"))
             .receiver(Type::short())
             .access_modifier(crate::spec::AccessModifier::Public)
-            .parameter(Name::from("args"), Type::array(Type::string()))
-            .parameter(Name::from("args2"), Type::array(Type::int()))
+            .parameter(FunctionParameter::new(Name::from("args"), Type::array(Type::string())))
+            .parameter(FunctionParameter::new(Name::from("args2"), Type::array(Type::int())))
             .body(CodeBlock::statement("return 23"))
             .operator(true)
             .suspended(true)
@@ -165,6 +195,27 @@ mod test {
 
         assert_eq!(
             "public suspend inline operator fun kotlin.Short.main(args: kotlin.Array<kotlin.String>, args2: kotlin.Array<kotlin.Int>): kotlin.Unit {\n    return 23\n}",
+            block.render_string()
+        )
+    }
+
+    #[test]
+    fn test_function_with_parameter_default_value() {
+        let block = Function::new(Name::from("main"))
+            .receiver(Type::short())
+            .access_modifier(crate::spec::AccessModifier::Public)
+            .parameter(
+                FunctionParameter::new(Name::from("args"), Type::array(Type::string()))
+                    .default_value(CodeBlock::atom("\"hello world\""))
+            )
+            .body(CodeBlock::statement("return 23"))
+            .operator(true)
+            .suspended(true)
+            .inline(true);
+
+
+        assert_eq!(
+            "public suspend inline operator fun kotlin.Short.main(args: kotlin.Array<kotlin.String> = \"hello world\"): kotlin.Unit {\n    return 23\n}",
             block.render_string()
         )
     }

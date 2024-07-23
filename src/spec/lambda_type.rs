@@ -80,7 +80,7 @@ mod test {
         let lambda_type = LambdaType::new(Type::int())
             .parameter(Type::string())
             .parameter(Type::boolean());
-        assert_eq!(lambda_type.render_string_in_root(), "(kotlin.String, kotlin.Boolean) -> kotlin.Int");
+        assert_eq!(lambda_type.render_string(), "(kotlin.String, kotlin.Boolean) -> kotlin.Int");
     }
 
     #[test]
@@ -88,7 +88,7 @@ mod test {
         let lambda_type = LambdaType::new(Type::int())
             .receiver(Type::string())
             .parameter(Type::boolean());
-        assert_eq!(lambda_type.render_string_in_root(), "kotlin.String.(kotlin.Boolean) -> kotlin.Int");
+        assert_eq!(lambda_type.render_string(), "kotlin.String.(kotlin.Boolean) -> kotlin.Int");
     }
 
     #[test]
@@ -97,6 +97,6 @@ mod test {
             .parameter(Type::string())
             .parameter(Type::boolean())
             .suspended(true);
-        assert_eq!(lambda_type.render_string_in_root(), "suspend (kotlin.String, kotlin.Boolean) -> kotlin.Int");
+        assert_eq!(lambda_type.render_string(), "suspend (kotlin.String, kotlin.Boolean) -> kotlin.Int");
     }
 }

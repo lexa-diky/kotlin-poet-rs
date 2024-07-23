@@ -70,7 +70,7 @@ mod test {
             Name::from_str("Class").unwrap(),
         );
         let parameter = ClassLikeType::new(type_name);
-        assert_eq!(parameter.render_string_in_root(), "io.github.lexadiky.Class");
+        assert_eq!(parameter.render_string(), "io.github.lexadiky.Class");
     }
 
     #[test]
@@ -81,7 +81,7 @@ mod test {
             Name::from_str("Class").unwrap(),
         );
         let parameter = ClassLikeType::new(type_name).nullable(true);
-        assert_eq!(parameter.render_string_in_root(), "io.github.lexadiky.Class?");
+        assert_eq!(parameter.render_string(), "io.github.lexadiky.Class?");
     }
 
     #[test]
@@ -109,7 +109,7 @@ mod test {
                 )
             ));
         assert_eq!(
-            parameter.render_string_in_root(),
+            parameter.render_string(),
             "io.github.lexadiky.Class<io.github.lexadiky.Generic1, io.github.lexadiky.Generic2>"
         );
     }
@@ -130,6 +130,6 @@ mod test {
                     )
                 )
             )).nullable(true);
-        assert_eq!(parameter.render_string_in_root(), "io.github.lexadiky.Class<io.github.lexadiky.Generic>?");
+        assert_eq!(parameter.render_string(), "io.github.lexadiky.Class<io.github.lexadiky.Generic>?");
     }
 }

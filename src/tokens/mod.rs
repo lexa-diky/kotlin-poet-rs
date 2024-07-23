@@ -24,6 +24,8 @@ pub const COLON: &str = ":";
 pub const ASSIGN: &str = "=";
 /// ',' separates list of values
 pub const COMMA: &str = ",";
+/// ';' denotes statement end
+pub const SEMICOLON: &str = ";";
 /// '?' denotes nullability
 pub const QUESTION_MARK: &str = "?";
 /// '`' used to escape non JVM compatible identifiers
@@ -34,13 +36,22 @@ pub const ANGLE_BRACKET_LEFT: &str = "<";
 pub const ANGLE_BRACKET_RIGHT: &str = ">";
 /// '->' separates lambda arguments from body
 pub const ARROW: &str = "->";
+/// '{' opens new scopes and lambda body
 pub const CURLY_BRACKET_LEFT: &str = "{";
+/// '}' closes scopes and lambda body
 pub const CURLY_BRACKET_RIGHT: &str = "}";
+/// '(' opens parameter / argument lists
 pub const ROUND_BRACKET_LEFT: &str = "(";
+/// ')' opens parameter / argument lists
 pub const ROUND_BRACKET_RIGHT: &str = ")";
+
+// Special variables
+
+/// 'value' special argument inside property's `set(value) {...}` and `get() {...}`
 pub const CONV_VAR_VALUE: &str = "value";
+/// 'filed' special variable inside property's `set(value) {...}` and `get() {...}`
 pub const CONV_VAR_FIELD: &str = "field";
-pub const SEMICOLON: &str = ";";
+
 
 // CATEGORY
 pub const NAME_PROHIBITED_TOKENS: [&str; 1] = [SPACE];

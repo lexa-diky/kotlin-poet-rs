@@ -1,5 +1,7 @@
 use std::fmt::Display;
 
+/// Error type for semantic conversion errors.
+/// For example when converting [crate::spec::ClassLikeTypeName] to [crate::spec::KotlinFile].
 #[derive(Debug)]
 pub struct SemanticConversionError {
     message: String

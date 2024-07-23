@@ -65,7 +65,7 @@ mod test {
                 Name::from_str("Class").unwrap(),
             ],
         );
-        assert_eq!(class_like_type_name.render_string_in_root(), "io.github.lexadiky.My.Class");
+        assert_eq!(class_like_type_name.render_string(), "io.github.lexadiky.My.Class");
     }
 
     #[test]
@@ -75,6 +75,6 @@ mod test {
             package,
             Name::from_str("Class").unwrap(),
         );
-        assert_eq!(class_like_type_name.render_string_in_root(), "io.github.lexadiky.Class");
+        assert_eq!(class_like_type_name.render_string(), "io.github.lexadiky.Class");
     }
 }

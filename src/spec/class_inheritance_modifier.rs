@@ -36,9 +36,9 @@ mod test {
 
     #[test]
     fn test_render() {
-        assert_eq!(ClassInheritanceModifier::Open.render_string_in_root(), "open");
-        assert_eq!(ClassInheritanceModifier::Final.render_string_in_root(), "final");
-        assert_eq!(ClassInheritanceModifier::Abstract.render_string_in_root(), "abstract");
-        assert_eq!(ClassInheritanceModifier::Sealed.render_string_in_root(), "sealed");
+        assert_eq!(ClassInheritanceModifier::Open.render_string(), "open");
+        assert_eq!(ClassInheritanceModifier::Final.render_string(), "final");
+        assert_eq!(ClassInheritanceModifier::Abstract.render_string(), "abstract");
+        assert_eq!(ClassInheritanceModifier::Sealed.render_string(), "sealed");
     }
 }

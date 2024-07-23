@@ -48,12 +48,12 @@ mod test {
     #[test]
     fn test_name() {
         let name = Name::from_str("Foo").unwrap();
-        assert_eq!(name.render_string_in_root(), "Foo");
+        assert_eq!(name.render_string(), "Foo");
     }
 
     #[test]
     fn test_name_with_space() {
         let name = Name::from_str("Foo Bar").unwrap();
-        assert_eq!(name.render_string_in_root(), "`Foo Bar`");
+        assert_eq!(name.render_string(), "`Foo Bar`");
     }
 }

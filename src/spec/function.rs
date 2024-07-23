@@ -165,7 +165,7 @@ mod test {
 
         assert_eq!(
             "public suspend inline operator fun kotlin.Short.main(args: kotlin.Array<kotlin.String>, args2: kotlin.Array<kotlin.Int>): kotlin.Unit {\n    return 23\n}",
-            block.render_string_in_root()
+            block.render_string()
         )
     }
 }

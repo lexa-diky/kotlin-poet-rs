@@ -28,8 +28,8 @@ mod test {
 
     #[test]
     fn test_render() {
-        assert_eq!(MemberInheritanceModifier::Open.render_string_in_root(), "open");
-        assert_eq!(MemberInheritanceModifier::Final.render_string_in_root(), "final");
-        assert_eq!(MemberInheritanceModifier::Abstract.render_string_in_root(), "abstract");
+        assert_eq!(MemberInheritanceModifier::Open.render_string(), "open");
+        assert_eq!(MemberInheritanceModifier::Final.render_string(), "final");
+        assert_eq!(MemberInheritanceModifier::Abstract.render_string(), "abstract");
     }
 }

@@ -114,6 +114,6 @@ mod test {
     fn render_generic_parameter() {
         let name = Name::from_str("T").unwrap();
         let parameter = Type::Generic(name);
-        assert_eq!(parameter.render_string_in_root(), "T");
+        assert_eq!(parameter.render_string(), "T");
     }
 }

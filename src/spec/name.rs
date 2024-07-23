@@ -1,14 +1,15 @@
 use std::str::FromStr;
 
 use crate::io::RenderKotlin;
-use crate::tokens::NAME_PROHIBITED_TOKENS;
 use crate::spec::CodeBlock;
+use crate::tokens;
 use crate::util::SemanticConversionError;
 
 /// Kotlin identifier name, automatically escaped with backticks if it contains escapable tokens
 #[derive(Debug, PartialEq, Clone)]
 pub struct Name {
     value: String,
+    should_be_escaped: bool
 }
 
 /// Creates new [Name] from [&str], may panic if creates invalid name
@@ -24,9 +25,23 @@ impl FromStr for Name {
 
     // TODO add backtick escaping
     fn from_str(s: &str) -> Result<Self, Self::Err> {
+        if s.chars().any(|ch| tokens::NAME_DISALLOWED_TOKENS.contains(ch)) {
+            return Err(
+                SemanticConversionError::new(
+                    format!("`{} contains tokens not allowed in kotlin identifier names`", s)
+                        .as_str()
+                )
+            )
+        }
+
+        let should_be_escaped = s.chars().any(
+            |ch| tokens::NAME_ESCAPED_TOKENS.contains(ch)
+        );
+        
         Ok(
             Name {
-                value: s.to_string()
+                value: s.to_string(),
+                should_be_escaped
             }
         )
     }
@@ -34,10 +49,7 @@ impl FromStr for Name {
 
 impl RenderKotlin for Name {
     fn render(&self) -> CodeBlock {
-        let contains_prohibited_token = NAME_PROHIBITED_TOKENS.iter().any(
-            |it| self.value.contains(it)
-        );
-        if contains_prohibited_token {
+        if self.should_be_escaped {
             return CodeBlock::atom(format!("`{}`", self.value).as_str());
         }
         return CodeBlock::atom(self.value.as_str());
@@ -60,5 +72,17 @@ mod test {
     fn test_name_with_space() {
         let name = Name::from_str("Foo Bar").unwrap();
         assert_eq!(name.render_string(), "`Foo Bar`");
+    }
+
+    #[test]
+    fn test_name_with_parentheses() {
+        let name = Name::from_str("Foo()Bar").unwrap();
+        assert_eq!(name.render_string(), "`Foo()Bar`");
+    }
+
+    #[test]
+    fn test_name_with_disallowed_characters() {
+        let name = Name::from_str("Foo/Bar");
+        assert!(matches!(name, Err(_)));
     }
 }

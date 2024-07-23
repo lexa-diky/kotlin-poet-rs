@@ -54,7 +54,8 @@ pub const CONV_VAR_FIELD: &str = "field";
 
 
 // CATEGORY
-pub const NAME_PROHIBITED_TOKENS: [&str; 1] = [SPACE];
+pub const NAME_ESCAPED_TOKENS: &str = " -!\"#$%^&()*+,-=?@^_{|}~";
+pub const NAME_DISALLOWED_TOKENS: &str = ".:/\\[]<>";
 
 pub mod keyword {
     pub const CLASS: &str = "class";

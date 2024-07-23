@@ -3,21 +3,26 @@ use std::str::FromStr;
 use crate::io::RenderKotlin;
 use crate::tokens::NAME_PROHIBITED_TOKENS;
 use crate::spec::CodeBlock;
+use crate::util::SemanticConversionError;
 
+/// Kotlin identifier name, automatically escaped with backticks if it contains escapable tokens
 #[derive(Debug, PartialEq, Clone)]
 pub struct Name {
     value: String,
 }
 
+/// Creates new [Name] from [&str], may panic if creates invalid name
 impl From<&str> for Name {
     fn from(value: &str) -> Self {
         Name::from_str(value).unwrap()
     }
 }
 
+/// Creates new [Name] from [&str]
 impl FromStr for Name {
-    type Err = ();
+    type Err = SemanticConversionError;
 
+    // TODO add backtick escaping
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Ok(
             Name {

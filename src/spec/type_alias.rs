@@ -2,6 +2,7 @@ use crate::io::RenderKotlin;
 use crate::spec::{CodeBlock, Name, Type};
 use crate::tokens;
 
+/// Kotlin's `typealias` declaration
 #[derive(Debug, Clone)]
 pub struct TypeAlias {
     pub name: Name,
@@ -11,7 +12,8 @@ pub struct TypeAlias {
 
 impl TypeAlias {
 
-    pub fn new(name: Name, actual: Type) -> Self {
+    /// Creates [TypeAlias] binding [name] to [actual] [Type]
+    pub fn new(name: Name, actual: Type) -> TypeAlias {
         TypeAlias {
             name,
             generic_parameters: Vec::new(),
@@ -19,6 +21,7 @@ impl TypeAlias {
         }
     }
 
+    /// Adds generic parameter to the type alias
     pub fn generic_parameter(mut self, name: Name) -> Self {
         self.generic_parameters.push(name);
         self

@@ -3,17 +3,17 @@ use crate::spec::{CodeBlock, Type};
 use crate::tokens;
 
 #[derive(PartialEq, Debug, Clone)]
-pub struct LambdaType {
+pub struct FunctionType {
     receiver: Box<Option<Type>>,
     parameters: Vec<Type>,
     returns: Box<Type>,
     is_suspended: bool
 }
 
-impl LambdaType {
+impl FunctionType {
 
     pub fn new(returns: Type) -> Self {
-        LambdaType {
+        FunctionType {
             receiver: Box::new(None),
             parameters: Vec::new(),
             returns: Box::new(returns),
@@ -42,7 +42,7 @@ impl LambdaType {
     }
 }
 
-impl RenderKotlin for LambdaType {
+impl RenderKotlin for FunctionType {
     fn render(&self) -> CodeBlock {
         let mut lambda = CodeBlock::empty();
         if let Some(receiver) = &*self.receiver {
@@ -73,11 +73,11 @@ impl RenderKotlin for LambdaType {
 mod test {
 
     use crate::io::RenderKotlin;
-    use crate::spec::{LambdaType, Type};
+    use crate::spec::{FunctionType, Type};
 
     #[test]
     fn render_lambda_type() {
-        let lambda_type = LambdaType::new(Type::int())
+        let lambda_type = FunctionType::new(Type::int())
             .parameter(Type::string())
             .parameter(Type::boolean());
         assert_eq!(lambda_type.render_string(), "(kotlin.String, kotlin.Boolean) -> kotlin.Int");
@@ -85,7 +85,7 @@ mod test {
 
     #[test]
     fn render_lambda_type_with_receiver() {
-        let lambda_type = LambdaType::new(Type::int())
+        let lambda_type = FunctionType::new(Type::int())
             .receiver(Type::string())
             .parameter(Type::boolean());
         assert_eq!(lambda_type.render_string(), "kotlin.String.(kotlin.Boolean) -> kotlin.Int");
@@ -93,7 +93,7 @@ mod test {
 
     #[test]
     fn render_lambda_type_with_suspended() {
-        let lambda_type = LambdaType::new(Type::int())
+        let lambda_type = FunctionType::new(Type::int())
             .parameter(Type::string())
             .parameter(Type::boolean())
             .suspended(true);

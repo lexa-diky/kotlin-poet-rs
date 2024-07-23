@@ -2,10 +2,14 @@ use crate::io::RenderKotlin;
 use crate::spec::CodeBlock;
 use crate::tokens;
 
+/// Inheritance modifiers applicable to class / file members
 #[derive(Debug, Clone)]
 pub enum MemberInheritanceModifier {
+    /// `open` modifier
     Open,
+    /// `final` modifier
     Final,
+    /// `abstract` modifier
     Abstract,
 }
 

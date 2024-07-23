@@ -23,7 +23,6 @@ impl From<&str> for Name {
 impl FromStr for Name {
     type Err = SemanticConversionError;
 
-    // TODO add backtick escaping
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         if s.chars().any(|ch| tokens::NAME_DISALLOWED_TOKENS.contains(ch)) {
             return Err(

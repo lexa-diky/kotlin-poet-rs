@@ -12,28 +12,3 @@ pub trait RenderKotlin {
         self.render().to_string()
     }
 }
-
-#[derive(Copy, Clone)]
-pub struct RenderContext {
-    indent_level: usize,
-}
-
-impl Default for RenderContext {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl RenderContext {
-    pub fn new() -> RenderContext {
-        RenderContext { indent_level: 0 }
-    }
-
-    pub fn indent(&self) -> RenderContext {
-        RenderContext { indent_level: self.indent_level + 1 }
-    }
-
-    pub fn level(&self) -> usize {
-        self.indent_level
-    }
-}

@@ -1,32 +1,28 @@
 use crate::io::RenderKotlin;
-use crate::spec::{Class, ClassLikeTypeName, CodeBlock, Function, Import, Name, Package, Property, TypeAlias};
+use crate::spec::{Class, ClassLikeTypeName, CodeBlock, Function, Import, Package, Property, TypeAlias};
 use crate::tokens;
-use crate::util::SemanticConversionError;
 
 #[derive(Debug, Clone)]
 enum KotlinFileNode {
     Property(Property),
     Function(Function),
     TypeAlias(TypeAlias),
-    Class(Class)
+    Class(Class),
 }
 
 #[derive(Debug, Clone)]
 pub struct KotlinFile {
-    name: Name,
     package: Option<Package>,
     imports: Vec<Import>,
-    nodes: Vec<KotlinFileNode>
+    nodes: Vec<KotlinFileNode>,
 }
 
 impl KotlinFile {
-
-    pub fn new(package: Package, name: Name) -> Self {
+    pub fn new(package: Package) -> Self {
         KotlinFile {
-            name,
             package: Some(package),
             imports: Vec::new(),
-            nodes: Vec::new()
+            nodes: Vec::new(),
         }
     }
 
@@ -56,24 +52,10 @@ impl KotlinFile {
     }
 }
 
-impl TryFrom<ClassLikeTypeName> for KotlinFile {
-    type Error = SemanticConversionError;
-
-    fn try_from(value: ClassLikeTypeName) -> Result<Self, Self::Error> {
+impl From<ClassLikeTypeName> for KotlinFile {
+    fn from(value: ClassLikeTypeName) -> Self {
         let package = value.package;
-        let names = value.names;
-
-        if names.len() != 1 {
-            return Err(
-                SemanticConversionError::new(
-                    "ClassLikeTypeName that is converted to Kotlin file name must have exactly one name"
-                )
-            )
-        }
-
-        Ok(
-            KotlinFile::new(package, names.first().unwrap().clone())
-        )
+        KotlinFile::new(package)
     }
 }
 

@@ -1,7 +1,7 @@
 use std::str::FromStr;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use kotlin_poet_rs::io::RenderKotlin;
-use kotlin_poet_rs::spec::{AccessModifier, CodeBlock, Function, FunctionParameter, KotlinFile, MemberInheritanceModifier, Name, Package, Property, PropertyGetter, PropertySetter, Type};
+use kotlin_poet_rs::spec::{AccessModifier, Class, CodeBlock, Function, FunctionParameter, KotlinFile, MemberInheritanceModifier, Name, Package, Property, PropertyGetter, PropertySetter, Type};
 
 fn render_generic_file() -> String {
     let property = Property::new(
@@ -30,23 +30,33 @@ fn render_generic_file() -> String {
         .body(CodeBlock::statement("val a = 2"));
 
 
+    let class = Class::new(Name::from("Benched"))
+        .function(function.clone())
+        .function(function.clone())
+        .property(property.clone());
+
+
     let file = KotlinFile::new(
         Package::from_str("a.b.c").unwrap(),
-        Name::from("Test"),
     )
         .property(property)
-        .function(function);
+        .function(function)
+        .class(class);
 
     file.render().to_string()
 }
 
 fn criterion_benchmark(c: &mut Criterion) {
     c.bench_function("generic file", |b| b.iter(||
-    black_box(
-        render_generic_file()
-    )
-    ));
+        black_box(
+            render_generic_file()
+         )),
+    );
 }
 
-criterion_group!(benches, criterion_benchmark);
+criterion_group! {
+    name = benches;
+    config = Criterion::default();
+    targets = criterion_benchmark
+}
 criterion_main!(benches);

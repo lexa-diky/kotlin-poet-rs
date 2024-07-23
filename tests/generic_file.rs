@@ -40,7 +40,6 @@ fn generic_test() {
 
     let file = KotlinFile::new(
         Package::from_str("a.b.c").unwrap(),
-        Name::from("Test"),
     ).property(property)
         .function(function)
         .class(class);

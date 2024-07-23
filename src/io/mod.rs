@@ -2,4 +2,4 @@ mod code_buffer;
 mod render;
 
 pub use code_buffer::CodeBuffer;
-pub use render::{RenderContext, RenderKotlin};
+pub use render::{RenderKotlin};

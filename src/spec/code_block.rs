@@ -148,7 +148,7 @@ impl CodeBlock {
     }
 
     /// Adds all elements from [elements] with comma separation, except for last one
-    pub fn with_comma_separated<F>(&mut self, elements: &Vec<F>)
+    pub fn with_comma_separated<F>(&mut self, elements: &[F])
     where
         F: RenderKotlin,
     {
@@ -173,7 +173,9 @@ impl CodeBlock {
             match node {
                 CodeBlockNode::Atom(buffer) => {
                     if matches!(root_buffer.last_char(), Some(tokens::NEW_LINE_CH)) {
-                        root_buffer.push(CodeBlock::mk_indent(indent).as_str());
+                        for _ in 0..indent {
+                            root_buffer.push(tokens::INDENT)
+                        }
                     }
                     root_buffer.push(buffer.as_string().as_str());
                 }
@@ -196,10 +198,6 @@ impl CodeBlock {
             }
         }
         root_buffer.as_string()
-    }
-
-    fn mk_indent(value: usize) -> String {
-        tokens::INDENT.repeat(value)
     }
 }
 

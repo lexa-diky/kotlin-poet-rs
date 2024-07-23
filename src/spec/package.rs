@@ -2,6 +2,7 @@ use std::str::FromStr;
 use crate::io::{RenderKotlin};
 use crate::tokens::DOT;
 use crate::spec::{CodeBlock, Name};
+use crate::util::SemanticConversionError;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct Package {
@@ -15,11 +16,11 @@ impl Package {
 }
 
 impl FromStr for Package {
-    type Err = ();
+    type Err = SemanticConversionError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let parts = s.split(DOT)
-            .map(Name::from_str).collect::<Result<Vec<_>, ()>>()?;
+            .map(Name::from_str).collect::<Result<Vec<_>, SemanticConversionError>>()?;
         Ok(Package::from(parts))
     }
 }

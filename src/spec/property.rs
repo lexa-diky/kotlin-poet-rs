@@ -3,12 +3,42 @@ use crate::spec::{AccessModifier, CodeBlock, MemberInheritanceModifier, Name, Ty
 use crate::tokens;
 
 #[derive(Debug, Clone)]
+enum PropertyInitializer {
+    Value(CodeBlock),
+    Delegate(CodeBlock),
+}
+
+impl RenderKotlin for PropertyInitializer {
+
+    fn render(&self) -> CodeBlock {
+        let mut block = CodeBlock::empty();
+        match self {
+            PropertyInitializer::Value(initializer) => {
+                block.with_space();
+                block.with_atom(tokens::ASSIGN);
+                block.with_space();
+                block.with_nested(initializer.clone())
+            }
+            PropertyInitializer::Delegate(delegate) => {
+                block.with_space();
+                block.with_atom(tokens::keyword::BY);
+                block.with_space();
+                block.with_nested(delegate.clone())
+            }
+        }
+
+        block
+    }
+}
+
+/// Represents a [Kotlin property](https://kotlinlang.org/docs/properties.html)
+#[derive(Debug, Clone)]
 pub struct Property {
     name: Name,
     returns: Type,
     inheritance_modifier: MemberInheritanceModifier,
     access_modifier: AccessModifier,
-    initializer: Option<CodeBlock>,
+    initializer: Option<PropertyInitializer>,
     getter: Option<PropertyGetter>,
     setter: Option<PropertySetter>,
     is_mutable: bool,
@@ -96,37 +126,52 @@ impl Property {
         }
     }
 
+    /// Sets [AccessModifier]
     pub fn access_modifier(mut self, access_modifier: AccessModifier) -> Property {
         self.access_modifier = access_modifier;
         self
     }
 
+    /// Sets [MemberInheritanceModifier]
     pub fn inheritance_modifier(mut self, inheritance_modifier: MemberInheritanceModifier) -> Property {
         self.inheritance_modifier = inheritance_modifier;
         self
     }
 
+    /// Sets property initializer `val some = <initializer>`
+    /// Exclusive with [Property::delegate]
     pub fn initializer(mut self, initializer: CodeBlock) -> Property {
-        self.initializer = Some(initializer);
+        self.initializer = Some(PropertyInitializer::Value(initializer));
         self
     }
 
+    /// Sets property delegate `val some by <delegate>`
+    /// Exclusive with [Property::initializer]
+    pub fn delegate(mut self, delegate: CodeBlock) -> Property {
+        self.initializer = Some(PropertyInitializer::Delegate(delegate));
+        self
+    }
+
+    /// Sets [PropertyGetter]
     pub fn getter(mut self, getter: PropertyGetter) -> Property {
         self.getter = Some(getter);
         self
     }
 
+    /// Sets [PropertySetter]
     pub fn setter(mut self, setter: PropertySetter) -> Property {
         self.setter = Some(setter);
         self.is_mutable = true;
         self
     }
 
+    /// Sets property mutability, a.k.a `val` or `var`
     pub fn mutable(mut self, flag: bool) -> Property {
         self.is_mutable = flag;
         self
     }
 
+    /// Adds `const` keyword to property
     pub fn constant(mut self, flag: bool) -> Property {
         self.is_const = flag;
         self
@@ -159,10 +204,7 @@ impl RenderKotlin for Property {
         block.with_nested(self.returns.render());
         block.with_indent();
         if let Some(initializer) = &self.initializer {
-            block.with_space();
-            block.with_atom(tokens::ASSIGN);
-            block.with_space();
-            block.with_nested(initializer.clone())
+            block.with_nested(initializer.render());
         }
         if let Some(setter) = &self.setter {
             block.with_nested(setter.render());
@@ -209,6 +251,18 @@ mod test {
 
         assert_eq!(
             "public final const val name: kotlin.String = \"Alex\"",
+            property.render().to_string()
+        )
+    }
+
+    #[test]
+    fn test_delegate() {
+        let property = Property::new(Name::from("name"), Type::string())
+            .constant(true)
+            .delegate(CodeBlock::atom("lazy { \"Alex\" }"));
+
+        assert_eq!(
+            "public final const val name: kotlin.String by lazy { \"Alex\" }",
             property.render().to_string()
         )
     }

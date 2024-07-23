@@ -7,7 +7,8 @@ enum ClassMemberNode {
     Property(Property),
     Function(Function),
     Subclass(Class),
-    SecondaryConstructor(SecondaryConstructor)
+    SecondaryConstructor(SecondaryConstructor),
+    InitBlock(CodeBlock)
 }
 
 #[derive(Debug, Clone)]
@@ -147,6 +148,11 @@ impl Class {
         self.member_nodes.push(ClassMemberNode::SecondaryConstructor(secondary_constructor));
         self
     }
+
+    pub fn init(mut self, block: CodeBlock) -> Self {
+        self.member_nodes.push(ClassMemberNode::InitBlock(block));
+        self
+    }
 }
 
 impl RenderKotlin for Class {
@@ -208,6 +214,13 @@ impl RenderKotlin for Class {
                     }
                     ClassMemberNode::SecondaryConstructor(secondary_constructor) => {
                         class_body_code.with_nested(secondary_constructor.render());
+                        class_body_code.with_new_line();
+                    }
+                    ClassMemberNode::InitBlock(code) => {
+                        class_body_code.with_atom(tokens::keyword::INIT);
+                        class_body_code.with_curly_brackets(|block| {
+                            block.with_nested(code.clone());
+                        });
                         class_body_code.with_new_line();
                     }
                 }
@@ -312,6 +325,19 @@ mod tests {
         assert_eq!(
             class.render().to_string(),
             "public final class Person public constructor() {\n\n}"
+        );
+    }
+
+    #[test]
+    fn test_with_init_block() {
+        let class = Class::new(Name::from("Person"))
+            .init(
+                CodeBlock::statement("println(42)")
+            );
+
+        assert_eq!(
+            class.render().to_string(),
+            "public final class Person {\n\n    init{\n        println(42)\n    }\n}"
         );
     }
 

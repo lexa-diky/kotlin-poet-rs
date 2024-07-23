@@ -1,5 +1,5 @@
 use crate::io::RenderKotlin;
-use crate::spec::{CodeBlock, FunctionParameter, Property};
+use crate::spec::{AccessModifier, CodeBlock, FunctionParameter, Property};
 use crate::tokens;
 
 #[derive(Debug, Clone)]
@@ -21,12 +21,14 @@ impl RenderKotlin for PrimaryConstructorParameter {
 #[derive(Debug, Clone)]
 pub struct PrimaryConstructor {
     arguments: Vec<PrimaryConstructorParameter>,
+    access_modifier: AccessModifier
 }
 
 impl PrimaryConstructor {
     pub fn new() -> PrimaryConstructor {
         PrimaryConstructor {
-            arguments: Vec::new()
+            arguments: Vec::new(),
+            access_modifier: AccessModifier::Public
         }
     }
 
@@ -39,11 +41,18 @@ impl PrimaryConstructor {
         self.arguments.push(PrimaryConstructorParameter::PropertyParameter(property));
         self
     }
+
+    pub fn access_modifier(mut self, access_modifier: AccessModifier) -> PrimaryConstructor {
+        self.access_modifier = access_modifier;
+        self
+    }
 }
 
 impl RenderKotlin for PrimaryConstructor {
     fn render(&self) -> CodeBlock {
         let mut block = CodeBlock::empty();
+        block.with_nested(self.access_modifier.render());
+        block.with_space();
         block.with_atom(tokens::keyword::CONSTRUCTOR);
         block.with_round_brackets(|params_block| {
             params_block.with_comma_separated(&self.arguments)
@@ -56,7 +65,7 @@ impl RenderKotlin for PrimaryConstructor {
 #[cfg(test)]
 mod tests {
     use crate::io::RenderKotlin;
-    use crate::spec::{CodeBlock, FunctionParameter, PrimaryConstructor, Property, Type};
+    use crate::spec::{AccessModifier, CodeBlock, FunctionParameter, PrimaryConstructor, Property, Type};
 
     #[test]
     fn primary_constructor_test() {
@@ -82,7 +91,22 @@ mod tests {
 
         assert_eq!(
             primary_constructor.render().to_string(),
-            "constructor(public final val name: kotlin.String = \"\", age: kotlin.Int)"
+            "public constructor(public final val name: kotlin.String = \"\", age: kotlin.Int)"
+        );
+    }
+
+    #[test]
+    fn test_private_constructor() {
+        let primary_constructor = PrimaryConstructor::new()
+            .access_modifier(AccessModifier::Private);
+
+        for node in primary_constructor.render().nodes {
+            println!("{:?}", node)
+        }
+
+        assert_eq!(
+            primary_constructor.render().to_string(),
+            "private constructor()"
         );
     }
 }

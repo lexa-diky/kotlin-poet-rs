@@ -288,7 +288,7 @@ mod tests {
 
         assert_eq!(
             class.render().to_string(),
-            "public final class Person constructor(public final val name: kotlin.String, age: kotlin.Int) {\n\n}"
+            "public final class Person public constructor(public final val name: kotlin.String, age: kotlin.Int) {\n\n}"
         );
     }
 
@@ -301,7 +301,7 @@ mod tests {
 
         assert_eq!(
             class.render().to_string(),
-            "public final class Person constructor() {\n\n}"
+            "public final class Person public constructor() {\n\n}"
         );
     }
 
@@ -322,7 +322,7 @@ mod tests {
 
         assert_eq!(
             class.render().to_string(),
-            "public data class Person constructor(public final val name: kotlin.String = \"\") {\n\n}"
+            "public data class Person public constructor(public final val name: kotlin.String = \"\") {\n\n}"
         );
     }
 }

@@ -1,14 +1,41 @@
 use crate::io::RenderKotlin;
-use crate::spec::{AccessModifier, Argument, ClassInheritanceModifier, CodeBlock, Function, Name, PrimaryConstructor, Property, SecondaryConstructor};
+use crate::spec::{AccessModifier, Argument, ClassInheritanceModifier, CodeBlock, CompanionObject, Function, Name, PrimaryConstructor, Property, SecondaryConstructor};
 use crate::tokens;
 
 #[derive(Debug, Clone)]
-enum ClassMemberNode {
+pub(crate) enum ClassMemberNode {
     Property(Property),
     Function(Function),
     Subclass(Class),
     SecondaryConstructor(SecondaryConstructor),
-    InitBlock(CodeBlock)
+    InitBlock(CodeBlock),
+}
+
+impl RenderKotlin for ClassMemberNode {
+    fn render(&self) -> CodeBlock {
+        let mut class_body_code = CodeBlock::empty();
+        match self {
+            ClassMemberNode::Property(property) => {
+                class_body_code.with_nested(property.render());
+            },
+            ClassMemberNode::Function(function) => {
+                class_body_code.with_nested(function.render());
+            },
+            ClassMemberNode::Subclass(subclass) => {
+                class_body_code.with_nested(subclass.render());
+            }
+            ClassMemberNode::SecondaryConstructor(secondary_constructor) => {
+                class_body_code.with_nested(secondary_constructor.render());
+            }
+            ClassMemberNode::InitBlock(code) => {
+                class_body_code.with_atom(tokens::keyword::INIT);
+                class_body_code.with_curly_brackets(|block| {
+                    block.with_nested(code.clone());
+                });
+            }
+        }
+        class_body_code
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -25,6 +52,7 @@ pub struct Class {
     member_nodes: Vec<ClassMemberNode>,
     enum_instances: Vec<EnumInstance>,
     primary_constructor: Option<PrimaryConstructor>,
+    companion_object: Option<CompanionObject>
 }
 
 impl Class {
@@ -36,7 +64,8 @@ impl Class {
             inheritance_modifier: ClassInheritanceModifier::Final,
             member_nodes: Vec::new(),
             enum_instances: Vec::new(),
-            primary_constructor: None
+            primary_constructor: None,
+            companion_object: None
         }
     }
 
@@ -47,7 +76,8 @@ impl Class {
             inheritance_modifier: ClassInheritanceModifier::Interface,
             member_nodes: Vec::new(),
             enum_instances: Vec::new(),
-            primary_constructor: None
+            primary_constructor: None,
+            companion_object: None
         }
     }
 
@@ -58,7 +88,8 @@ impl Class {
             inheritance_modifier: ClassInheritanceModifier::Abstract,
             member_nodes: Vec::new(),
             enum_instances: Vec::new(),
-            primary_constructor: None
+            primary_constructor: None,
+            companion_object: None
         }
     }
 
@@ -69,7 +100,8 @@ impl Class {
             inheritance_modifier: ClassInheritanceModifier::Object,
             member_nodes: Vec::new(),
             enum_instances: Vec::new(),
-            primary_constructor: None
+            primary_constructor: None,
+            companion_object: None
         }
     }
 
@@ -80,7 +112,8 @@ impl Class {
             inheritance_modifier: ClassInheritanceModifier::Sealed,
             member_nodes: Vec::new(),
             enum_instances: Vec::new(),
-            primary_constructor: None
+            primary_constructor: None,
+            companion_object: None
         }
     }
 
@@ -91,7 +124,8 @@ impl Class {
             inheritance_modifier: ClassInheritanceModifier::Enum,
             member_nodes: Vec::new(),
             enum_instances: Vec::new(),
-            primary_constructor: None
+            primary_constructor: None,
+            companion_object: None
         }
     }
 
@@ -102,7 +136,8 @@ impl Class {
             inheritance_modifier: ClassInheritanceModifier::Data,
             member_nodes: Vec::new(),
             enum_instances: Vec::new(),
-            primary_constructor: None
+            primary_constructor: None,
+            companion_object: None
         }
     }
 
@@ -153,6 +188,11 @@ impl Class {
         self.member_nodes.push(ClassMemberNode::InitBlock(block));
         self
     }
+
+    pub fn companion_object(mut self, companion_object: CompanionObject) -> Self {
+        self.companion_object = Some(companion_object);
+        self
+    }
 }
 
 impl RenderKotlin for Class {
@@ -199,31 +239,13 @@ impl RenderKotlin for Class {
             }
 
             for node in &self.member_nodes {
-                match node {
-                    ClassMemberNode::Property(property) => {
-                        class_body_code.with_nested(property.render());
-                        class_body_code.with_new_line();
-                    },
-                    ClassMemberNode::Function(function) => {
-                        class_body_code.with_nested(function.render());
-                        class_body_code.with_new_line();
-                    },
-                    ClassMemberNode::Subclass(subclass) => {
-                        class_body_code.with_nested(subclass.render());
-                        class_body_code.with_new_line();
-                    }
-                    ClassMemberNode::SecondaryConstructor(secondary_constructor) => {
-                        class_body_code.with_nested(secondary_constructor.render());
-                        class_body_code.with_new_line();
-                    }
-                    ClassMemberNode::InitBlock(code) => {
-                        class_body_code.with_atom(tokens::keyword::INIT);
-                        class_body_code.with_curly_brackets(|block| {
-                            block.with_nested(code.clone());
-                        });
-                        class_body_code.with_new_line();
-                    }
-                }
+                class_body_code.with_nested(node.render());
+                class_body_code.with_new_line();
+            }
+
+            if let Some(companion_object) = &self.companion_object {
+                class_body_code.with_nested(companion_object.render());
+                class_body_code.with_new_line();
             }
         });
 

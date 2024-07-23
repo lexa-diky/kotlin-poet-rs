@@ -94,4 +94,6 @@ pub mod keyword {
     pub const CONSTRUCTOR: &str = "constructor";
     /// 'init' keyword, used for initializing class after constructor call
     pub const INIT: &str = "init";
+    /// `companion`
+    pub const COMPANION: &str = "companion";
 }

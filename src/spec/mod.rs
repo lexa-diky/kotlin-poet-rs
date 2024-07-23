@@ -17,6 +17,7 @@ mod file;
 mod argument;
 mod primary_constructor;
 mod secondary_constructor;
+mod companion_object;
 
 pub use package::Package;
 pub use class_like_type_name::ClassLikeTypeName;
@@ -37,3 +38,4 @@ pub use file::KotlinFile;
 pub use argument::Argument;
 pub use primary_constructor::PrimaryConstructor;
 pub use secondary_constructor::SecondaryConstructor;
+pub use companion_object::CompanionObject;

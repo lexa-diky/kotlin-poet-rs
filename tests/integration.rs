@@ -2,10 +2,10 @@ use std::path::Path;
 use std::str::FromStr;
 
 use kotlin_poet_rs::io::RenderKotlin;
-use kotlin_poet_rs::spec::{AccessModifier, Class, ClassInheritanceModifier, CodeBlock, Function, FunctionParameter, KotlinFile, MemberInheritanceModifier, Name, Package, Property, PropertyGetter, PropertySetter, Type};
+use kotlin_poet_rs::spec::{AccessModifier, Class, ClassInheritanceModifier, CodeBlock, CompanionObject, Function, FunctionParameter, KotlinFile, MemberInheritanceModifier, Name, Package, PrimaryConstructor, Property, PropertyGetter, PropertySetter, Type};
 
 #[test]
-fn generic_test() {
+fn generic_file() {
     let property = Property::new(
         Name::from("name"),
         Type::string(),
@@ -47,6 +47,48 @@ fn generic_test() {
     assert_rendered(
         "tests/samples/generic_file.kt",
         &file.render(),
+    )
+}
+
+#[test]
+fn class_with_companion_object() {
+    let class = Class::new(Name::from("Person"))
+        .primary_constructor(
+            PrimaryConstructor::new()
+                .property(
+                    Property::new(
+                        Name::from("name"),
+                        Type::string(),
+                    )
+                )
+        )
+        .companion_object(
+            CompanionObject::new()
+                .property(
+                    Property::new(
+                        Name::from("nameCmp"),
+                        Type::string(),
+                    ).initializer(
+                        CodeBlock::atom("\"Alex\"")
+                    )
+                )
+                .function(
+                    Function::new(Name::from("printName"))
+                        .parameter(
+                            FunctionParameter::new(
+                                Name::from("name"),
+                                Type::string(),
+                            )
+                        )
+                        .body(
+                            CodeBlock::statement("println(nameCmp)")
+                        )
+                )
+        );
+
+    assert_rendered(
+        "tests/samples/class_with_companion_object.kt",
+        &&class.render(),
     )
 }
 

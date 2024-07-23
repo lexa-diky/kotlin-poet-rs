@@ -4,12 +4,14 @@ use crate::tokens::DOT;
 use crate::spec::{CodeBlock, Name};
 use crate::util::SemanticConversionError;
 
+/// Fully qualified package name, may be parsed from [&str]
 #[derive(Debug, PartialEq, Clone)]
 pub struct Package {
     parts: Vec<Name>,
 }
 
 impl Package {
+    /// Creates new package from [Name] parts
     pub fn from(names: Vec<Name>) -> Package {
         Package { parts: names }
     }

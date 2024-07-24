@@ -1,6 +1,8 @@
+use std::str::FromStr;
 use crate::io::{RenderKotlin};
 use crate::spec::class_like_type::ClassLikeType;
 use crate::spec::{ClassLikeTypeName, CodeBlock, FunctionType, Name, Package};
+use crate::util::SemanticConversionError;
 
 // region stdlib types codegen
 macro_rules! fn_basic_type_factory {
@@ -106,6 +108,19 @@ impl Type {
     fn_generic_type_factory!(list, kotlin.collections, List<value>);
     fn_generic_type_factory!(set, kotlin.collections, Set<value>);
     fn_generic_type_factory!(array, kotlin, Array<value>);
+}
+
+impl FromStr for Type {
+    type Err = SemanticConversionError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(
+            Type::ClassLike(
+                ClassLikeType::from_str(s)?
+            )
+        )
+    }
+
 }
 
 impl RenderKotlin for Type {

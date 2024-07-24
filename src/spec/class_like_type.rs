@@ -1,6 +1,9 @@
+use std::fmt::format;
+use std::str::FromStr;
 use crate::io::RenderKotlin;
-use crate::spec::{ClassLikeTypeName, CodeBlock, Type};
+use crate::spec::{ClassLikeTypeName, CodeBlock, Name, Package, Type};
 use crate::tokens;
+use crate::util::SemanticConversionError;
 
 #[derive(PartialEq, Debug, Clone)]
 pub struct ClassLikeType {
@@ -30,9 +33,9 @@ impl ClassLikeType {
 }
 
 impl RenderKotlin for ClassLikeType {
-
     fn render(&self) -> CodeBlock {
         let mut type_name = self.type_name.render();
+
         if !self.generic_arguments.is_empty() {
             type_name.with_atom(tokens::ANGLE_BRACKET_LEFT);
 
@@ -51,7 +54,48 @@ impl RenderKotlin for ClassLikeType {
             type_name.with_atom(tokens::QUESTION_MARK);
         };
 
-        type_name.clone()
+        type_name
+    }
+}
+
+impl FromStr for ClassLikeType {
+    type Err = SemanticConversionError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let parts: Vec<&str> = s.split('.').collect();
+        if parts.len() > 1 {
+            let mut package_parts = Vec::new();
+            for part in &parts[0..parts.len() - 1] {
+                package_parts.push(Name::from_str(part)?)
+            }
+
+            let package = Package::from(package_parts);
+            let name = Name::from_str(parts[parts.len() - 1])?;
+
+            Ok(
+                ClassLikeType::new(
+                    ClassLikeTypeName::simple(
+                        package,
+                        name,
+                    )
+                )
+            )
+        } else if parts.len() == 1 {
+            Ok(
+                ClassLikeType::new(
+                    ClassLikeTypeName::simple(
+                        Package::from(vec![]),
+                        Name::from(parts[0])
+                    )
+                )
+            )
+        } else {
+            Err(
+                SemanticConversionError::new(
+                    format!("Can't convert {s} to ClassLikeType").as_str()
+                )
+            )
+        }
     }
 }
 
@@ -131,5 +175,23 @@ mod test {
                 )
             )).nullable(true);
         assert_eq!(parameter.render_string(), "io.github.lexadiky.Class<io.github.lexadiky.Generic>?");
+    }
+
+    #[test]
+    fn test_from_string_long() {
+        let class_like_type = ClassLikeType::from_str("io.github.lexadiky.Class").unwrap();
+        assert_eq!(class_like_type.render_string(), "io.github.lexadiky.Class");
+    }
+
+    #[test]
+    fn test_from_string_short() {
+        let class_like_type = ClassLikeType::from_str("github.Class").unwrap();
+        assert_eq!(class_like_type.render_string(), "github.Class");
+    }
+
+    #[test]
+    fn test_from_string_top_level() {
+        let class_like_type = ClassLikeType::from_str("Class").unwrap();
+        assert_eq!(class_like_type.render_string(), "Class");
     }
 }

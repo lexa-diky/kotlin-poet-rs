@@ -29,9 +29,10 @@ impl RenderKotlin for ClassLikeTypeName {
         let mut code = CodeBlock::empty();
 
         let package = self.package.render();
-        code.with_nested(package);
-
-        code.with_atom(tokens::DOT);
+        if !package.nodes.is_empty() {
+            code.with_nested(package);
+            code.with_atom(tokens::DOT);
+        }
 
         for (index, part) in self.names.iter().enumerate() {
             code.with_nested(part.render());

@@ -239,7 +239,7 @@ mod test {
         );
 
         let rendered = property.render().to_string();
-        let expected = "public final var name: kotlin.String = \"\"\n    set(value) {\n        field = value\n    }\n    get() {\n        return field\n    }\n";
+        let expected = "public final var name: kotlin.String = \"\"\n    set(value) {\n        field = value\n    }\n    get() {\n        return field\n    }";
         assert_eq!(rendered, expected);
     }
 

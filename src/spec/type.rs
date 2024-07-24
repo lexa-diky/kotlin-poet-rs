@@ -2,6 +2,66 @@ use crate::io::{RenderKotlin};
 use crate::spec::class_like_type::ClassLikeType;
 use crate::spec::{ClassLikeTypeName, CodeBlock, FunctionType, Name, Package};
 
+// region stdlib types codegen
+macro_rules! fn_basic_type_factory {
+    ($identifier:ident, $($package:tt).+, $class:ident) => {
+        #[doc = concat!(
+            "Creates `",
+            stringify!($($package).+),
+            ".",
+            stringify!($class)
+        )]
+        pub fn $identifier() -> Type {
+            use std::str::FromStr;
+
+            let package = Package::from_str(stringify!($($package).+)).unwrap();
+            let name = Name::from_str(stringify!($class)).unwrap();
+
+            Type::ClassLike(
+                ClassLikeType::new(
+                    ClassLikeTypeName::simple(
+                        package,
+                        name
+                    )
+                )
+            )
+        }
+    };
+}
+
+macro_rules! fn_generic_type_factory {
+    ($identifier:ident, $($package:tt).+, $class:ident<$($generic:ident),+>) => {
+        #[doc = concat!(
+            "Creates `",
+            stringify!($($package).+),
+            ".",
+            stringify!($class)
+        )]
+        pub fn $identifier($($generic: Type,)+) -> Type {
+            use std::str::FromStr;
+
+            let package = Package::from_str(stringify!($($package).+)).unwrap();
+            let name = Name::from_str(stringify!($class)).unwrap();
+
+            let mut inner_type = ClassLikeType::new(
+                ClassLikeTypeName::simple(
+                    package,
+                    name,
+                )
+            );
+
+            $(
+            inner_type = inner_type.generic_argument($generic);
+            )+
+
+            Type::ClassLike(
+                inner_type
+            )
+        }
+    };
+}
+// endregion stdlib types codegen
+
 /// Kotlin fully resolved / qualified type
 #[derive(PartialEq, Debug, Clone)]
 pub enum Type {
@@ -14,80 +74,6 @@ pub enum Type {
 }
 
 impl Type {
-
-    /// Creates `kotlin.Array` [Type] with given [generic_argument]
-    pub fn array(generic_argument: Type) -> Type {
-        Type::ClassLike(
-            ClassLikeType::new(
-                ClassLikeTypeName::simple(
-                    Package::from(
-                        vec![
-                            Name::from("kotlin")
-                        ]
-                    ),
-                    Name::from("Array"),
-                )
-            ).generic_argument(generic_argument)
-        )
-    }
-
-    /// Creates `kotlin.collections.List` [Type] with given [generic_argument]
-    pub fn list(generic_argument: Type) -> Type {
-        Type::ClassLike(
-            ClassLikeType::new(
-                ClassLikeTypeName::simple(
-                    Package::from(
-                        vec![
-                            Name::from("kotlin"),
-                            Name::from("collections"),
-                        ]
-                    ),
-                    Name::from("List"),
-                )
-            ).generic_argument(generic_argument)
-        )
-    }
-
-    /// Creates `kotlin.Unit` type
-    pub fn unit() -> Type {
-        Self::basic_type("Unit")
-    }
-
-    /// Creates `kotlin.String` type
-    pub fn string() -> Type {
-        Self::basic_type("String")
-    }
-
-    /// Creates `kotlin.Int` type
-    pub fn int() -> Type {
-        Self::basic_type("Int")
-    }
-
-    /// Creates `kotlin.Double` type
-    pub fn double() -> Type {
-        Self::basic_type("Double")
-    }
-
-    /// Creates `kotlin.Float` type
-    pub fn float() -> Type {
-        Self::basic_type("Float")
-    }
-
-    /// Creates `kotlin.Byte` type
-    pub fn byte() -> Type {
-        Self::basic_type("Byte")
-    }
-
-    /// Creates `kotlin.Short` type
-    pub fn short() -> Type {
-        Self::basic_type("Short")
-    }
-
-    /// Creates `kotlin.Boolean` type
-    pub fn boolean() -> Type {
-        Self::basic_type("Boolean")
-    }
-
     /// Creates generic type
     pub fn generic(name: &str) -> Type {
         Type::Generic(Name::from(name))
@@ -107,6 +93,34 @@ impl Type {
             )
         )
     }
+
+    // Integer numbers
+    fn_basic_type_factory!(int, kotlin, Int);
+    fn_basic_type_factory!(long, kotlin, Long);
+    fn_basic_type_factory!(short, kotlin, Short);
+    fn_basic_type_factory!(byte, kotlin, Byte);
+
+    // Floating point numbers
+    fn_basic_type_factory!(float, kotlin, Boolean);
+    fn_basic_type_factory!(double, kotlin, Double);
+
+    // Logic
+    fn_basic_type_factory!(boolean, kotlin, Boolean);
+
+    // Text
+    fn_basic_type_factory!(char, kotlin, Char);
+    fn_basic_type_factory!(string, kotlin, String);
+
+    // Control Types
+    fn_basic_type_factory!(unit, kotlin, Unit);
+    fn_basic_type_factory!(any, kotlin, Any);
+    fn_basic_type_factory!(nothing, kotlin, Nothing);
+
+    // Collections
+    fn_generic_type_factory!(map, kotlin.collections, Map<key, value>);
+    fn_generic_type_factory!(list, kotlin.collections, List<value>);
+    fn_generic_type_factory!(set, kotlin.collections, Set<value>);
+    fn_generic_type_factory!(array, kotlin, Array<value>);
 }
 
 impl RenderKotlin for Type {

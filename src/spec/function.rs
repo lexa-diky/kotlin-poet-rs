@@ -54,6 +54,7 @@ pub struct Function {
     is_suspended: bool,
     is_inline: bool,
     is_operator: bool,
+    is_override: bool,
     generic_parameters: Vec<GenericParameter>
 }
 
@@ -70,7 +71,8 @@ impl Function {
             is_suspended: false,
             is_inline: false,
             is_operator: false,
-            generic_parameters: Vec::new()
+            generic_parameters: Vec::new(),
+            is_override: false
         }
     }
 
@@ -123,6 +125,11 @@ impl Function {
         self.is_inline = flag;
         self
     }
+
+    pub fn overrides(mut self, flag: bool) -> Function {
+        self.is_override = flag;
+        self
+    }
 }
 
 impl RenderKotlin for Function {
@@ -143,6 +150,11 @@ impl RenderKotlin for Function {
 
         if self.is_operator {
             block.with_atom(tokens::keyword::OPERATOR);
+            block.with_space();
+        }
+
+        if self.is_override {
+            block.with_atom(tokens::keyword::OVERRIDE);
             block.with_space();
         }
 
@@ -259,6 +271,19 @@ mod test {
 
         assert_eq!(
             "public fun <A, B> box(): kotlin.Unit where A: kotlin.String, A: kotlin.Int",
+            block.render_string()
+        )
+    }
+
+    #[test]
+    fn test_override() {
+        let block = Function::new(Name::from("box"))
+            .overrides(true)
+            .returns(Type::int())
+            .body(CodeBlock::statement("return 23"));
+
+        assert_eq!(
+            "public override fun box(): kotlin.Int {\n    return 23\n}",
             block.render_string()
         )
     }

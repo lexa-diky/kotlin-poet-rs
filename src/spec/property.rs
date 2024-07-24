@@ -42,7 +42,8 @@ pub struct Property {
     getter: Option<PropertyGetter>,
     setter: Option<PropertySetter>,
     is_mutable: bool,
-    is_const: bool
+    is_const: bool,
+    is_override: bool
 }
 
 #[derive(Debug, Clone)]
@@ -122,13 +123,20 @@ impl Property {
             getter: None,
             setter: None,
             is_mutable: false,
-            is_const: false
+            is_const: false,
+            is_override: false
         }
     }
 
     /// Sets [AccessModifier]
     pub fn access_modifier(mut self, access_modifier: AccessModifier) -> Property {
         self.access_modifier = access_modifier;
+        self
+    }
+
+    /// Marks function as `override`
+    pub fn overrides(mut self, flag: bool) -> Property {
+        self.is_override = flag;
         self
     }
 
@@ -189,6 +197,11 @@ impl RenderKotlin for Property {
         if self.is_const {
             block.with_atom(tokens::keyword::CONST);
             block.with_space()
+        }
+
+        if self.is_override {
+            block.with_atom(tokens::keyword::OVERRIDE);
+            block.with_space();
         }
 
         if self.is_mutable {
@@ -263,6 +276,18 @@ mod test {
 
         assert_eq!(
             "public final const val name: kotlin.String by lazy { \"Alex\" }",
+            property.render().to_string()
+        )
+    }
+
+    #[test]
+    fn test_override() {
+        let property = Property::new(Name::from("age"), Type::int())
+            .overrides(true)
+            .initializer(CodeBlock::atom("22"));
+
+        assert_eq!(
+            "public final override val age: kotlin.Int = 22",
             property.render().to_string()
         )
     }

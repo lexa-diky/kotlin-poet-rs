@@ -61,7 +61,7 @@ impl GenericParameter {
         code
     }
 
-    pub(crate) fn render_type_boundaries_vec_if_required(vec: &Vec<GenericParameter>) -> CodeBlock {
+    pub(crate) fn render_type_boundaries_vec_if_required(vec: &[GenericParameter]) -> CodeBlock {
         let boundary_code_blocks = vec.iter().filter(|parameter| !parameter.type_boundaries.is_empty())
             .map(|parameter| {
                 parameter.render_type_boundaries()

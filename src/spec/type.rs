@@ -79,21 +79,6 @@ impl Type {
         Type::Generic(Name::from(name))
     }
 
-    fn basic_type(name: &str) -> Type {
-        Type::ClassLike(
-            ClassLikeType::new(
-                ClassLikeTypeName::simple(
-                    Package::from(
-                        vec![
-                            Name::from("kotlin")
-                        ]
-                    ),
-                    Name::from(name),
-                )
-            )
-        )
-    }
-
     // Integer numbers
     fn_basic_type_factory!(int, kotlin, Int);
     fn_basic_type_factory!(long, kotlin, Long);

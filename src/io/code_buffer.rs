@@ -1,10 +1,9 @@
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct CodeBuffer {
-    buffer: String
+    buffer: String,
 }
 
 impl CodeBuffer {
-
     pub fn from(s: &str) -> CodeBuffer {
         CodeBuffer {
             buffer: s.to_string()
@@ -19,11 +18,21 @@ impl CodeBuffer {
         self.buffer.clone()
     }
 
-    pub fn last_char(&self) -> Option<char> {
-        return self.buffer.chars().last()
+    pub fn into_string(self) -> String {
+        self.buffer
     }
 
+    pub fn last_char(&self) -> Option<char> {
+        return self.buffer.chars().last();
+    }
+
+    /// Performs in place trimming of the inner buffer
     pub fn trim(&mut self) {
-        self.buffer = self.buffer.trim().to_string()
+        while self.buffer.starts_with([' ', '\n']) {
+            self.buffer.remove(0);
+        }
+        while self.buffer.ends_with([' ', '\n']) {
+            self.buffer.remove(self.buffer.len() - 1);
+        }
     }
 }

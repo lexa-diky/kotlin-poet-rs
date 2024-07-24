@@ -10,6 +10,7 @@ enum KotlinFileNode {
     Class(Class),
 }
 
+/// Represents a Kotlin file.
 #[derive(Debug, Clone)]
 pub struct KotlinFile {
     package: Option<Package>,

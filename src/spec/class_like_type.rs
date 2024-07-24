@@ -62,40 +62,11 @@ impl FromStr for ClassLikeType {
     type Err = SemanticConversionError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let parts: Vec<&str> = s.split('.').collect();
-        if parts.len() > 1 {
-            let mut package_parts = Vec::new();
-            for part in &parts[0..parts.len() - 1] {
-                package_parts.push(Name::from_str(part)?)
-            }
-
-            let package = Package::from(package_parts);
-            let name = Name::from_str(parts[parts.len() - 1])?;
-
-            Ok(
-                ClassLikeType::new(
-                    ClassLikeTypeName::simple(
-                        package,
-                        name,
-                    )
-                )
+        Ok(
+            ClassLikeType::new(
+                ClassLikeTypeName::from_str(s)?
             )
-        } else if parts.len() == 1 {
-            Ok(
-                ClassLikeType::new(
-                    ClassLikeTypeName::simple(
-                        Package::from(vec![]),
-                        Name::from(parts[0])
-                    )
-                )
-            )
-        } else {
-            Err(
-                SemanticConversionError::new(
-                    format!("Can't convert {s} to ClassLikeType").as_str()
-                )
-            )
-        }
+        )
     }
 }
 
@@ -175,23 +146,5 @@ mod test {
                 )
             )).nullable(true);
         assert_eq!(parameter.render_string(), "io.github.lexadiky.Class<io.github.lexadiky.Generic>?");
-    }
-
-    #[test]
-    fn test_from_string_long() {
-        let class_like_type = ClassLikeType::from_str("io.github.lexadiky.Class").unwrap();
-        assert_eq!(class_like_type.render_string(), "io.github.lexadiky.Class");
-    }
-
-    #[test]
-    fn test_from_string_short() {
-        let class_like_type = ClassLikeType::from_str("github.Class").unwrap();
-        assert_eq!(class_like_type.render_string(), "github.Class");
-    }
-
-    #[test]
-    fn test_from_string_top_level() {
-        let class_like_type = ClassLikeType::from_str("Class").unwrap();
-        assert_eq!(class_like_type.render_string(), "Class");
     }
 }

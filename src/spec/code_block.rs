@@ -55,7 +55,7 @@ impl CodeBlock {
     pub fn with_nested(&mut self, code_block: CodeBlock) {
         for node in code_block.nodes {
             if let CodeBlockNode::Atom(buffer) = node {
-                self.with_atom(buffer.as_string().as_str());
+                self.with_atom(buffer.into_string().as_str());
                 continue;
             };
             self.nodes.push(node);
@@ -219,7 +219,7 @@ impl CodeBlock {
         }
 
         root_buffer.trim();
-        root_buffer.as_string()
+        root_buffer.into_string()
     }
 }
 

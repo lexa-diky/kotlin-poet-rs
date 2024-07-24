@@ -18,6 +18,8 @@ mod argument;
 mod primary_constructor;
 mod secondary_constructor;
 mod companion_object;
+mod generic_parameter;
+mod generic_invariance;
 
 pub use package::Package;
 pub use class_like_type_name::ClassLikeTypeName;
@@ -39,3 +41,5 @@ pub use argument::Argument;
 pub use primary_constructor::PrimaryConstructor;
 pub use secondary_constructor::SecondaryConstructor;
 pub use companion_object::CompanionObject;
+pub use generic_invariance::GenericInvariance;
+pub use generic_parameter::GenericParameter;

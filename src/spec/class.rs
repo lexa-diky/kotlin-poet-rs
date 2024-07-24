@@ -1,5 +1,5 @@
 use crate::io::RenderKotlin;
-use crate::spec::{AccessModifier, Argument, ClassInheritanceModifier, CodeBlock, CompanionObject, Function, Name, PrimaryConstructor, Property, SecondaryConstructor};
+use crate::spec::{AccessModifier, Argument, ClassInheritanceModifier, CodeBlock, CompanionObject, Function, GenericParameter, Name, PrimaryConstructor, Property, SecondaryConstructor};
 use crate::tokens;
 
 #[derive(Debug, Clone)]
@@ -17,10 +17,10 @@ impl RenderKotlin for ClassMemberNode {
         match self {
             ClassMemberNode::Property(property) => {
                 class_body_code.with_nested(property.render());
-            },
+            }
             ClassMemberNode::Function(function) => {
                 class_body_code.with_nested(function.render());
-            },
+            }
             ClassMemberNode::Subclass(subclass) => {
                 class_body_code.with_nested(subclass.render());
             }
@@ -41,7 +41,7 @@ impl RenderKotlin for ClassMemberNode {
 #[derive(Debug, Clone)]
 struct EnumInstance {
     name: Name,
-    arguments: Vec<Argument>
+    arguments: Vec<Argument>,
 }
 
 #[derive(Debug, Clone)]
@@ -52,11 +52,11 @@ pub struct Class {
     member_nodes: Vec<ClassMemberNode>,
     enum_instances: Vec<EnumInstance>,
     primary_constructor: Option<PrimaryConstructor>,
-    companion_object: Option<CompanionObject>
+    companion_object: Option<CompanionObject>,
+    generic_parameters: Vec<GenericParameter>,
 }
 
 impl Class {
-
     pub fn new(name: Name) -> Self {
         Class {
             name,
@@ -65,7 +65,8 @@ impl Class {
             member_nodes: Vec::new(),
             enum_instances: Vec::new(),
             primary_constructor: None,
-            companion_object: None
+            companion_object: None,
+            generic_parameters: Vec::new(),
         }
     }
 
@@ -77,7 +78,8 @@ impl Class {
             member_nodes: Vec::new(),
             enum_instances: Vec::new(),
             primary_constructor: None,
-            companion_object: None
+            companion_object: None,
+            generic_parameters: Vec::new(),
         }
     }
 
@@ -89,7 +91,8 @@ impl Class {
             member_nodes: Vec::new(),
             enum_instances: Vec::new(),
             primary_constructor: None,
-            companion_object: None
+            companion_object: None,
+            generic_parameters: Vec::new(),
         }
     }
 
@@ -101,7 +104,8 @@ impl Class {
             member_nodes: Vec::new(),
             enum_instances: Vec::new(),
             primary_constructor: None,
-            companion_object: None
+            companion_object: None,
+            generic_parameters: Vec::new(),
         }
     }
 
@@ -113,7 +117,8 @@ impl Class {
             member_nodes: Vec::new(),
             enum_instances: Vec::new(),
             primary_constructor: None,
-            companion_object: None
+            companion_object: None,
+            generic_parameters: Vec::new(),
         }
     }
 
@@ -125,7 +130,8 @@ impl Class {
             member_nodes: Vec::new(),
             enum_instances: Vec::new(),
             primary_constructor: None,
-            companion_object: None
+            companion_object: None,
+            generic_parameters: Vec::new(),
         }
     }
 
@@ -137,7 +143,8 @@ impl Class {
             member_nodes: Vec::new(),
             enum_instances: Vec::new(),
             primary_constructor: None,
-            companion_object: None
+            companion_object: None,
+            generic_parameters: Vec::new(),
         }
     }
 
@@ -169,7 +176,7 @@ impl Class {
     pub fn enum_instance(mut self, name: Name, arguments: Vec<Argument>) -> Self {
         self.enum_instances.push(EnumInstance {
             name,
-            arguments
+            arguments,
         });
         self
     }
@@ -193,6 +200,13 @@ impl Class {
         self.companion_object = Some(companion_object);
         self
     }
+
+    /// Adds [GenericParameter] to this class.
+    /// Could be called multiple times to have multiple generic parameters.
+    pub fn generic_parameter(mut self, generic_parameter: GenericParameter) -> Self {
+        self.generic_parameters.push(generic_parameter);
+        self
+    }
 }
 
 impl RenderKotlin for Class {
@@ -212,12 +226,26 @@ impl RenderKotlin for Class {
             code.with_space();
         }
         code.with_nested(self.name.render());
+        if !self.generic_parameters.is_empty() {
+            code.with_angle_brackets(|code| {
+                code.with_comma_separated(
+                    &self.generic_parameters.iter().map(|it| it.render_definition())
+                        .collect::<Vec<CodeBlock>>()
+                );
+            });
+        }
         code.with_space();
 
         if let Some(primary_constructor) = &self.primary_constructor {
             code.with_nested(primary_constructor.render());
             code.with_space();
         }
+
+        code.with_nested(
+            GenericParameter::render_type_boundaries_vec_if_required(
+                &self.generic_parameters
+            )
+        );
 
         code.with_curly_brackets(|class_body_code| {
             class_body_code.with_new_line();
@@ -255,7 +283,7 @@ impl RenderKotlin for Class {
 
 #[cfg(test)]
 mod tests {
-    use crate::spec::{FunctionParameter, PropertyGetter, PropertySetter, Type};
+    use crate::spec::{FunctionParameter, GenericInvariance, PropertyGetter, PropertySetter, Type};
     use super::*;
 
     #[test]
@@ -320,13 +348,13 @@ mod tests {
                     .property(
                         Property::new(
                             Name::from("name"),
-                            Type::string()
+                            Type::string(),
                         )
                     )
                     .parameter(
                         FunctionParameter::new(
                             Name::from("age"),
-                            Type::int()
+                            Type::int(),
                         )
                     )
             );
@@ -371,7 +399,7 @@ mod tests {
                     .property(
                         Property::new(
                             Name::from("name"),
-                            Type::string()
+                            Type::string(),
                         ).initializer(
                             CodeBlock::atom("\"\"")
                         )
@@ -392,13 +420,13 @@ mod tests {
                     .property(
                         Property::new(
                             Name::from("name"),
-                            Type::string()
+                            Type::string(),
                         )
                     )
                     .property(
                         Property::new(
                             Name::from("age"),
-                            Type::int()
+                            Type::int(),
                         )
                     )
             )
@@ -407,7 +435,7 @@ mod tests {
                     .parameter(
                         FunctionParameter::new(
                             Name::from("name"),
-                            Type::string()
+                            Type::string(),
                         )
                     )
                     .delegate_argument(
@@ -429,5 +457,79 @@ mod tests {
             class.render().to_string(),
             "public data class Person public constructor(public final val name: kotlin.String, public final val age: kotlin.Int) {\n\n    public constructor(name: kotlin.String) : this(name, 23) {\n        println(42)\n    }\n}"
         );
+    }
+
+    #[test]
+    fn test_interface() {
+        let class = Class::new_interface(Name::from("Person"));
+        let code = class.render();
+
+        assert_eq!(code.to_string(), "public interface Person {\n\n}");
+    }
+
+    #[test]
+    fn test_abstract() {
+        let class = Class::new_abstract(Name::from("Person"));
+        let code = class.render();
+
+        assert_eq!(code.to_string(), "public abstract class Person {\n\n}");
+    }
+
+    #[test]
+    fn test_object() {
+        let class = Class::new_object(Name::from("Person"));
+        let code = class.render();
+
+        assert_eq!(code.to_string(), "public object Person {\n\n}");
+    }
+
+    #[test]
+    fn test_sealed() {
+        let class = Class::new_sealed(Name::from("Person"));
+        let code = class.render();
+
+        assert_eq!(code.to_string(), "public sealed class Person {\n\n}");
+    }
+
+    #[test]
+    fn test_generic_class() {
+        let class = Class::new(Name::from("Box"))
+            .generic_parameter(
+                GenericParameter::new(Name::from("A"))
+            )
+            .generic_parameter(
+                GenericParameter::new(Name::from("B"))
+                    .invariance(GenericInvariance::In)
+            )
+            .generic_parameter(
+                GenericParameter::new(Name::from("C"))
+                    .invariance(GenericInvariance::Out)
+            );
+
+        let code = class.render();
+
+        assert_eq!(code.to_string(), "public final class Box<A, in B, out C> {\n\n}");
+    }
+
+    #[test]
+    fn test_generic_class_with_boundaries() {
+        let class = Class::new(Name::from("Box"))
+            .generic_parameter(
+                GenericParameter::new(Name::from("A"))
+            )
+            .generic_parameter(
+                GenericParameter::new(Name::from("B"))
+                    .invariance(GenericInvariance::In)
+                    .type_boundary(Type::string())
+                    .type_boundary(Type::int())
+            )
+            .generic_parameter(
+                GenericParameter::new(Name::from("C"))
+                    .invariance(GenericInvariance::Out)
+            );
+
+        let code = class.render();
+
+        assert_eq!(code.to_string(), "public final class Box<A, in B, out C> where B: kotlin.String, B: kotlin.Int {\n\n}");
     }
 }

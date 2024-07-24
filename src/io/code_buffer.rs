@@ -22,4 +22,8 @@ impl CodeBuffer {
     pub fn last_char(&self) -> Option<char> {
         return self.buffer.chars().last()
     }
+
+    pub fn trim(&mut self) {
+        self.buffer = self.buffer.trim().to_string()
+    }
 }

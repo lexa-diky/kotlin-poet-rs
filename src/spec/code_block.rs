@@ -39,8 +39,6 @@ impl CodeBlock {
     }
 
     /// Creates code block with a single atom node and empty line.
-    /// Please avoid using it in [RenderKotlin::render], prefer [CodeBlock::empty] and [CodeBlock::with_atom] instead.
-    #[deprecated]
     pub fn statement(text: &str) -> CodeBlock {
         let mut cb = CodeBlock::empty();
         cb.with_statement(text);
@@ -147,6 +145,19 @@ impl CodeBlock {
         self.with_atom(tokens::ROUND_BRACKET_RIGHT);
     }
 
+    /// Surrounds first parameter [block] with angle brackets and adds it to [self].
+    pub fn with_angle_brackets<F>(&mut self, block: F)
+    where
+        F: FnOnce(&mut CodeBlock),
+    {
+        let mut inner_code = CodeBlock::empty();
+
+        self.with_atom(tokens::ANGLE_BRACKET_LEFT);
+        block(&mut inner_code);
+        self.with_nested(inner_code);
+        self.with_atom(tokens::ANGLE_BRACKET_RIGHT);
+    }
+
     /// Adds all elements from [elements] with comma separation, except for last one
     pub fn with_comma_separated<F>(&mut self, elements: &[F])
     where
@@ -197,6 +208,8 @@ impl CodeBlock {
                 }
             }
         }
+
+        root_buffer.trim();
         root_buffer.as_string()
     }
 }
@@ -206,5 +219,15 @@ impl CodeBlock {
 impl ToString for CodeBlock {
     fn to_string(&self) -> String {
         self.render()
+    }
+}
+
+impl RenderKotlin for CodeBlock {
+    fn render(&self) -> CodeBlock {
+        self.clone()
+    }
+
+    fn render_string(&self) -> String {
+        self.to_string()
     }
 }

@@ -85,10 +85,6 @@ mod tests {
             .property(property)
             .parameter(function_parameter);
 
-        for node in primary_constructor.render().nodes {
-            println!("{:?}", node)
-        }
-
         assert_eq!(
             primary_constructor.render().to_string(),
             "public constructor(public final val name: kotlin.String = \"\", age: kotlin.Int)"
@@ -99,10 +95,6 @@ mod tests {
     fn test_private_constructor() {
         let primary_constructor = PrimaryConstructor::new()
             .access_modifier(AccessModifier::Private);
-
-        for node in primary_constructor.render().nodes {
-            println!("{:?}", node)
-        }
 
         assert_eq!(
             primary_constructor.render().to_string(),

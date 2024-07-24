@@ -96,4 +96,10 @@ pub mod keyword {
     pub const INIT: &str = "init";
     /// `companion`
     pub const COMPANION: &str = "companion";
+
+    //
+    pub const WHERE: &str = "where";
+    pub const IN: &str = "in";
+    pub const OUT: &str = "out";
+
 }

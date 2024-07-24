@@ -1,7 +1,5 @@
 use crate::io::RenderKotlin;
-use crate::spec::CodeBlock;
-use crate::spec::name::Name;
-use crate::spec::package::Package;
+use crate::spec::{CodeBlock, Name, Package};
 use crate::tokens;
 
 #[derive(PartialEq, Debug, Clone)]

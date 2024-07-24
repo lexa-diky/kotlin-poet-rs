@@ -1,5 +1,5 @@
 use crate::io::RenderKotlin;
-use crate::spec::{AccessModifier, CodeBlock, MemberInheritanceModifier, Name, Type};
+use crate::spec::{AccessModifier, CodeBlock, GenericParameter, MemberInheritanceModifier, Name, Type};
 use crate::tokens;
 
 #[derive(Debug, Clone)]
@@ -54,6 +54,7 @@ pub struct Function {
     is_suspended: bool,
     is_inline: bool,
     is_operator: bool,
+    generic_parameters: Vec<GenericParameter>
 }
 
 impl Function {
@@ -69,6 +70,7 @@ impl Function {
             is_suspended: false,
             is_inline: false,
             is_operator: false,
+            generic_parameters: Vec::new()
         }
     }
 
@@ -107,6 +109,11 @@ impl Function {
         self
     }
 
+    pub fn generic_parameter(mut self, parameter: GenericParameter) -> Function {
+        self.generic_parameters.push(parameter);
+        self
+    }
+
     pub fn suspended(mut self, flag: bool) -> Function {
         self.is_suspended = flag;
         self
@@ -142,6 +149,16 @@ impl RenderKotlin for Function {
         block.with_atom(tokens::keyword::FUN);
         block.with_space();
 
+        if !self.generic_parameters.is_empty() {
+            block.with_angle_brackets(|code| {
+                code.with_comma_separated(
+                    &self.generic_parameters.iter().map(|it| it.render_definition())
+                        .collect::<Vec<CodeBlock>>()
+                );
+            });
+            block.with_space();
+        }
+
         if let Some(receiver) = &self.receiver {
             block.with_nested(receiver.render());
             block.with_atom(tokens::DOT);
@@ -163,6 +180,13 @@ impl RenderKotlin for Function {
         block.with_space();
         block.with_nested(self.returns.render());
 
+        block.with_space();
+        block.with_nested(
+            GenericParameter::render_type_boundaries_vec_if_required(
+                &self.generic_parameters
+            )
+        );
+
         if let Some(body) = &self.body {
             block.with_space();
             block.with_curly_brackets(|inner| {
@@ -177,7 +201,7 @@ impl RenderKotlin for Function {
 #[cfg(test)]
 mod test {
     use crate::io::RenderKotlin;
-    use crate::spec::{CodeBlock, Function, Name, Type};
+    use crate::spec::{CodeBlock, Function, GenericParameter, Name, Type};
     use crate::spec::function::FunctionParameter;
 
     #[test]
@@ -216,6 +240,25 @@ mod test {
 
         assert_eq!(
             "public suspend inline operator fun kotlin.Short.main(args: kotlin.Array<kotlin.String> = \"hello world\"): kotlin.Unit {\n    return 23\n}",
+            block.render_string()
+        )
+    }
+
+    #[test]
+    fn test_function_with_generic_arguments() {
+        let block = Function::new(Name::from("box"))
+            .generic_parameter(
+                GenericParameter::new(Name::from("A"))
+                    .type_boundary(Type::string())
+                    .type_boundary(Type::int()),
+            )
+            .generic_parameter(
+                GenericParameter::new(Name::from("B"))
+            );
+
+
+        assert_eq!(
+            "public fun <A, B> box(): kotlin.Unit where A: kotlin.String, A: kotlin.Int",
             block.render_string()
         )
     }

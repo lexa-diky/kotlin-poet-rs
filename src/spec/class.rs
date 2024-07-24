@@ -1,5 +1,5 @@
 use crate::io::RenderKotlin;
-use crate::spec::{AccessModifier, Argument, ClassInheritanceModifier, CodeBlock, CompanionObject, Function, GenericParameter, Name, PrimaryConstructor, Property, SecondaryConstructor};
+use crate::spec::{AccessModifier, Argument, ClassInheritanceModifier, CodeBlock, CompanionObject, Function, GenericParameter, Name, PrimaryConstructor, Property, SecondaryConstructor, Type};
 use crate::tokens;
 
 #[derive(Debug, Clone)]
@@ -54,6 +54,8 @@ pub struct Class {
     primary_constructor: Option<PrimaryConstructor>,
     companion_object: Option<CompanionObject>,
     generic_parameters: Vec<GenericParameter>,
+    parent_classes: Vec<Type>,
+    is_inner: bool
 }
 
 impl Class {
@@ -67,85 +69,14 @@ impl Class {
             primary_constructor: None,
             companion_object: None,
             generic_parameters: Vec::new(),
+            parent_classes: Vec::new(),
+            is_inner: false
         }
     }
 
-    pub fn new_interface(name: Name) -> Self {
-        Class {
-            name,
-            access_modifier: AccessModifier::Public,
-            inheritance_modifier: ClassInheritanceModifier::Interface,
-            member_nodes: Vec::new(),
-            enum_instances: Vec::new(),
-            primary_constructor: None,
-            companion_object: None,
-            generic_parameters: Vec::new(),
-        }
-    }
-
-    pub fn new_abstract(name: Name) -> Self {
-        Class {
-            name,
-            access_modifier: AccessModifier::Public,
-            inheritance_modifier: ClassInheritanceModifier::Abstract,
-            member_nodes: Vec::new(),
-            enum_instances: Vec::new(),
-            primary_constructor: None,
-            companion_object: None,
-            generic_parameters: Vec::new(),
-        }
-    }
-
-    pub fn new_object(name: Name) -> Self {
-        Class {
-            name,
-            access_modifier: AccessModifier::Public,
-            inheritance_modifier: ClassInheritanceModifier::Object,
-            member_nodes: Vec::new(),
-            enum_instances: Vec::new(),
-            primary_constructor: None,
-            companion_object: None,
-            generic_parameters: Vec::new(),
-        }
-    }
-
-    pub fn new_sealed(name: Name) -> Self {
-        Class {
-            name,
-            access_modifier: AccessModifier::Public,
-            inheritance_modifier: ClassInheritanceModifier::Sealed,
-            member_nodes: Vec::new(),
-            enum_instances: Vec::new(),
-            primary_constructor: None,
-            companion_object: None,
-            generic_parameters: Vec::new(),
-        }
-    }
-
-    pub fn new_enum(name: Name) -> Self {
-        Class {
-            name,
-            access_modifier: AccessModifier::Public,
-            inheritance_modifier: ClassInheritanceModifier::Enum,
-            member_nodes: Vec::new(),
-            enum_instances: Vec::new(),
-            primary_constructor: None,
-            companion_object: None,
-            generic_parameters: Vec::new(),
-        }
-    }
-
-    pub fn new_data_class(name: Name) -> Self {
-        Class {
-            name,
-            access_modifier: AccessModifier::Public,
-            inheritance_modifier: ClassInheritanceModifier::Data,
-            member_nodes: Vec::new(),
-            enum_instances: Vec::new(),
-            primary_constructor: None,
-            companion_object: None,
-            generic_parameters: Vec::new(),
-        }
+    pub fn inner(mut self, flag: bool) -> Self {
+        self.is_inner = flag;
+        self
     }
 
     pub fn access_modifier(mut self, access_modifier: AccessModifier) -> Self {
@@ -207,6 +138,12 @@ impl Class {
         self.generic_parameters.push(generic_parameter);
         self
     }
+
+    /// Adds parent class / interface to this class.
+    pub fn inherits(mut self, parent_type: Type) -> Self {
+        self.parent_classes.push(parent_type);
+        self
+    }
 }
 
 impl RenderKotlin for Class {
@@ -215,6 +152,10 @@ impl RenderKotlin for Class {
 
         code.with_nested(self.access_modifier.render());
         code.with_space();
+        if self.is_inner {
+            code.with_atom(tokens::keyword::INNER);
+            code.with_space();
+        }
         code.with_nested(self.inheritance_modifier.render());
         code.with_space();
         if !matches!(
@@ -238,6 +179,16 @@ impl RenderKotlin for Class {
 
         if let Some(primary_constructor) = &self.primary_constructor {
             code.with_nested(primary_constructor.render());
+            code.with_space();
+        }
+
+        if !self.parent_classes.is_empty() {
+            code.with_pop_space();
+            code.with_atom(tokens::COLON);
+            code.with_space();
+            code.with_comma_separated(
+                &self.parent_classes
+            );
             code.with_space();
         }
 
@@ -324,7 +275,8 @@ mod tests {
 
     #[test]
     fn test_enum() {
-        let class = Class::new_enum(Name::from("Person"))
+        let class = Class::new(Name::from("Person"))
+            .inheritance_modifier(ClassInheritanceModifier::Enum)
             .enum_instance(Name::from("Alex"), vec![
                 Argument::new(CodeBlock::atom("23"))
             ])
@@ -393,7 +345,8 @@ mod tests {
 
     #[test]
     fn test_data_class() {
-        let class = Class::new_data_class(Name::from("Person"))
+        let class = Class::new(Name::from("Person"))
+            .inheritance_modifier(ClassInheritanceModifier::Data)
             .primary_constructor(
                 PrimaryConstructor::new()
                     .property(
@@ -414,7 +367,8 @@ mod tests {
 
     #[test]
     fn test_data_class_with_secondary_constructor() {
-        let class = Class::new_data_class(Name::from("Person"))
+        let class = Class::new(Name::from("Person"))
+            .inheritance_modifier(ClassInheritanceModifier::Data)
             .primary_constructor(
                 PrimaryConstructor::new()
                     .property(
@@ -461,7 +415,8 @@ mod tests {
 
     #[test]
     fn test_interface() {
-        let class = Class::new_interface(Name::from("Person"));
+        let class = Class::new(Name::from("Person"))
+            .inheritance_modifier(ClassInheritanceModifier::Interface);
         let code = class.render();
 
         assert_eq!(code.to_string(), "public interface Person {\n\n}");
@@ -469,7 +424,8 @@ mod tests {
 
     #[test]
     fn test_abstract() {
-        let class = Class::new_abstract(Name::from("Person"));
+        let class = Class::new(Name::from("Person"))
+            .inheritance_modifier(ClassInheritanceModifier::Abstract);
         let code = class.render();
 
         assert_eq!(code.to_string(), "public abstract class Person {\n\n}");
@@ -477,15 +433,33 @@ mod tests {
 
     #[test]
     fn test_object() {
-        let class = Class::new_object(Name::from("Person"));
+        let class = Class::new(Name::from("Person"))
+            .inheritance_modifier(ClassInheritanceModifier::Object);
         let code = class.render();
 
         assert_eq!(code.to_string(), "public object Person {\n\n}");
     }
 
     #[test]
+    fn test_class_with_inner() {
+        let class = Class::new(Name::from("Person"))
+            .subclass(
+                Class::new("InnerPerson".into())
+                    .inheritance_modifier(ClassInheritanceModifier::Abstract)
+                    .inner(true)
+            );
+        let code = class.render();
+
+        assert_eq!(
+            code.to_string(),
+            "public final class Person {\n\n    public inner abstract class InnerPerson {\n\n    }\n}"
+        );
+    }
+
+    #[test]
     fn test_sealed() {
-        let class = Class::new_sealed(Name::from("Person"));
+        let class = Class::new(Name::from("Person"))
+            .inheritance_modifier(ClassInheritanceModifier::Sealed);
         let code = class.render();
 
         assert_eq!(code.to_string(), "public sealed class Person {\n\n}");
@@ -509,6 +483,26 @@ mod tests {
         let code = class.render();
 
         assert_eq!(code.to_string(), "public final class Box<A, in B, out C> {\n\n}");
+    }
+
+    #[test]
+    fn test_generic_with_parent() {
+        let class = Class::new(Name::from("Box"))
+            .generic_parameter(
+                GenericParameter::new(Name::from("A"))
+                    .invariance(GenericInvariance::In)
+                    .type_boundary(Type::string())
+            )
+            .inherits(
+                Type::int()
+            );
+
+        let code = class.render();
+
+        assert_eq!(
+            code.to_string(),
+            "public final class Box<in A>: kotlin.Int where A: kotlin.String {\n\n}"
+        );
     }
 
     #[test]

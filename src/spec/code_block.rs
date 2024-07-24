@@ -67,6 +67,7 @@ impl CodeBlock {
         self.with_indent_value(1);
     }
 
+    #[inline]
     fn with_indent_value(&mut self, value: usize) {
         if value == 0 {
             return;
@@ -83,6 +84,7 @@ impl CodeBlock {
         self.with_unindent_value(1);
     }
 
+    #[inline]
     fn with_unindent_value(&mut self, value: usize) {
         if value == 0 {
             return;
@@ -114,6 +116,13 @@ impl CodeBlock {
             return; // no double spaces
         }
         self.nodes.push(CodeBlockNode::Space);
+    }
+
+    /// Removes last [CodeBlockNode::Space] if exists
+    pub fn with_pop_space(&mut self) {
+        if matches!(self.nodes.last(), Some(CodeBlockNode::Space)) {
+            self.nodes.remove(self.nodes.len() - 1);
+        }
     }
 
     /// Surrounds first parameter [block] with curly brackets + indent and adds it to [self].

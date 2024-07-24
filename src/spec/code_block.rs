@@ -53,7 +53,10 @@ impl CodeBlock {
 
     /// Embeds all node from [code_block] into [self].
     pub fn with_nested(&mut self, code_block: CodeBlock) {
-        self.nodes.extend(code_block.nodes);
+        self.nodes.reserve(code_block.nodes.len());
+        for node in code_block.nodes {
+            self.nodes.push(node);
+        }
     }
 
     /// Adds [CodeBlockNode::Indent] with value 1.

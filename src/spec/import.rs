@@ -2,14 +2,19 @@ use crate::io::RenderKotlin;
 use crate::spec::{ClassLikeTypeName, CodeBlock, Name, Package};
 use crate::tokens;
 
+/// Defines [Kotlin's import statement](https://kotlinlang.org/docs/packages.html#imports)
 #[derive(Debug, PartialEq, Clone)]
 pub enum Import {
+    /// Import a class-like type possibly aliased with a different name
     ClassLikeType { type_name: ClassLikeTypeName, alias: Option<Name> },
+    /// Import of all types from a package
     Projection(Package),
-    Function { package: Package, name: Name },
+    /// Import of function / property
+    TopLevel { package: Package, name: Name },
 }
 
 impl Import {
+    /// Creates an import statement for a class-like type
     pub fn class_like(type_name: ClassLikeTypeName) -> Self {
         Import::ClassLikeType {
             type_name,
@@ -17,6 +22,7 @@ impl Import {
         }
     }
 
+    /// Creates an import statement for a class-like type with an alias
     pub fn class_like_alias(type_name: ClassLikeTypeName, alias: Name) -> Self {
         Import::ClassLikeType {
             type_name,
@@ -24,12 +30,14 @@ impl Import {
         }
     }
 
+    /// Creates an import statement for all types in a package
     pub fn projection(package: Package) -> Self {
         Import::Projection(package)
     }
 
-    pub fn function(package: Package, name: Name) -> Self {
-        Import::Function {
+    /// Creates an import statement for a function or property
+    pub fn top_level(package: Package, name: Name) -> Self {
+        Import::TopLevel {
             package,
             name,
         }
@@ -57,7 +65,7 @@ impl RenderKotlin for Import {
                 code.with_atom(tokens::DOT);
                 code.with_atom(tokens::STAR);
             }
-            Import::Function { package, name } => {
+            Import::TopLevel { package, name } => {
                 code.with_nested(package.render());
                 code.with_atom(tokens::DOT);
                 code.with_nested(name.render());
@@ -106,8 +114,8 @@ mod test {
     }
 
     #[test]
-    fn test_import_function() {
-        let import = Import::Function {
+    fn test_import_top_level() {
+        let import = Import::TopLevel {
             package: Package::from_str("com.example").unwrap(),
             name: Name::from_str("foo").unwrap(),
         };

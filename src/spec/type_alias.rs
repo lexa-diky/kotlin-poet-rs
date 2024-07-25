@@ -1,13 +1,14 @@
 use crate::io::RenderKotlin;
-use crate::spec::{CodeBlock, Name, Type};
+use crate::spec::{CodeBlock, Name, Type, VisibilityModifier};
 use crate::tokens;
 
 /// Kotlin's `typealias` declaration
 #[derive(Debug, Clone)]
 pub struct TypeAlias {
-    pub name: Name,
-    pub generic_parameters: Vec<Name>,
-    pub actual: Type,
+    name: Name,
+    generic_parameters: Vec<Name>,
+    actual: Type,
+    visibility_modifier: VisibilityModifier
 }
 
 impl TypeAlias {
@@ -18,6 +19,7 @@ impl TypeAlias {
             name,
             generic_parameters: Vec::new(),
             actual,
+            visibility_modifier: VisibilityModifier::Public
         }
     }
 
@@ -26,11 +28,18 @@ impl TypeAlias {
         self.generic_parameters.push(name);
         self
     }
+
+    pub fn visibility_modifier(mut self, visibility_modifier: VisibilityModifier) -> Self {
+        self.visibility_modifier = visibility_modifier;
+        self
+    }
 }
 
 impl RenderKotlin for TypeAlias {
     fn render(&self) -> CodeBlock {
         let mut code = CodeBlock::empty();
+        code.with_nested(self.visibility_modifier.render());
+        code.with_space();
         code.with_atom(tokens::keyword::TYPEALIAS);
         code.with_space();
         code.with_nested(self.name.render());
@@ -62,7 +71,19 @@ mod test {
         );
 
         let actual = alias.render().to_string();
-        let expected = "typealias MyType = kotlin.String";
+        let expected = "public typealias MyType = kotlin.String";
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn private_type_alias() {
+        let alias = TypeAlias::new(
+            Name::from("MyType"),
+            Type::string(),
+        ).visibility_modifier(VisibilityModifier::Private);
+
+        let actual = alias.render().to_string();
+        let expected = "private typealias MyType = kotlin.String";
         assert_eq!(actual, expected);
     }
 
@@ -71,10 +92,11 @@ mod test {
         let alias = TypeAlias::new(
             Name::from("Vec"),
             Type::list(Type::generic("T")),
-        ).generic_parameter(Name::from("T"));
+        ).generic_parameter(Name::from("T"))
+            .generic_parameter(Name::from("B"));
 
         let actual = alias.render().to_string();
-        let expected = "typealias Vec<T> = kotlin.collections.List<T>";
+        let expected = "public typealias Vec<T, B> = kotlin.collections.List<T>";
         assert_eq!(actual, expected);
     }
 }

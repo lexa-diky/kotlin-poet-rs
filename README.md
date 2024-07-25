@@ -8,8 +8,8 @@
 ![Crates.io License](https://img.shields.io/crates/l/kotlin-poet-rs?logo=apache)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/lexa-diky/kotlin-poet-rs?logo=github)
 
-https://lexa-diky.github.io/kotlin-poet-rs/kotlin_poet_rs/index.html
 > Currently, this project is in heavy development and not ready for any serious use.
+> **API might be extremely unstable.**
 
 ## Get Started
 
@@ -72,3 +72,19 @@ It aims to fix them and provide better API for generating Kotlin code. We don't 
 #### No built-in IO
 
 Rust IO is very versatile and comes in many shapes. Thus this project does not suggest any IO implementation.
+
+### No dependencies
+
+This library is commited to be as little as possible.
+It does not depend on any other library, except for `std`.
+
+## Supported features
+
+### Typealias
+
+- ✅ Name
+- ✅ Associated type (via `Type`)
+- ✅ Generic parameters
+- ✅ Visibility modifiers
+
+### _TBD_

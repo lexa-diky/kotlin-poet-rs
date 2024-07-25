@@ -4,7 +4,7 @@ use crate::tokens;
 /// Node of a code block that can be rendered to a Kotlin code.
 /// You can treat this nodes as commands for rendering, like "add atom", "add new line", etc.
 #[derive(Debug, PartialEq, Clone)]
-pub enum CodeBlockNode {
+pub(crate) enum CodeBlockNode {
     Atom(CodeBuffer),
     Space,
     NewLine,

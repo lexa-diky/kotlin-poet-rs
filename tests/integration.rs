@@ -2,7 +2,7 @@ use std::path::Path;
 use std::str::FromStr;
 
 use kotlin_poet_rs::io::RenderKotlin;
-use kotlin_poet_rs::spec::{VisibilityModifier, Class, ClassInheritanceModifier, CodeBlock, CompanionObject, Function, FunctionParameter, KotlinFile, MemberInheritanceModifier, Name, Package, PrimaryConstructor, Property, PropertyGetter, PropertySetter, Type};
+use kotlin_poet_rs::spec::{VisibilityModifier, Class, ClassInheritanceModifier, CodeBlock, CompanionObject, Function, Parameter, KotlinFile, MemberInheritanceModifier, Name, Package, PrimaryConstructor, Property, PropertyGetter, PropertySetter, Type};
 
 #[test]
 fn generic_file() {
@@ -26,7 +26,7 @@ fn generic_file() {
         .inline(true)
         .visibility_modifier(VisibilityModifier::Private)
         .inheritance_modifier(MemberInheritanceModifier::Abstract)
-        .parameter(FunctionParameter::new(Name::from("args"), Type::array(Type::string())))
+        .parameter(Parameter::new(Name::from("args"), Type::array(Type::string())))
         .returns(Type::array(Type::string()))
         .receiver(Type::int())
         .body(CodeBlock::statement("val a = 2"));
@@ -75,7 +75,7 @@ fn class_with_companion_object() {
                 .function(
                     Function::new(Name::from("printName"))
                         .parameter(
-                            FunctionParameter::new(
+                            Parameter::new(
                                 Name::from("name"),
                                 Type::string(),
                             )

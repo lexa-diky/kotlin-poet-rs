@@ -64,7 +64,7 @@ impl RenderKotlin for CompanionObject {
 #[cfg(test)]
 mod tests {
     use crate::io::RenderKotlin;
-    use crate::spec::{Class, CodeBlock, CompanionObject, Function, FunctionParameter, Name, Property, Type};
+    use crate::spec::{Class, CodeBlock, CompanionObject, Function, Parameter, Name, Property, Type};
 
     #[test]
     fn companion_object() {
@@ -75,7 +75,7 @@ mod tests {
             )
             .function(
                 Function::new(Name::from("printName"))
-                    .parameter(FunctionParameter::new(Name::from("name"), Type::string()))
+                    .parameter(Parameter::new(Name::from("name"), Type::string()))
                     .body(CodeBlock::statement("println(name)"))
             );
 

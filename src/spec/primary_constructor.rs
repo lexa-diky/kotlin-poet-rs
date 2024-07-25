@@ -1,11 +1,11 @@
 use crate::io::RenderKotlin;
-use crate::spec::{VisibilityModifier, CodeBlock, FunctionParameter, Property};
+use crate::spec::{VisibilityModifier, CodeBlock, Parameter, Property};
 use crate::tokens;
 
 #[derive(Debug, Clone)]
 enum PrimaryConstructorParameter {
     PropertyParameter(Property),
-    FunctionLike(FunctionParameter),
+    FunctionLike(Parameter),
 }
 
 impl RenderKotlin for PrimaryConstructorParameter {
@@ -32,7 +32,7 @@ impl PrimaryConstructor {
         }
     }
 
-    pub fn parameter(mut self, parameter: FunctionParameter) -> PrimaryConstructor {
+    pub fn parameter(mut self, parameter: Parameter) -> PrimaryConstructor {
         self.arguments.push(PrimaryConstructorParameter::FunctionLike(parameter));
         self
     }
@@ -65,7 +65,7 @@ impl RenderKotlin for PrimaryConstructor {
 #[cfg(test)]
 mod tests {
     use crate::io::RenderKotlin;
-    use crate::spec::{VisibilityModifier, CodeBlock, FunctionParameter, PrimaryConstructor, Property, Type};
+    use crate::spec::{VisibilityModifier, CodeBlock, Parameter, PrimaryConstructor, Property, Type};
 
     #[test]
     fn primary_constructor_test() {
@@ -76,7 +76,7 @@ mod tests {
             CodeBlock::atom("\"\"")
         );
 
-        let function_parameter = FunctionParameter::new(
+        let function_parameter = Parameter::new(
             "age".into(),
             Type::int()
         );

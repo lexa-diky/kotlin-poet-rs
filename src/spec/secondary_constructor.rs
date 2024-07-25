@@ -1,11 +1,11 @@
 use crate::io::RenderKotlin;
-use crate::spec::{VisibilityModifier, Argument, CodeBlock, FunctionParameter, PrimaryConstructor};
+use crate::spec::{VisibilityModifier, Argument, CodeBlock, Parameter, PrimaryConstructor};
 use crate::tokens;
 
 /// Defines [Class's secondary constructor](https://kotlinlang.org/docs/classes.html#constructors)
 #[derive(Debug, Clone)]
 pub struct SecondaryConstructor {
-    parameters: Vec<FunctionParameter>,
+    parameters: Vec<Parameter>,
     delegate_parameters: Vec<Argument>,
     visibility_modifier: VisibilityModifier,
     body: Option<CodeBlock>,
@@ -21,7 +21,7 @@ impl SecondaryConstructor {
         }
     }
 
-    pub fn parameter(mut self, parameter: FunctionParameter) -> SecondaryConstructor {
+    pub fn parameter(mut self, parameter: Parameter) -> SecondaryConstructor {
         self.parameters.push(parameter);
         self
     }
@@ -74,14 +74,14 @@ impl RenderKotlin for SecondaryConstructor {
 #[cfg(test)]
 mod tests {
     use crate::io::RenderKotlin;
-    use crate::spec::{VisibilityModifier, Argument, CodeBlock, FunctionParameter, SecondaryConstructor, Type};
+    use crate::spec::{VisibilityModifier, Argument, CodeBlock, Parameter, SecondaryConstructor, Type};
 
     #[test]
     fn secondary_constructor_test() {
         let secondary_constructor = SecondaryConstructor::new()
             .visibility_modifier(VisibilityModifier::Public)
-            .parameter(FunctionParameter::new("name".into(), Type::string()))
-            .parameter(FunctionParameter::new("age".into(), Type::int()))
+            .parameter(Parameter::new("name".into(), Type::string()))
+            .parameter(Parameter::new("age".into(), Type::int()))
             .delegate_argument(Argument::new(CodeBlock::atom("name")))
             .delegate_argument(Argument::new(CodeBlock::atom("age")))
             .body(CodeBlock::statement("println(42)"));

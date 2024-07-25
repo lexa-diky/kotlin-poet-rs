@@ -1,7 +1,7 @@
 use std::str::FromStr;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use kotlin_poet_rs::io::RenderKotlin;
-use kotlin_poet_rs::spec::{VisibilityModifier, Class, CodeBlock, Function, FunctionParameter, KotlinFile, MemberInheritanceModifier, Name, Package, Property, PropertyGetter, PropertySetter, Type};
+use kotlin_poet_rs::spec::{VisibilityModifier, Class, CodeBlock, Function, Parameter, KotlinFile, MemberInheritanceModifier, Name, Package, Property, PropertyGetter, PropertySetter, Type};
 
 fn render_generic_file() -> String {
     let property = Property::new(
@@ -24,7 +24,7 @@ fn render_generic_file() -> String {
         .inline(true)
         .visibility_modifier(VisibilityModifier::Private)
         .inheritance_modifier(MemberInheritanceModifier::Abstract)
-        .parameter(FunctionParameter::new(Name::from("text"), Type::string()))
+        .parameter(Parameter::new(Name::from("text"), Type::string()))
         .returns(Type::array(Type::string()))
         .receiver(Type::int())
         .body(CodeBlock::statement("val a = 2"));

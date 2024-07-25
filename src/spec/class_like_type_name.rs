@@ -37,6 +37,7 @@ impl ClassLikeTypeName {
 impl FromStr for ClassLikeTypeName {
     type Err = SemanticConversionError;
 
+    #[allow(clippy::comparison_chain)]
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let parts: Vec<&str> = s.split('.').collect();
         if parts.len() > 1 {

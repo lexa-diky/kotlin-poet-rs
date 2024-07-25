@@ -234,7 +234,7 @@ impl RenderKotlin for Class {
 
 #[cfg(test)]
 mod tests {
-    use crate::spec::{FunctionParameter, GenericInvariance, PropertyGetter, PropertySetter, Type};
+    use crate::spec::{Parameter, GenericInvariance, PropertyGetter, PropertySetter, Type};
     use super::*;
 
     #[test]
@@ -304,7 +304,7 @@ mod tests {
                         )
                     )
                     .parameter(
-                        FunctionParameter::new(
+                        Parameter::new(
                             Name::from("age"),
                             Type::int(),
                         )
@@ -387,7 +387,7 @@ mod tests {
             .secondary_constructor(
                 SecondaryConstructor::new()
                     .parameter(
-                        FunctionParameter::new(
+                        Parameter::new(
                             Name::from("name"),
                             Type::string(),
                         )

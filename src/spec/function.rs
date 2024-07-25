@@ -1,52 +1,12 @@
 use crate::io::RenderKotlin;
-use crate::spec::{VisibilityModifier, CodeBlock, GenericParameter, MemberInheritanceModifier, Name, Type};
+use crate::spec::{VisibilityModifier, CodeBlock, GenericParameter, MemberInheritanceModifier, Name, Type, Parameter};
 use crate::tokens;
-
-#[derive(Debug, Clone)]
-pub struct FunctionParameter {
-    name: Name,
-    parameter_type: Type,
-    default_value: Option<CodeBlock>,
-}
-
-impl RenderKotlin for FunctionParameter {
-    fn render(&self) -> CodeBlock {
-        let mut block = CodeBlock::empty();
-        block.with_nested(self.name.render());
-        block.with_atom(tokens::COLON);
-        block.with_space();
-        block.with_nested(self.parameter_type.render());
-        if let Some(default_value) = &self.default_value {
-            block.with_space();
-            block.with_atom(tokens::ASSIGN);
-            block.with_space();
-            block.with_nested(default_value.clone());
-        }
-
-        block
-    }
-}
-
-impl FunctionParameter {
-    pub fn new(name: Name, parameter_type: Type) -> FunctionParameter {
-        FunctionParameter {
-            name,
-            parameter_type,
-            default_value: None,
-        }
-    }
-
-    pub fn default_value(mut self, default_value: CodeBlock) -> FunctionParameter {
-        self.default_value = Some(default_value);
-        self
-    }
-}
 
 #[derive(Debug, Clone)]
 pub struct Function {
     name: Name,
     visibility_modifier: VisibilityModifier,
-    parameters: Vec<FunctionParameter>,
+    parameters: Vec<Parameter>,
     body: Option<CodeBlock>,
     returns: Type,
     receiver: Option<Type>,
@@ -86,7 +46,7 @@ impl Function {
         self
     }
 
-    pub fn parameter(mut self, parameter: FunctionParameter) -> Function {
+    pub fn parameter(mut self, parameter: Parameter) -> Function {
         self.parameters.push(parameter);
         self
     }
@@ -214,15 +174,15 @@ impl RenderKotlin for Function {
 mod test {
     use crate::io::RenderKotlin;
     use crate::spec::{CodeBlock, Function, GenericParameter, Name, Type};
-    use crate::spec::function::FunctionParameter;
+    use crate::spec::function::Parameter;
 
     #[test]
     fn test_function_with_multiple_parameters() {
         let block = Function::new(Name::from("main"))
             .receiver(Type::short())
             .visibility_modifier(crate::spec::VisibilityModifier::Public)
-            .parameter(FunctionParameter::new(Name::from("args"), Type::array(Type::string())))
-            .parameter(FunctionParameter::new(Name::from("args2"), Type::array(Type::int())))
+            .parameter(Parameter::new(Name::from("args"), Type::array(Type::string())))
+            .parameter(Parameter::new(Name::from("args2"), Type::array(Type::int())))
             .body(CodeBlock::statement("return 23"))
             .operator(true)
             .suspended(true)
@@ -241,7 +201,7 @@ mod test {
             .receiver(Type::short())
             .visibility_modifier(crate::spec::VisibilityModifier::Public)
             .parameter(
-                FunctionParameter::new(Name::from("args"), Type::array(Type::string()))
+                Parameter::new(Name::from("args"), Type::array(Type::string()))
                     .default_value(CodeBlock::atom("\"hello world\""))
             )
             .body(CodeBlock::statement("return 23"))

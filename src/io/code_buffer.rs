@@ -1,5 +1,5 @@
 #[derive(Debug, Default, PartialEq, Clone)]
-pub struct CodeBuffer {
+pub(crate) struct CodeBuffer {
     buffer: String,
 }
 

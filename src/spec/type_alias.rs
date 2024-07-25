@@ -24,11 +24,13 @@ impl TypeAlias {
     }
 
     /// Adds generic parameter to the type alias
+    /// Multiple generic parameters can be added, they will appear in order this method is called.
     pub fn generic_parameter(mut self, name: Name) -> Self {
         self.generic_parameters.push(name);
         self
     }
 
+    /// Sets [VisibilityModifier]. [VisibilityModifier::Protected] is not allowed
     pub fn visibility_modifier(mut self, visibility_modifier: VisibilityModifier) -> Self {
         self.visibility_modifier = visibility_modifier;
         self

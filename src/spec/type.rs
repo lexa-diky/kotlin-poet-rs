@@ -21,7 +21,7 @@ macro_rules! fn_basic_type_factory {
 
             Type::ClassLike(
                 ClassLikeType::new(
-                    ClassLikeTypeName::simple(
+                    ClassLikeTypeName::top_level(
                         package,
                         name
                     )
@@ -46,7 +46,7 @@ macro_rules! fn_generic_type_factory {
             let name = Name::from_str(stringify!($class)).unwrap();
 
             let mut inner_type = ClassLikeType::new(
-                ClassLikeTypeName::simple(
+                ClassLikeTypeName::top_level(
                     package,
                     name,
                 )

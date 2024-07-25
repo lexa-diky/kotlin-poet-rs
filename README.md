@@ -109,4 +109,10 @@ It does not depend on any other library, except for `std`.
 - ✅ Import aliases
 - ✅ Rendering
 
+### ClassLikeTypeName
+
+- ✅ Top level class names
+- ✅ Nested class names
+- ✅ Rendering
+
 ### _TBD_

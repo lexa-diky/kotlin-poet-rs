@@ -5,20 +5,27 @@ use crate::spec::{CodeBlock, Name, Package};
 use crate::tokens;
 use crate::util::SemanticConversionError;
 
+/// Represents a class-like type name.
+///
+/// This struct does not support generics, nullability or any other possible type 'modifiers'.
+/// You can use [ClassLikeType] instead.
 #[derive(PartialEq, Debug, Clone)]
 pub struct ClassLikeTypeName {
-    pub package: Package,
-    pub names: Vec<Name>,
+    pub(crate) package: Package,
+    names: Vec<Name>,
 }
 
 impl ClassLikeTypeName {
-    pub fn simple(package: Package, name: Name) -> ClassLikeTypeName {
+
+    /// Creates top level class name, for example `com.example.MyClass`
+    pub fn top_level(package: Package, name: Name) -> ClassLikeTypeName {
         ClassLikeTypeName {
             package,
             names: vec![name],
         }
     }
 
+    /// Creates nested class name, for example `com.example.MyClass.InnerClass`
     pub fn nested(package: Package, names: Vec<Name>) -> ClassLikeTypeName {
         ClassLikeTypeName {
             package,
@@ -41,14 +48,14 @@ impl FromStr for ClassLikeTypeName {
             let package = Package::from(package_parts);
             let name = Name::from_str(parts[parts.len() - 1])?;
 
-            Ok(ClassLikeTypeName::simple(
+            Ok(ClassLikeTypeName::top_level(
                 package,
                 name,
             )
             )
         } else if parts.len() == 1 {
             Ok(
-                ClassLikeTypeName::simple(
+                ClassLikeTypeName::top_level(
                     Package::from(vec![]),
                     Name::from(parts[0]),
                 )
@@ -109,7 +116,7 @@ mod test {
     #[test]
     fn render_simple_kotlin() {
         let package: Package = "io.github.lexadiky".parse().unwrap();
-        let class_like_type_name = ClassLikeTypeName::simple(
+        let class_like_type_name = ClassLikeTypeName::top_level(
             package,
             Name::from_str("Class").unwrap(),
         );

@@ -1,7 +1,7 @@
-use std::fmt::format;
 use std::str::FromStr;
+
 use crate::io::RenderKotlin;
-use crate::spec::{ClassLikeTypeName, CodeBlock, Name, Package, Type};
+use crate::spec::{ClassLikeTypeName, CodeBlock, Type};
 use crate::tokens;
 use crate::util::SemanticConversionError;
 
@@ -73,6 +73,7 @@ impl FromStr for ClassLikeType {
 #[cfg(test)]
 mod test {
     use std::str::FromStr;
+
     use crate::io::RenderKotlin;
     use crate::spec::{ClassLikeType, ClassLikeTypeName, Type};
     use crate::spec::{Name, Package};
@@ -80,7 +81,7 @@ mod test {
     #[test]
     fn render_simple_class_like_type() {
         let package: Package = "io.github.lexadiky".parse().unwrap();
-        let type_name = ClassLikeTypeName::simple(
+        let type_name = ClassLikeTypeName::top_level(
             package,
             Name::from_str("Class").unwrap(),
         );
@@ -91,7 +92,7 @@ mod test {
     #[test]
     fn render_nullable_class_like_type() {
         let package: Package = "io.github.lexadiky".parse().unwrap();
-        let type_name = ClassLikeTypeName::simple(
+        let type_name = ClassLikeTypeName::top_level(
             package,
             Name::from_str("Class").unwrap(),
         );
@@ -102,14 +103,14 @@ mod test {
     #[test]
     fn render_generic_class_like_type() {
         let package: Package = "io.github.lexadiky".parse().unwrap();
-        let type_name = ClassLikeTypeName::simple(
+        let type_name = ClassLikeTypeName::top_level(
             package.clone(),
             Name::from_str("Class").unwrap(),
         );
         let parameter = ClassLikeType::new(type_name)
             .generic_argument(Type::ClassLike(
                 ClassLikeType::new(
-                    ClassLikeTypeName::simple(
+                    ClassLikeTypeName::top_level(
                         package.clone(),
                         Name::from_str("Generic1").unwrap(),
                     )
@@ -117,7 +118,7 @@ mod test {
             ))
             .generic_argument(Type::ClassLike(
                 ClassLikeType::new(
-                    ClassLikeTypeName::simple(
+                    ClassLikeTypeName::top_level(
                         package,
                         Name::from_str("Generic2").unwrap(),
                     )
@@ -132,14 +133,14 @@ mod test {
     #[test]
     fn render_nullable_generic_class_like_type() {
         let package: Package = "io.github.lexadiky".parse().unwrap();
-        let type_name = ClassLikeTypeName::simple(
+        let type_name = ClassLikeTypeName::top_level(
             package.clone(),
             Name::from_str("Class").unwrap(),
         );
         let parameter = ClassLikeType::new(type_name)
             .generic_argument(Type::ClassLike(
                 ClassLikeType::new(
-                    ClassLikeTypeName::simple(
+                    ClassLikeTypeName::top_level(
                         package,
                         Name::from_str("Generic").unwrap(),
                     )

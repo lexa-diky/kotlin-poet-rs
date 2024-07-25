@@ -87,7 +87,7 @@ mod test {
     #[test]
     fn test_import_class_like_type() {
         let import = Import::class_like(
-            ClassLikeTypeName::simple(
+            ClassLikeTypeName::top_level(
                 Package::from_str("com.example").unwrap(),
                 Name::from_str("Foo").unwrap(),
             )
@@ -98,7 +98,7 @@ mod test {
     #[test]
     fn test_import_class_like_type_with_alias() {
         let import = Import::class_like_alias(
-            ClassLikeTypeName::simple(
+            ClassLikeTypeName::top_level(
                 Package::from_str("com.example").unwrap(),
                 Name::from_str("Foo").unwrap(),
             ),

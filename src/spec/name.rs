@@ -24,6 +24,14 @@ impl FromStr for Name {
     type Err = SemanticConversionError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
+        if s.is_empty() {
+            return Err(
+                SemanticConversionError::new(
+                    "Name cannot be empty"
+                )
+            )
+        }
+
         if s.chars().any(|ch| tokens::NAME_DISALLOWED_TOKENS.contains(ch)) {
             return Err(
                 SemanticConversionError::new(

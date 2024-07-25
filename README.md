@@ -87,4 +87,15 @@ It does not depend on any other library, except for `std`.
 - ✅ Generic parameters
 - ✅ Visibility modifiers
 
+### Package
+
+- ✅ Root package
+- ✅ Nested packages
+
+### Name
+
+- ✅ Simple Java compatible name
+- ✅ Escaped UTF-8 name
+- ✅ String parsing
+
 ### _TBD_

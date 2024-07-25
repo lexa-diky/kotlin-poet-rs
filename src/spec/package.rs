@@ -22,7 +22,9 @@ impl FromStr for Package {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let parts = s.split(DOT)
-            .map(Name::from_str).collect::<Result<Vec<_>, SemanticConversionError>>()?;
+            .filter(|part| !part.is_empty())
+            .map(Name::from_str)
+            .collect::<Result<Vec<_>, SemanticConversionError>>()?;
         Ok(Package::from(parts))
     }
 }
@@ -46,11 +48,11 @@ impl RenderKotlin for Package {
 mod test {
     use std::str::FromStr;
     use crate::io::RenderKotlin;
-    use crate::spec::Name;
+    use crate::spec::{Name, Package};
 
     #[test]
     fn parse_package() {
-        let package: super::Package = "io.github.lexadiky".parse().unwrap();
+        let package: Package = "io.github.lexadiky".parse().unwrap();
         assert_eq!(package.parts, vec![
             Name::from_str("io").unwrap(),
             Name::from_str("github").unwrap(),
@@ -59,8 +61,20 @@ mod test {
     }
 
     #[test]
+    fn parse_empty_package() {
+        let package: Package = "".parse().unwrap();
+        assert_eq!(package.parts, vec![]);
+    }
+
+    #[test]
     fn render_kotlin() {
-        let package: super::Package = "io.github.lexadiky".parse().unwrap();
+        let package: Package = "io.github.lexadiky".parse().unwrap();
         assert_eq!(package.render_string(), "io.github.lexadiky");
+    }
+
+    #[test]
+    fn render_empty() {
+        let package: Package = Package::from(vec![]);
+        assert_eq!(package.render_string(), "");
     }
 }

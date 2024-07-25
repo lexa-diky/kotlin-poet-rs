@@ -278,10 +278,10 @@ mod tests {
         let class = Class::new(Name::from("Person"))
             .inheritance_modifier(ClassInheritanceModifier::Enum)
             .enum_instance(Name::from("Alex"), vec![
-                Argument::new(CodeBlock::atom("23"))
+                Argument::new_positional(CodeBlock::atom("23"))
             ])
             .enum_instance(Name::from("Vova"), vec![
-                Argument::new(CodeBlock::atom("23"))
+                Argument::new_positional(CodeBlock::atom("23"))
             ])
             ;
         let code = class.render();
@@ -393,12 +393,12 @@ mod tests {
                         )
                     )
                     .delegate_argument(
-                        Argument::new(
+                        Argument::new_positional(
                             CodeBlock::atom("name")
                         )
                     )
                     .delegate_argument(
-                        Argument::new(
+                        Argument::new_positional(
                             CodeBlock::atom("23")
                         )
                     )

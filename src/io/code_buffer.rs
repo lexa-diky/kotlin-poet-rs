@@ -26,12 +26,14 @@ impl CodeBuffer {
         return self.buffer.chars().last();
     }
 
+    const SPACE_LIKE: [char; 2] = [' ', '\n'];
+
     /// Performs in place trimming of the inner buffer
     pub fn trim(&mut self) {
-        while self.buffer.starts_with([' ', '\n']) {
+        while self.buffer.starts_with(Self::SPACE_LIKE) {
             self.buffer.remove(0);
         }
-        while self.buffer.ends_with([' ', '\n']) {
+        while self.buffer.ends_with(Self::SPACE_LIKE) {
             self.buffer.remove(self.buffer.len() - 1);
         }
     }

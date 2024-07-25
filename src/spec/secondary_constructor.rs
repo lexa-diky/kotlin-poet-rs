@@ -82,8 +82,8 @@ mod tests {
             .visibility_modifier(VisibilityModifier::Public)
             .parameter(Parameter::new("name".into(), Type::string()))
             .parameter(Parameter::new("age".into(), Type::int()))
-            .delegate_argument(Argument::new(CodeBlock::atom("name")))
-            .delegate_argument(Argument::new(CodeBlock::atom("age")))
+            .delegate_argument(Argument::new_positional(CodeBlock::atom("name")))
+            .delegate_argument(Argument::new_positional(CodeBlock::atom("age")))
             .body(CodeBlock::statement("println(42)"));
 
         let rendered = secondary_constructor.render().to_string();

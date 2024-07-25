@@ -32,13 +32,12 @@ Constant property with initializer:
 use kotlin_poet_rs::spec::{CodeBlock, Name, Property, Type};
 use kotlin_poet_rs::io::RenderKotlin;
 
-fn main() {
-    let property = Property::new(Name::from("name"), Type::string())
-        .constant(true)
-        .initializer(CodeBlock::atom("\"Alex\""));
+let property = Property::new(Name::from("name"), Type::string())
+    .constant(true)
+    .initializer(CodeBlock::atom("\"Alex\""));
 
-    println!("{}", property.render_string());
-}
+println!("{}", property.render_string());
+
 ```
 
 Will print:
@@ -113,6 +112,12 @@ It does not depend on any other library, except for `std`.
 
 - ✅ Top level class names
 - ✅ Nested class names
+- ✅ Rendering
+
+### Argument
+
+- ✅ Named arguments
+- ✅ Positional arguments
 - ✅ Rendering
 
 ### _TBD_

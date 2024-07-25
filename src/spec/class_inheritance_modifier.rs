@@ -2,16 +2,29 @@ use crate::io::RenderKotlin;
 use crate::spec::CodeBlock;
 use crate::tokens;
 
+/// Inheritance modifiers applicable to class-like entities.
+/// Enables converting class to interface, enum e.t.c.
+/// Defaults to [ClassInheritanceModifier::Final], lack of inheritance modifier is represented as default.
+///
+/// Class / File members use [crate::spec::MemberInheritanceModifier] instead.
 #[derive(Debug, Clone)]
 pub enum ClassInheritanceModifier {
+    /// Corresponds open classes a.k.a. classes that can be inherited.
     Open,
+    /// Default, no inheritance allowed.
     Final,
+    /// Denotes that class-like entity is interface.
     Interface,
+    /// Denotes abstract classes
     Abstract,
+    /// Denotes sealed class, for simplicity abstract keyword is omitted
     Sealed,
+    /// Denotes that class-like entry is standalone object, for companion objects see [crate::spec::CompanionObject]
     Object,
+    /// Denotes that class-like entity is enum
     Enum,
-    Data
+    /// Denotes that class-like entity is data, for simplicity final keyword is omitted
+    Data,
 }
 
 impl RenderKotlin for ClassInheritanceModifier {

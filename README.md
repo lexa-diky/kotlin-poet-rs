@@ -46,6 +46,10 @@ Will print:
 public final const val name: kotlin.String = "Alex"
 ```
 
+## Supported features
+
+To see what features are currently supported and planned for the future, check [roadmap](ROADMAP.md).
+
 ## Philosophy
 
 ### Explicit better then implicit
@@ -76,48 +80,3 @@ Rust IO is very versatile and comes in many shapes. Thus this project does not s
 
 This library is commited to be as little as possible.
 It does not depend on any other library, except for `std`.
-
-## Supported features
-
-### Typealias
-
-- ✅ Name
-- ✅ Associated type (via `Type`)
-- ✅ Generic parameters
-- ✅ Visibility modifiers
-- ✅ Rendering
-
-### Package
-
-- ✅ Root package
-- ✅ Nested packages
-- ✅ Rendering
-
-### Name
-
-- ✅ Simple Java compatible name
-- ✅ Escaped UTF-8 name
-- ✅ String parsing
-- ✅ Rendering
-
-### Import
-
-- ✅ Class / Interface / Object imports
-- ✅ Whole package imports
-- ✅ Top level function / property imports
-- ✅ Import aliases
-- ✅ Rendering
-
-### ClassLikeTypeName
-
-- ✅ Top level class names
-- ✅ Nested class names
-- ✅ Rendering
-
-### Argument
-
-- ✅ Named arguments
-- ✅ Positional arguments
-- ✅ Rendering
-
-### _TBD_

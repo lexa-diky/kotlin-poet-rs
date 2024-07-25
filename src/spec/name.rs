@@ -6,6 +6,19 @@ use crate::tokens;
 use crate::util::SemanticConversionError;
 
 /// Kotlin identifier name, automatically escaped with backticks if it contains escapable tokens
+///
+/// # Examples
+/// ```rust
+/// use std::str::FromStr;
+/// use kotlin_poet_rs::io::RenderKotlin;
+/// use kotlin_poet_rs::spec::Name;
+///
+/// let name = Name::from("Foo");
+/// assert_eq!(name.render_string(), "Foo");
+///
+/// let escaped_name = Name::from("Foo Bar");
+/// assert_eq!(escaped_name.render_string(), "`Foo Bar`")
+/// ```
 #[derive(Debug, PartialEq, Clone)]
 pub struct Name {
     value: String,
@@ -90,6 +103,12 @@ mod test {
     #[test]
     fn test_name_with_disallowed_characters() {
         let name = Name::from_str("Foo/Bar");
+        assert!(matches!(name, Err(_)));
+    }
+
+    #[test]
+    fn test_empty_name() {
+        let name = Name::from_str("");
         assert!(matches!(name, Err(_)));
     }
 }

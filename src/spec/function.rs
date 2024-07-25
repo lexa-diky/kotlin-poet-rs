@@ -1,5 +1,5 @@
 use crate::io::RenderKotlin;
-use crate::spec::{AccessModifier, CodeBlock, GenericParameter, MemberInheritanceModifier, Name, Type};
+use crate::spec::{VisibilityModifier, CodeBlock, GenericParameter, MemberInheritanceModifier, Name, Type};
 use crate::tokens;
 
 #[derive(Debug, Clone)]
@@ -45,7 +45,7 @@ impl FunctionParameter {
 #[derive(Debug, Clone)]
 pub struct Function {
     name: Name,
-    access_modifier: AccessModifier,
+    visibility_modifier: VisibilityModifier,
     parameters: Vec<FunctionParameter>,
     body: Option<CodeBlock>,
     returns: Type,
@@ -62,7 +62,7 @@ impl Function {
     pub fn new(name: Name) -> Function {
         Function {
             name,
-            access_modifier: AccessModifier::Public,
+            visibility_modifier: VisibilityModifier::Public,
             parameters: Vec::new(),
             body: None,
             returns: Type::unit(),
@@ -76,8 +76,8 @@ impl Function {
         }
     }
 
-    pub fn access_modifier(mut self, access_modifier: AccessModifier) -> Function {
-        self.access_modifier = access_modifier;
+    pub fn visibility_modifier(mut self, visibility_modifier: VisibilityModifier) -> Function {
+        self.visibility_modifier = visibility_modifier;
         self
     }
 
@@ -135,7 +135,7 @@ impl Function {
 impl RenderKotlin for Function {
     fn render(&self) -> CodeBlock {
         let mut block = CodeBlock::empty();
-        block.with_nested(self.access_modifier.render());
+        block.with_nested(self.visibility_modifier.render());
         block.with_space();
 
         if self.is_suspended {
@@ -220,7 +220,7 @@ mod test {
     fn test_function_with_multiple_parameters() {
         let block = Function::new(Name::from("main"))
             .receiver(Type::short())
-            .access_modifier(crate::spec::AccessModifier::Public)
+            .visibility_modifier(crate::spec::VisibilityModifier::Public)
             .parameter(FunctionParameter::new(Name::from("args"), Type::array(Type::string())))
             .parameter(FunctionParameter::new(Name::from("args2"), Type::array(Type::int())))
             .body(CodeBlock::statement("return 23"))
@@ -239,7 +239,7 @@ mod test {
     fn test_function_with_parameter_default_value() {
         let block = Function::new(Name::from("main"))
             .receiver(Type::short())
-            .access_modifier(crate::spec::AccessModifier::Public)
+            .visibility_modifier(crate::spec::VisibilityModifier::Public)
             .parameter(
                 FunctionParameter::new(Name::from("args"), Type::array(Type::string()))
                     .default_value(CodeBlock::atom("\"hello world\""))

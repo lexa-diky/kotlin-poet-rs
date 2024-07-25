@@ -1,5 +1,5 @@
 use crate::io::RenderKotlin;
-use crate::spec::{AccessModifier, Argument, CodeBlock, FunctionParameter, PrimaryConstructor};
+use crate::spec::{VisibilityModifier, Argument, CodeBlock, FunctionParameter, PrimaryConstructor};
 use crate::tokens;
 
 /// Defines [Class's secondary constructor](https://kotlinlang.org/docs/classes.html#constructors)
@@ -7,7 +7,7 @@ use crate::tokens;
 pub struct SecondaryConstructor {
     parameters: Vec<FunctionParameter>,
     delegate_parameters: Vec<Argument>,
-    access_modifier: AccessModifier,
+    visibility_modifier: VisibilityModifier,
     body: Option<CodeBlock>,
 }
 
@@ -16,7 +16,7 @@ impl SecondaryConstructor {
         SecondaryConstructor {
             parameters: Vec::new(),
             delegate_parameters: Vec::new(),
-            access_modifier: AccessModifier::Public,
+            visibility_modifier: VisibilityModifier::Public,
             body: None,
         }
     }
@@ -36,8 +36,8 @@ impl SecondaryConstructor {
         self
     }
 
-    pub fn access_modifier(mut self, access_modifier: AccessModifier) -> SecondaryConstructor {
-        self.access_modifier = access_modifier;
+    pub fn visibility_modifier(mut self, visibility_modifier: VisibilityModifier) -> SecondaryConstructor {
+        self.visibility_modifier = visibility_modifier;
         self
     }
 }
@@ -46,7 +46,7 @@ impl RenderKotlin for SecondaryConstructor {
     fn render(&self) -> CodeBlock {
         let mut cb = CodeBlock::empty();
         let mut pc = PrimaryConstructor::new()
-            .access_modifier(self.access_modifier.clone());
+            .visibility_modifier(self.visibility_modifier.clone());
 
         for parameter in &self.parameters {
             pc = pc.parameter(parameter.clone());
@@ -74,12 +74,12 @@ impl RenderKotlin for SecondaryConstructor {
 #[cfg(test)]
 mod tests {
     use crate::io::RenderKotlin;
-    use crate::spec::{AccessModifier, Argument, CodeBlock, FunctionParameter, SecondaryConstructor, Type};
+    use crate::spec::{VisibilityModifier, Argument, CodeBlock, FunctionParameter, SecondaryConstructor, Type};
 
     #[test]
     fn secondary_constructor_test() {
         let secondary_constructor = SecondaryConstructor::new()
-            .access_modifier(AccessModifier::Public)
+            .visibility_modifier(VisibilityModifier::Public)
             .parameter(FunctionParameter::new("name".into(), Type::string()))
             .parameter(FunctionParameter::new("age".into(), Type::int()))
             .delegate_argument(Argument::new(CodeBlock::atom("name")))

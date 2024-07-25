@@ -1,5 +1,5 @@
 use crate::io::RenderKotlin;
-use crate::spec::{AccessModifier, CodeBlock, MemberInheritanceModifier, Name, Type};
+use crate::spec::{VisibilityModifier, CodeBlock, MemberInheritanceModifier, Name, Type};
 use crate::tokens;
 
 #[derive(Debug, Clone)]
@@ -37,7 +37,7 @@ pub struct Property {
     name: Name,
     returns: Type,
     inheritance_modifier: MemberInheritanceModifier,
-    access_modifier: AccessModifier,
+    visibility_modifier: VisibilityModifier,
     initializer: Option<PropertyInitializer>,
     getter: Option<PropertyGetter>,
     setter: Option<PropertySetter>,
@@ -78,19 +78,19 @@ impl RenderKotlin for PropertyGetter {
 #[derive(Debug, Clone)]
 pub struct PropertySetter {
     code: CodeBlock,
-    access_modifier: AccessModifier,
+    visibility_modifier: VisibilityModifier,
 }
 
 impl PropertySetter {
     pub fn new(code: CodeBlock) -> PropertySetter {
         PropertySetter {
             code,
-            access_modifier: AccessModifier::Public,
+            visibility_modifier: VisibilityModifier::Public,
         }
     }
 
-    pub fn access_modifier(mut self, access_modifier: AccessModifier) -> PropertySetter {
-        self.access_modifier = access_modifier;
+    pub fn visibility_modifier(mut self, visibility_modifier: VisibilityModifier) -> PropertySetter {
+        self.visibility_modifier = visibility_modifier;
         self
     }
 }
@@ -118,7 +118,7 @@ impl Property {
             name,
             returns,
             inheritance_modifier: MemberInheritanceModifier::Final,
-            access_modifier: AccessModifier::Public,
+            visibility_modifier: VisibilityModifier::Public,
             initializer: None,
             getter: None,
             setter: None,
@@ -128,9 +128,9 @@ impl Property {
         }
     }
 
-    /// Sets [AccessModifier]
-    pub fn access_modifier(mut self, access_modifier: AccessModifier) -> Property {
-        self.access_modifier = access_modifier;
+    /// Sets [VisibilityModifier]
+    pub fn visibility_modifier(mut self, visibility_modifier: VisibilityModifier) -> Property {
+        self.visibility_modifier = visibility_modifier;
         self
     }
 
@@ -189,7 +189,7 @@ impl Property {
 impl RenderKotlin for Property {
     fn render(&self) -> CodeBlock {
         let mut block = CodeBlock::empty();
-        block.with_nested(self.access_modifier.render());
+        block.with_nested(self.visibility_modifier.render());
         block.with_space();
         block.with_nested(self.inheritance_modifier.render());
         block.with_space();

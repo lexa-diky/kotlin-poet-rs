@@ -1,10 +1,10 @@
 use crate::io::RenderKotlin;
-use crate::spec::{AccessModifier, Class, CodeBlock, Function, Property};
+use crate::spec::{VisibilityModifier, Class, CodeBlock, Function, Property};
 use crate::tokens;
 
 #[derive(Debug, Clone)]
 pub struct CompanionObject {
-    access_modifier: AccessModifier,
+    visibility_modifier: VisibilityModifier,
     member_nodes: Vec<crate::spec::class::ClassMemberNode>,
 }
 
@@ -12,7 +12,7 @@ impl CompanionObject {
     pub fn new() -> Self {
         CompanionObject {
             member_nodes: Vec::new(),
-            access_modifier: AccessModifier::Public
+            visibility_modifier: VisibilityModifier::Public
         }
     }
 
@@ -36,8 +36,8 @@ impl CompanionObject {
         self
     }
 
-    pub fn access_modifier(mut self, access_modifier: AccessModifier) -> Self {
-        self.access_modifier = access_modifier;
+    pub fn visibility_modifier(mut self, visibility_modifier: VisibilityModifier) -> Self {
+        self.visibility_modifier = visibility_modifier;
         self
     }
 }
@@ -45,7 +45,7 @@ impl CompanionObject {
 impl RenderKotlin for CompanionObject {
     fn render(&self) -> CodeBlock {
         let mut code = CodeBlock::empty();
-        code.with_nested(self.access_modifier.render());
+        code.with_nested(self.visibility_modifier.render());
         code.with_space();
         code.with_atom(tokens::keyword::COMPANION);
         code.with_space();

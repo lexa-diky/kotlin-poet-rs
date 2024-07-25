@@ -1,5 +1,5 @@
 use crate::io::RenderKotlin;
-use crate::spec::{AccessModifier, CodeBlock, FunctionParameter, Property};
+use crate::spec::{VisibilityModifier, CodeBlock, FunctionParameter, Property};
 use crate::tokens;
 
 #[derive(Debug, Clone)]
@@ -21,14 +21,14 @@ impl RenderKotlin for PrimaryConstructorParameter {
 #[derive(Debug, Clone)]
 pub struct PrimaryConstructor {
     arguments: Vec<PrimaryConstructorParameter>,
-    access_modifier: AccessModifier
+    visibility_modifier: VisibilityModifier
 }
 
 impl PrimaryConstructor {
     pub fn new() -> PrimaryConstructor {
         PrimaryConstructor {
             arguments: Vec::new(),
-            access_modifier: AccessModifier::Public
+            visibility_modifier: VisibilityModifier::Public
         }
     }
 
@@ -42,8 +42,8 @@ impl PrimaryConstructor {
         self
     }
 
-    pub fn access_modifier(mut self, access_modifier: AccessModifier) -> PrimaryConstructor {
-        self.access_modifier = access_modifier;
+    pub fn visibility_modifier(mut self, visibility_modifier: VisibilityModifier) -> PrimaryConstructor {
+        self.visibility_modifier = visibility_modifier;
         self
     }
 }
@@ -51,7 +51,7 @@ impl PrimaryConstructor {
 impl RenderKotlin for PrimaryConstructor {
     fn render(&self) -> CodeBlock {
         let mut block = CodeBlock::empty();
-        block.with_nested(self.access_modifier.render());
+        block.with_nested(self.visibility_modifier.render());
         block.with_space();
         block.with_atom(tokens::keyword::CONSTRUCTOR);
         block.with_round_brackets(|params_block| {
@@ -65,7 +65,7 @@ impl RenderKotlin for PrimaryConstructor {
 #[cfg(test)]
 mod tests {
     use crate::io::RenderKotlin;
-    use crate::spec::{AccessModifier, CodeBlock, FunctionParameter, PrimaryConstructor, Property, Type};
+    use crate::spec::{VisibilityModifier, CodeBlock, FunctionParameter, PrimaryConstructor, Property, Type};
 
     #[test]
     fn primary_constructor_test() {
@@ -94,7 +94,7 @@ mod tests {
     #[test]
     fn test_private_constructor() {
         let primary_constructor = PrimaryConstructor::new()
-            .access_modifier(AccessModifier::Private);
+            .visibility_modifier(VisibilityModifier::Private);
 
         assert_eq!(
             primary_constructor.render().to_string(),

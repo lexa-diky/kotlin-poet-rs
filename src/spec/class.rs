@@ -1,5 +1,5 @@
 use crate::io::RenderKotlin;
-use crate::spec::{AccessModifier, Argument, ClassInheritanceModifier, CodeBlock, CompanionObject, Function, GenericParameter, Name, PrimaryConstructor, Property, SecondaryConstructor, Type};
+use crate::spec::{VisibilityModifier, Argument, ClassInheritanceModifier, CodeBlock, CompanionObject, Function, GenericParameter, Name, PrimaryConstructor, Property, SecondaryConstructor, Type};
 use crate::tokens;
 
 #[derive(Debug, Clone)]
@@ -47,7 +47,7 @@ struct EnumInstance {
 #[derive(Debug, Clone)]
 pub struct Class {
     name: Name,
-    access_modifier: AccessModifier,
+    visibility_modifier: VisibilityModifier,
     inheritance_modifier: ClassInheritanceModifier,
     member_nodes: Vec<ClassMemberNode>,
     enum_instances: Vec<EnumInstance>,
@@ -62,7 +62,7 @@ impl Class {
     pub fn new(name: Name) -> Self {
         Class {
             name,
-            access_modifier: AccessModifier::Public,
+            visibility_modifier: VisibilityModifier::Public,
             inheritance_modifier: ClassInheritanceModifier::Final,
             member_nodes: Vec::new(),
             enum_instances: Vec::new(),
@@ -79,8 +79,8 @@ impl Class {
         self
     }
 
-    pub fn access_modifier(mut self, access_modifier: AccessModifier) -> Self {
-        self.access_modifier = access_modifier;
+    pub fn visibility_modifier(mut self, visibility_modifier: VisibilityModifier) -> Self {
+        self.visibility_modifier = visibility_modifier;
         self
     }
 
@@ -150,7 +150,7 @@ impl RenderKotlin for Class {
     fn render(&self) -> CodeBlock {
         let mut code = CodeBlock::empty();
 
-        code.with_nested(self.access_modifier.render());
+        code.with_nested(self.visibility_modifier.render());
         code.with_space();
         if self.is_inner {
             code.with_atom(tokens::keyword::INNER);

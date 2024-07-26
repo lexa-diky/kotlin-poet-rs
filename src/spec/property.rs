@@ -1,5 +1,5 @@
 use crate::io::RenderKotlin;
-use crate::spec::{VisibilityModifier, CodeBlock, MemberInheritanceModifier, Name, Type};
+use crate::spec::{VisibilityModifier, CodeBlock, MemberInheritanceModifier, Name, Type, Annotation};
 use crate::tokens;
 
 #[derive(Debug, Clone)]
@@ -43,7 +43,8 @@ pub struct Property {
     setter: Option<PropertySetter>,
     is_mutable: bool,
     is_const: bool,
-    is_override: bool
+    is_override: bool,
+    annotations: Vec<Annotation>
 }
 
 #[derive(Debug, Clone)]
@@ -124,7 +125,8 @@ impl Property {
             setter: None,
             is_mutable: false,
             is_const: false,
-            is_override: false
+            is_override: false,
+            annotations: Vec::new()
         }
     }
 
@@ -184,11 +186,21 @@ impl Property {
         self.is_const = flag;
         self
     }
+
+    /// Adds an annotation
+    pub fn annotation(mut self, annotation: Annotation) -> Property {
+        self.annotations.push(annotation);
+        self
+    }
 }
 
 impl RenderKotlin for Property {
     fn render(&self) -> CodeBlock {
         let mut block = CodeBlock::empty();
+        for annotation in &self.annotations {
+            block.with_nested(annotation.render());
+            block.with_new_line();
+        }
         block.with_nested(self.visibility_modifier.render());
         block.with_space();
         block.with_nested(self.inheritance_modifier.render());
@@ -232,6 +244,8 @@ impl RenderKotlin for Property {
 
 #[cfg(test)]
 mod test {
+    use std::str::FromStr;
+    use crate::spec::ClassLikeTypeName;
     use super::*;
 
     #[test]
@@ -288,6 +302,26 @@ mod test {
 
         assert_eq!(
             "public final override val age: kotlin.Int = 22",
+            property.render().to_string()
+        )
+    }
+
+    #[test]
+    fn test_annotation() {
+        let property = Property::new(Name::from("age"), Type::int())
+            .overrides(true)
+            .initializer(CodeBlock::atom("22"))
+            .annotation(Annotation::new(
+                ClassLikeTypeName::from_str("io.github.lexadiky.MyAnnotation")
+                    .unwrap()
+            ))
+            .annotation(Annotation::new(
+                ClassLikeTypeName::from_str("io.github.lexadiky.OtherAnnotation")
+                    .unwrap()
+            ));
+
+        assert_eq!(
+            "@io.github.lexadiky.MyAnnotation()\n@io.github.lexadiky.OtherAnnotation()\npublic final override val age: kotlin.Int = 22",
             property.render().to_string()
         )
     }

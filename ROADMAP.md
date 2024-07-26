@@ -71,4 +71,10 @@ There is currently no estimate when `1.0` release will come.
 - ✅ Positional arguments
 - ✅ Rendering
 
+### Annotation
+- ✅ Annotation on entity
+- ✅ Annotation arguments
+- ✅ Annotation with target specifier
+- ✅ Rendering
+
 ### _TBD_

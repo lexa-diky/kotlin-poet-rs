@@ -50,19 +50,30 @@ pub struct Property {
 #[derive(Debug, Clone)]
 pub struct PropertyGetter {
     code: CodeBlock,
+    annotations: Vec<Annotation>
 }
 
 impl PropertyGetter {
     pub fn new(code: CodeBlock) -> PropertyGetter {
         PropertyGetter {
-            code
+            code,
+            annotations: Vec::new()
         }
+    }
+
+    pub fn annotation(mut self, annotation: Annotation) -> PropertyGetter {
+        self.annotations.push(annotation);
+        self
     }
 }
 
 impl RenderKotlin for PropertyGetter {
     fn render(&self) -> CodeBlock {
         let mut block = CodeBlock::empty();
+        for annotation in &self.annotations {
+            block.with_nested(annotation.render());
+            block.with_new_line();
+        }
         block.with_atom(tokens::keyword::GET);
         block.with_round_brackets(|_| {});
         block.with_space();
@@ -80,6 +91,7 @@ impl RenderKotlin for PropertyGetter {
 pub struct PropertySetter {
     code: CodeBlock,
     visibility_modifier: VisibilityModifier,
+    annotations: Vec<Annotation>
 }
 
 impl PropertySetter {
@@ -87,11 +99,17 @@ impl PropertySetter {
         PropertySetter {
             code,
             visibility_modifier: VisibilityModifier::Public,
+            annotations: Vec::new()
         }
     }
 
     pub fn visibility_modifier(mut self, visibility_modifier: VisibilityModifier) -> PropertySetter {
         self.visibility_modifier = visibility_modifier;
+        self
+    }
+
+    pub fn annotation(mut self, annotation: Annotation) -> PropertySetter {
+        self.annotations.push(annotation);
         self
     }
 }
@@ -100,6 +118,10 @@ impl RenderKotlin for PropertySetter {
 
     fn render(&self) -> CodeBlock {
         let mut code = CodeBlock::empty();
+        for annotation in &self.annotations {
+            code.with_nested(annotation.render());
+            code.with_new_line();
+        }
         code.with_atom(tokens::keyword::SET);
         code.with_round_brackets(|parameters_code| {
             parameters_code.with_atom(tokens::CONV_VAR_VALUE);
@@ -323,6 +345,32 @@ mod test {
         assert_eq!(
             "@io.github.lexadiky.MyAnnotation()\n@io.github.lexadiky.OtherAnnotation()\npublic final override val age: kotlin.Int = 22",
             property.render().to_string()
+        )
+    }
+
+    #[test]
+    fn test_setter_with_annotation() {
+        let setter = PropertySetter::new(CodeBlock::statement("println(47)"))
+            .annotation(Annotation::new(
+                ClassLikeTypeName::from_str("a.A").unwrap()
+            ));
+
+        assert_eq!(
+            "@a.A()\nset(value) {\n    println(47)\n}",
+            setter.render_string()
+        )
+    }
+
+    #[test]
+    fn test_getter_with_annotation() {
+        let setter = PropertyGetter::new(CodeBlock::statement("println(47)"))
+            .annotation(Annotation::new(
+                ClassLikeTypeName::from_str("a.A").unwrap()
+            ));
+
+        assert_eq!(
+            "@a.A()\nget() {\n    println(47)\n}",
+            setter.render_string()
         )
     }
 }

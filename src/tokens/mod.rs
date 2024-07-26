@@ -28,6 +28,8 @@ pub const COMMA: &str = ",";
 pub const SEMICOLON: &str = ";";
 /// '?' denotes nullability
 pub const QUESTION_MARK: &str = "?";
+/// `@` used as annotation prefix
+pub const AT: &str = "@";
 /// '`' used to escape non JVM compatible identifiers
 pub const TICK: &str = "`";
 /// `<` start of generic parameters
@@ -103,4 +105,13 @@ pub mod keyword {
     pub const WHERE: &str = "where";
     pub const IN: &str = "in";
     pub const OUT: &str = "out";
+
+    // Annotation target
+    pub const FILE: &str = "file";
+    pub const PROPERTY: &str = "property";
+    pub const FIELD: &str = "field";
+    pub const RECEIVER: &str = "receiver";
+    pub const PARAM: &str = "param";
+    pub const SET_PARAM: &str = "setparam";
+    pub const DELEGATE: &str = "delegate";
 }

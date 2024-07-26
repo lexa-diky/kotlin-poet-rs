@@ -1,5 +1,5 @@
 use crate::io::RenderKotlin;
-use crate::spec::{Class, ClassLikeTypeName, CodeBlock, Function, Import, Package, Property, TypeAlias};
+use crate::spec::{Annotation, AnnotationTarget, Class, ClassLikeTypeName, CodeBlock, Function, Import, Package, Property, TypeAlias};
 use crate::tokens;
 
 #[derive(Debug, Clone)]
@@ -16,6 +16,7 @@ pub struct KotlinFile {
     package: Option<Package>,
     imports: Vec<Import>,
     nodes: Vec<KotlinFileNode>,
+    annotations: Vec<Annotation>
 }
 
 impl KotlinFile {
@@ -24,6 +25,7 @@ impl KotlinFile {
             package: Some(package),
             imports: Vec::new(),
             nodes: Vec::new(),
+            annotations: Vec::new()
         }
     }
 
@@ -51,6 +53,14 @@ impl KotlinFile {
         self.nodes.push(KotlinFileNode::Class(class));
         self
     }
+
+    pub fn annotation(mut self, annotation: Annotation) -> Self {
+        self.annotations.push(
+            annotation
+                .target(AnnotationTarget::File)
+        );
+        self
+    }
 }
 
 impl From<ClassLikeTypeName> for KotlinFile {
@@ -63,6 +73,13 @@ impl From<ClassLikeTypeName> for KotlinFile {
 impl RenderKotlin for KotlinFile {
     fn render(&self) -> CodeBlock {
         let mut code = CodeBlock::empty();
+        for annotation in &self.annotations {
+            code.with_nested(annotation.render());
+            code.with_new_line();
+        }
+        if !self.annotations.is_empty() {
+            code.with_new_line();
+        }
 
         if let Some(package) = &self.package {
             code.with_atom(tokens::keyword::PACKAGE);

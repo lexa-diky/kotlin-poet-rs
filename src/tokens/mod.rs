@@ -71,6 +71,13 @@ pub const BLOCK_COMMENT_MIDDLE: &str = " *";
 /// ' */' used to e end block comments
 pub const BLOCK_COMMENT_END: &str = " */";
 
+/// '/**' used to start kdoc comments
+pub const KDOC_COMMENT_START: &str = "/**";
+/// ' *' used in middle of kdoc comments
+pub const KDOC_COMMENT_MIDDLE: &str = " *";
+/// ' */' used to end kdoc comments
+pub const KDOC_COMMENT_END: &str = " */";
+
 pub mod keyword {
     pub const CLASS: &str = "class";
     /// 'this' keyword, refers to current context parameter or parent constructor

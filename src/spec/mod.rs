@@ -24,6 +24,7 @@ mod parameter;
 mod annotation;
 mod annotation_target;
 mod comment;
+mod kdoc;
 
 pub use package::Package;
 pub use class_like_type_name::ClassLikeTypeName;
@@ -51,3 +52,4 @@ pub use parameter::Parameter;
 pub use annotation::Annotation;
 pub use annotation_target::AnnotationTarget;
 pub use comment::Comment;
+pub use kdoc::KDoc;

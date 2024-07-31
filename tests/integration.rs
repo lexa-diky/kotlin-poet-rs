@@ -2,7 +2,7 @@ use std::path::Path;
 use std::str::FromStr;
 
 use kotlin_poet_rs::io::RenderKotlin;
-use kotlin_poet_rs::spec::{VisibilityModifier, Class, ClassInheritanceModifier, CodeBlock, CompanionObject, Function, Parameter, KotlinFile, MemberInheritanceModifier, Name, Package, PrimaryConstructor, Property, PropertyGetter, PropertySetter, Type};
+use kotlin_poet_rs::spec::{VisibilityModifier, Class, ClassInheritanceModifier, CodeBlock, CompanionObject, Function, Parameter, KotlinFile, MemberInheritanceModifier, Name, Package, PrimaryConstructor, Property, PropertyGetter, PropertySetter, Type, KDoc};
 
 #[test]
 fn generic_file() {
@@ -89,6 +89,17 @@ fn class_with_companion_object() {
     assert_rendered(
         "tests/samples/class_with_companion_object.kt",
         &&class.render(),
+    )
+}
+
+#[test]
+fn kdoc_comment() {
+    assert_rendered(
+        "tests/samples/kdoc.kt",
+        &KDoc::new()
+            .append("Hello\nWorld")
+            .merge(KDoc::new().append("Wow such documentation"))
+            .render()
     )
 }
 

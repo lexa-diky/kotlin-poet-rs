@@ -81,4 +81,8 @@ There is currently no estimate when `1.0` release will come.
 - ✅ Inline and block comments
 - ✅ Rendering
 
+### KDoc
+- ✅ Merging multiple KDocs into one
+- ✅ Rendering
+
 ### _TBD_

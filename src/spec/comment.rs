@@ -4,6 +4,8 @@ use crate::tokens;
 
 /// Represents a 'normal', non documentation comment in Kotlin.
 ///
+/// Entities that support comments should usually store them as [Vec<Comment>] and aggregate multiple comments.
+///
 /// # Example
 /// ```rust
 /// use kotlin_poet_rs::spec::Comment;
@@ -92,7 +94,6 @@ mod tests {
             .append("Hello\n")
             .append("World\n");
 
-        println!("{}", comment.render_string());
         assert_eq!(
             comment.render_string(),
             "/*\n * Hello\n * World\n */"

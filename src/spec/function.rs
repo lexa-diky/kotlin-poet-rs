@@ -1,5 +1,5 @@
 use crate::io::RenderKotlin;
-use crate::spec::{VisibilityModifier, CodeBlock, GenericParameter, MemberInheritanceModifier, Name, Type, Parameter};
+use crate::spec::{VisibilityModifier, CodeBlock, GenericParameter, MemberInheritanceModifier, Name, Type, Parameter, Annotation};
 use crate::tokens;
 
 #[derive(Debug, Clone)]
@@ -15,7 +15,8 @@ pub struct Function {
     is_inline: bool,
     is_operator: bool,
     is_override: bool,
-    generic_parameters: Vec<GenericParameter>
+    generic_parameters: Vec<GenericParameter>,
+    annotations: Vec<Annotation>,
 }
 
 impl Function {
@@ -32,7 +33,8 @@ impl Function {
             is_inline: false,
             is_operator: false,
             generic_parameters: Vec::new(),
-            is_override: false
+            is_override: false,
+            annotations: Vec::new(),
         }
     }
 
@@ -90,11 +92,22 @@ impl Function {
         self.is_override = flag;
         self
     }
+
+    pub fn annotation(mut self, annotation: Annotation) -> Function {
+        self.annotations.push(annotation);
+        self
+    }
 }
 
 impl RenderKotlin for Function {
     fn render(&self) -> CodeBlock {
         let mut block = CodeBlock::empty();
+
+        for annotation in &self.annotations {
+            block.with_nested(annotation.render());
+            block.with_new_line()
+        }
+
         block.with_nested(self.visibility_modifier.render());
         block.with_space();
 
@@ -173,7 +186,7 @@ impl RenderKotlin for Function {
 #[cfg(test)]
 mod test {
     use crate::io::RenderKotlin;
-    use crate::spec::{CodeBlock, Function, GenericParameter, Name, Type};
+    use crate::spec::{Annotation, ClassLikeTypeName, CodeBlock, Function, GenericParameter, Name, Package, Type};
     use crate::spec::function::Parameter;
 
     #[test]
@@ -244,6 +257,32 @@ mod test {
 
         assert_eq!(
             "public override fun box(): kotlin.Int {\n    return 23\n}",
+            block.render_string()
+        )
+    }
+
+    #[test]
+    fn test_with_annotation() {
+        let block = Function::new(Name::from("box"))
+            .annotation(
+                Annotation::new(
+                    ClassLikeTypeName::top_level(
+                        Package::root(),
+                        Name::from("Test"),
+                    )
+                )
+            )
+            .annotation(
+                Annotation::new(
+                    ClassLikeTypeName::top_level(
+                        Package::root(),
+                        Name::from("Test2"),
+                    )
+                )
+            );
+
+        assert_eq!(
+            "@Test()\n@Test2()\npublic fun box(): kotlin.Unit",
             block.render_string()
         )
     }

@@ -77,4 +77,8 @@ There is currently no estimate when `1.0` release will come.
 - ✅ Annotation with target specifier
 - ✅ Rendering
 
+### Comment
+- ✅ Inline and block comments
+- ✅ Rendering
+
 ### _TBD_

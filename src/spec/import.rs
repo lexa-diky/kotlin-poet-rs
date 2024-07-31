@@ -87,10 +87,7 @@ mod test {
     #[test]
     fn test_import_class_like_type() {
         let import = Import::class_like(
-            ClassLikeTypeName::top_level(
-                Package::from_str("com.example").unwrap(),
-                Name::from_str("Foo").unwrap(),
-            )
+            ClassLikeTypeName::from_str("com.example.Foo").unwrap()
         );
         assert_eq!(import.render_string(), "import com.example.Foo");
     }

@@ -59,6 +59,18 @@ pub const CONV_VAR_FIELD: &str = "field";
 pub const NAME_ESCAPED_TOKENS: &str = " -!\"#$%^&()*+,-=?@^_{|}~";
 pub const NAME_DISALLOWED_TOKENS: &str = ".:/\\[]<>";
 
+// Comments
+
+/// '//' used to start single line comments
+pub const INLINE_COMMENT_START: &str = "//";
+
+/// '/*' used to start block comments
+pub const BLOCK_COMMENT_START: &str = "/*";
+/// ' *' used in middle of block comments
+pub const BLOCK_COMMENT_MIDDLE: &str = " *";
+/// ' */' used to e end block comments
+pub const BLOCK_COMMENT_END: &str = " */";
+
 pub mod keyword {
     pub const CLASS: &str = "class";
     /// 'this' keyword, refers to current context parameter or parent constructor

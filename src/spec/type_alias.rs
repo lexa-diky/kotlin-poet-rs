@@ -1,5 +1,5 @@
 use crate::io::RenderKotlin;
-use crate::spec::{CodeBlock, Name, Type, VisibilityModifier};
+use crate::spec::{Annotation, CodeBlock, Name, Type, VisibilityModifier};
 use crate::tokens;
 
 /// Kotlin's `typealias` declaration
@@ -8,7 +8,8 @@ pub struct TypeAlias {
     name: Name,
     generic_parameters: Vec<Name>,
     actual: Type,
-    visibility_modifier: VisibilityModifier
+    visibility_modifier: VisibilityModifier,
+    annotations: Vec<Annotation>
 }
 
 impl TypeAlias {
@@ -19,7 +20,8 @@ impl TypeAlias {
             name,
             generic_parameters: Vec::new(),
             actual,
-            visibility_modifier: VisibilityModifier::Public
+            visibility_modifier: VisibilityModifier::Public,
+            annotations: Vec::new()
         }
     }
 
@@ -35,11 +37,21 @@ impl TypeAlias {
         self.visibility_modifier = visibility_modifier;
         self
     }
+
+    /// Adds annotation to the type alias
+    pub fn annotation(mut self, annotation: Annotation) -> Self {
+        self.annotations.push(annotation);
+        self
+    }
 }
 
 impl RenderKotlin for TypeAlias {
     fn render(&self) -> CodeBlock {
         let mut code = CodeBlock::empty();
+        for annotation in &self.annotations {
+            code.with_nested(annotation.render());
+            code.with_new_line();
+        }
         code.with_nested(self.visibility_modifier.render());
         code.with_space();
         code.with_atom(tokens::keyword::TYPEALIAS);
@@ -61,7 +73,7 @@ impl RenderKotlin for TypeAlias {
 
 #[cfg(test)]
 mod test {
-    use crate::spec::Type;
+    use crate::spec::{Class, ClassLikeTypeName, Package, Type};
 
     use super::*;
 
@@ -99,6 +111,25 @@ mod test {
 
         let actual = alias.render().to_string();
         let expected = "public typealias Vec<T, B> = kotlin.collections.List<T>";
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn type_alias_with_annotation() {
+        let alias = TypeAlias::new(
+            Name::from("Vec"),
+            Type::list(Type::string()),
+        ).annotation(
+            Annotation::new(
+                ClassLikeTypeName::top_level(
+                    Package::root(),
+                    Name::from("JvmName")
+                )
+            )
+        );
+
+        let actual = alias.render().to_string();
+        let expected = "@JvmName()\npublic typealias Vec = kotlin.collections.List<kotlin.String>";
         assert_eq!(actual, expected);
     }
 }

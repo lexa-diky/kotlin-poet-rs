@@ -1,6 +1,7 @@
 use criterion::{black_box, Criterion, criterion_group, criterion_main};
 use kotlin_poet_rs::io::RenderKotlin;
 use kotlin_poet_rs::spec::Name;
+
 fn name_escaping_escaped() -> String {
     let name = Name::from("Hello, World!");
     return name.render_string();

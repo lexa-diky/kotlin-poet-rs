@@ -13,6 +13,7 @@ There is currently no estimate when `1.0` release will come.
 ### High priority
 
 - Annotations
+- Comments / KDoc
 
 ### Low priority
 

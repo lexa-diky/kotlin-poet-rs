@@ -79,7 +79,6 @@ impl RenderKotlin for Name {
 #[cfg(test)]
 mod test {
     use std::str::FromStr;
-
     use super::*;
 
     #[test]

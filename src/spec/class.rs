@@ -1,5 +1,5 @@
 use crate::io::RenderKotlin;
-use crate::spec::{VisibilityModifier, Argument, ClassInheritanceModifier, CodeBlock, CompanionObject, Function, GenericParameter, Name, PrimaryConstructor, Property, SecondaryConstructor, Type};
+use crate::spec::{VisibilityModifier, Argument, ClassInheritanceModifier, CodeBlock, CompanionObject, Function, GenericParameter, Name, PrimaryConstructor, Property, SecondaryConstructor, Type, Annotation};
 use crate::tokens;
 
 #[derive(Debug, Clone)]
@@ -55,7 +55,8 @@ pub struct Class {
     companion_object: Option<CompanionObject>,
     generic_parameters: Vec<GenericParameter>,
     parent_classes: Vec<Type>,
-    is_inner: bool
+    is_inner: bool,
+    annotations: Vec<Annotation>,
 }
 
 impl Class {
@@ -70,7 +71,8 @@ impl Class {
             companion_object: None,
             generic_parameters: Vec::new(),
             parent_classes: Vec::new(),
-            is_inner: false
+            is_inner: false,
+            annotations: Vec::new(),
         }
     }
 
@@ -144,11 +146,23 @@ impl Class {
         self.parent_classes.push(parent_type);
         self
     }
+
+    /// Adds [Annotation] to this class.
+    /// They will appear in order this method is called.
+    pub fn annotation(mut self, annotation: Annotation) -> Self {
+        self.annotations.push(annotation);
+        self
+    }
 }
 
 impl RenderKotlin for Class {
     fn render(&self) -> CodeBlock {
         let mut code = CodeBlock::empty();
+
+        for annotation in &self.annotations {
+            code.with_nested(annotation.render());
+            code.with_new_line();
+        }
 
         code.with_nested(self.visibility_modifier.render());
         code.with_space();
@@ -234,7 +248,7 @@ impl RenderKotlin for Class {
 
 #[cfg(test)]
 mod tests {
-    use crate::spec::{Parameter, GenericInvariance, PropertyGetter, PropertySetter, Type};
+    use crate::spec::{Parameter, GenericInvariance, PropertyGetter, PropertySetter, Type, ClassLikeTypeName, Package};
     use super::*;
 
     #[test]
@@ -525,5 +539,19 @@ mod tests {
         let code = class.render();
 
         assert_eq!(code.to_string(), "public final class Box<A, in B, out C> where B: kotlin.String, B: kotlin.Int {\n\n}");
+    }
+
+    #[test]
+    fn test_with_annotation() {
+        let class = Class::new(Name::from("Person"))
+            .annotation(
+                Annotation::new(ClassLikeTypeName::top_level(
+                    Package::from(Vec::new()),
+                    Name::from("Deprecated"),
+                ))
+            );
+        let code = class.render();
+
+        assert_eq!(code.to_string(), "@Deprecated()\npublic final class Person {\n\n}");
     }
 }

@@ -18,7 +18,7 @@ use crate::tokens;
 ///    "// Hello, World!",
 ///    comment.render_string()
 /// )
-/// ```
+#[derive(Debug, Clone)]
 pub struct Comment {
     content: String,
     is_block_render: bool,

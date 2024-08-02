@@ -1,5 +1,5 @@
 use crate::io::RenderKotlin;
-use crate::spec::{VisibilityModifier, Argument, ClassInheritanceModifier, CodeBlock, CompanionObject, Function, GenericParameter, Name, PrimaryConstructor, Property, SecondaryConstructor, Type, Annotation};
+use crate::spec::{VisibilityModifier, Argument, ClassInheritanceModifier, CodeBlock, CompanionObject, Function, GenericParameter, Name, PrimaryConstructor, Property, SecondaryConstructor, Type, Annotation, KDoc};
 use crate::tokens;
 
 #[derive(Debug, Clone)]
@@ -57,6 +57,7 @@ pub struct Class {
     parent_classes: Vec<Type>,
     is_inner: bool,
     annotations: Vec<Annotation>,
+    kdoc: Option<KDoc>
 }
 
 impl Class {
@@ -73,6 +74,7 @@ impl Class {
             parent_classes: Vec::new(),
             is_inner: false,
             annotations: Vec::new(),
+            kdoc: None
         }
     }
 
@@ -153,11 +155,26 @@ impl Class {
         self.annotations.push(annotation);
         self
     }
+
+    /// Adds [KDoc] to this class.
+    /// In case of multiple calls, KDocs will be merged, see [KDoc::merge].
+    pub fn kdoc(mut self, kdoc: KDoc) -> Self {
+        self.kdoc = match self.kdoc {
+            None => { Some(kdoc) }
+            Some(old) => { Some(old.merge(kdoc)) }
+        };
+        self
+    }
 }
 
 impl RenderKotlin for Class {
     fn render(&self) -> CodeBlock {
         let mut code = CodeBlock::empty();
+
+        if let Some(kdoc) = &self.kdoc {
+            code.with_nested(kdoc.render());
+            code.with_new_line();
+        }
 
         for annotation in &self.annotations {
             code.with_nested(annotation.render());
@@ -257,6 +274,21 @@ mod tests {
         let code = class.render();
 
         assert_eq!(code.to_string(), "public final class Person {\n\n}");
+    }
+
+    #[test]
+    fn test_class_with_kdoc() {
+        let class = Class::new(Name::from("Person"))
+            .kdoc(
+                KDoc::from("hello world")
+                    .merge(KDoc::from("at here"))
+            );
+        let code = class.render();
+
+        assert_eq!(
+            code.to_string(),
+            "/**\n * hello world\n * at here\n */\npublic final class Person {\n\n}"
+        );
     }
 
     #[test]

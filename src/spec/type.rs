@@ -88,7 +88,7 @@ impl Type {
     fn_basic_type_factory!(byte, kotlin, Byte);
 
     // Floating point numbers
-    fn_basic_type_factory!(float, kotlin, Boolean);
+    fn_basic_type_factory!(float, kotlin, Float);
     fn_basic_type_factory!(double, kotlin, Double);
 
     // Logic

@@ -22,6 +22,7 @@ There is currently no estimate when `1.0` release will come.
 - `spec::Module`
 - Standard library `Type` factories generation
 - Parsing of some `spec` types from strings
+- Code generate complete bindings for Kotlin standard library
 
 ### Researching
 

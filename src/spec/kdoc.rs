@@ -6,6 +6,7 @@ use crate::tokens;
 ///
 /// Entities that support KDoc should usually store it as singular instance and merge multiple KDocs into one.
 /// Missing KDoc is represented as [Option::None].
+#[derive(Debug, Clone)]
 pub struct KDoc {
     content: String,
 }
@@ -29,6 +30,12 @@ impl KDoc {
         self.content.push_str(tokens::NEW_LINE);
         self.content.push_str(other.content.as_str());
         self
+    }
+}
+
+impl From<&str> for KDoc {
+    fn from(value: &str) -> Self {
+        KDoc::new().append(value)
     }
 }
 

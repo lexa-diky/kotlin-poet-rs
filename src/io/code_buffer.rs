@@ -1,35 +1,35 @@
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, Default)]
 pub(crate) struct CodeBuffer {
     buffer: String,
 }
 
 impl CodeBuffer {
-    pub fn from(s: &str) -> CodeBuffer {
+    pub(crate) fn from(s: &str) -> CodeBuffer {
         CodeBuffer {
             buffer: s.to_string()
         }
     }
 
-    pub fn push(&mut self, s: &str) {
+    pub(crate) fn push(&mut self, s: &str) {
         self.buffer.push_str(s);
     }
 
-    pub fn as_string(&self) -> String {
+    pub(crate) fn as_string(&self) -> String {
         self.buffer.clone()
     }
 
-    pub fn into_string(self) -> String {
+    pub(crate) fn into_string(self) -> String {
         self.buffer
     }
 
-    pub fn last_char(&self) -> Option<char> {
+    pub(crate) fn last_char(&self) -> Option<char> {
         return self.buffer.chars().last();
     }
 
     const SPACE_LIKE: [char; 2] = [' ', '\n'];
 
     /// Performs in place trimming of the inner buffer
-    pub fn trim(&mut self) {
+    pub(crate) fn trim(&mut self) {
         while self.buffer.starts_with(Self::SPACE_LIKE) {
             self.buffer.remove(0);
         }

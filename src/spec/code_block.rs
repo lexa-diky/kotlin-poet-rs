@@ -3,9 +3,9 @@ use crate::tokens;
 
 /// Node of a code block that can be rendered to a Kotlin code.
 /// You can treat this nodes as commands for rendering, like "add atom", "add new line", etc.
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, Clone)]
 pub(crate) enum CodeBlockNode {
-    Atom(CodeBuffer),
+    Atom(String),
     Space,
     NewLine,
     Indent(usize),
@@ -13,7 +13,7 @@ pub(crate) enum CodeBlockNode {
 }
 
 /// Plain list of nodes that can be rendered to a Kotlin code.
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, Clone)]
 pub struct CodeBlock {
     pub(crate) nodes: Vec<CodeBlockNode>,
 }
@@ -32,7 +32,7 @@ impl CodeBlock {
         CodeBlock {
             nodes: vec![
                 CodeBlockNode::Atom(
-                    CodeBuffer::from(text)
+                    text.to_string()
                 )
             ],
         }
@@ -101,10 +101,10 @@ impl CodeBlock {
     /// Adds [CodeBlockNode::Atom]
     pub fn with_atom(&mut self, text: &str) {
         if let Some(CodeBlockNode::Atom(inner_buffer)) = self.nodes.last_mut() {
-            inner_buffer.push(text);
+            inner_buffer.push_str(text);
             return;
         }
-        self.nodes.push(CodeBlockNode::Atom(CodeBuffer::from(text)));
+        self.nodes.push(CodeBlockNode::Atom(text.to_string()));
     }
 
     /// Adds [CodeBlockNode::Space]
@@ -194,7 +194,7 @@ impl CodeBlock {
                             root_buffer.push(tokens::INDENT)
                         }
                     }
-                    root_buffer.push(buffer.as_string().as_str());
+                    root_buffer.push(buffer.as_str());
                 }
                 CodeBlockNode::Indent(size) => {
                     indent += size;

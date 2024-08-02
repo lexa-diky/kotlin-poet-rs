@@ -32,7 +32,7 @@ use crate::tokens;
 ///
 /// assert_eq!(argument.render().to_string(), "value");
 /// ```
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone)]
 pub struct Argument {
     pub name: Option<Name>,
     pub value: CodeBlock,

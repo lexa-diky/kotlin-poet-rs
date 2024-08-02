@@ -3,7 +3,7 @@ use std::str::FromStr;
 use crate::io::RenderKotlin;
 use crate::spec::{ClassLikeTypeName, CodeBlock, Type};
 use crate::tokens;
-use crate::util::SemanticConversionError;
+use crate::util::{SemanticConversionError, yolo_from_str};
 
 #[derive(PartialEq, Debug, Clone)]
 pub struct ClassLikeType {
@@ -21,11 +21,13 @@ impl ClassLikeType {
         }
     }
 
+    /// Marks the type as nullable
     pub fn nullable(mut self, flag: bool) -> ClassLikeType {
         self.nullable = flag;
         self
     }
 
+    /// Adds a generic argument to the type
     pub fn generic_argument(mut self, parameter: Type) -> ClassLikeType {
         self.generic_arguments.push(parameter);
         self
@@ -58,6 +60,7 @@ impl RenderKotlin for ClassLikeType {
     }
 }
 
+yolo_from_str!(ClassLikeType);
 impl FromStr for ClassLikeType {
     type Err = SemanticConversionError;
 

@@ -3,7 +3,7 @@ use std::str::FromStr;
 use crate::io::RenderKotlin;
 use crate::spec::CodeBlock;
 use crate::tokens;
-use crate::util::SemanticConversionError;
+use crate::util::{SemanticConversionError, yolo_from_str};
 
 /// Kotlin identifier name, automatically escaped with backticks if it contains escapable tokens
 ///
@@ -25,13 +25,7 @@ pub struct Name {
     should_be_escaped: bool
 }
 
-/// Creates new [Name] from [&str], may panic if creates invalid name
-impl From<&str> for Name {
-    fn from(value: &str) -> Self {
-        Name::from_str(value).unwrap()
-    }
-}
-
+yolo_from_str!(Name);
 /// Creates new [Name] from [&str]
 impl FromStr for Name {
     type Err = SemanticConversionError;

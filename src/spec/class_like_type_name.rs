@@ -3,7 +3,7 @@ use std::str::FromStr;
 use crate::io::RenderKotlin;
 use crate::spec::{CodeBlock, Name, Package};
 use crate::tokens;
-use crate::util::SemanticConversionError;
+use crate::util::{SemanticConversionError, yolo_from_str};
 
 /// Represents a class-like type name.
 ///
@@ -34,6 +34,7 @@ impl ClassLikeTypeName {
     }
 }
 
+yolo_from_str!(ClassLikeTypeName);
 impl FromStr for ClassLikeTypeName {
     type Err = SemanticConversionError;
 

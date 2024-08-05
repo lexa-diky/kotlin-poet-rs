@@ -4,18 +4,9 @@ pub(crate) struct CodeBuffer {
 }
 
 impl CodeBuffer {
-    pub(crate) fn from(s: &str) -> CodeBuffer {
-        CodeBuffer {
-            buffer: s.to_string()
-        }
-    }
 
     pub(crate) fn push(&mut self, s: &str) {
         self.buffer.push_str(s);
-    }
-
-    pub(crate) fn as_string(&self) -> String {
-        self.buffer.clone()
     }
 
     pub(crate) fn into_string(self) -> String {

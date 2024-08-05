@@ -1,5 +1,5 @@
 use crate::io::RenderKotlin;
-use crate::spec::{VisibilityModifier, CodeBlock, MemberInheritanceModifier, Name, Type, Annotation};
+use crate::spec::{VisibilityModifier, CodeBlock, MemberInheritanceModifier, Name, Type, Annotation, KDoc};
 use crate::tokens;
 
 #[derive(Debug, Clone)]
@@ -44,7 +44,8 @@ pub struct Property {
     is_mutable: bool,
     is_const: bool,
     is_override: bool,
-    annotations: Vec<Annotation>
+    annotations: Vec<Annotation>,
+    kdoc: Option<KDoc>
 }
 
 #[derive(Debug, Clone)]
@@ -148,7 +149,8 @@ impl Property {
             is_mutable: false,
             is_const: false,
             is_override: false,
-            annotations: Vec::new()
+            annotations: Vec::new(),
+            kdoc: None
         }
     }
 
@@ -214,15 +216,32 @@ impl Property {
         self.annotations.push(annotation);
         self
     }
+
+    /// Adds [KDoc] to this class.
+    /// In case of multiple calls, KDocs will be merged, see [KDoc::merge].
+    pub fn kdoc(mut self, kdoc: KDoc) -> Self {
+        self.kdoc = match self.kdoc {
+            None => { Some(kdoc) }
+            Some(old) => { Some(old.merge(kdoc)) }
+        };
+        self
+    }
 }
 
 impl RenderKotlin for Property {
     fn render(&self) -> CodeBlock {
         let mut block = CodeBlock::empty();
+
+        if let Some(kdoc) = &self.kdoc {
+            block.with_nested(kdoc.render());
+            block.with_new_line();
+        }
+
         for annotation in &self.annotations {
             block.with_nested(annotation.render());
             block.with_new_line();
         }
+
         block.with_nested(self.visibility_modifier.render());
         block.with_space();
         block.with_nested(self.inheritance_modifier.render());
@@ -324,6 +343,17 @@ mod test {
 
         assert_eq!(
             "public final override val age: kotlin.Int = 22",
+            property.render().to_string()
+        )
+    }
+
+    #[test]
+    fn test_kdoc() {
+        let property = Property::new(Name::from("age"), Type::int())
+            .kdoc(KDoc::from("Hello\nWorld"));
+
+        assert_eq!(
+            "/**\n * Hello\n * World\n */\npublic final val age: kotlin.Int",
             property.render().to_string()
         )
     }

@@ -1,5 +1,5 @@
 use crate::io::RenderKotlin;
-use crate::spec::{VisibilityModifier, CodeBlock, GenericParameter, MemberInheritanceModifier, Name, Type, Parameter, Annotation};
+use crate::spec::{VisibilityModifier, CodeBlock, GenericParameter, MemberInheritanceModifier, Name, Type, Parameter, Annotation, KDoc};
 use crate::tokens;
 
 #[derive(Debug, Clone)]
@@ -17,6 +17,7 @@ pub struct Function {
     is_override: bool,
     generic_parameters: Vec<GenericParameter>,
     annotations: Vec<Annotation>,
+    kdoc: Option<KDoc>
 }
 
 impl Function {
@@ -35,6 +36,7 @@ impl Function {
             generic_parameters: Vec::new(),
             is_override: false,
             annotations: Vec::new(),
+            kdoc: None
         }
     }
 
@@ -97,11 +99,26 @@ impl Function {
         self.annotations.push(annotation);
         self
     }
+
+    /// Adds [KDoc] to this class.
+    /// In case of multiple calls, KDocs will be merged, see [KDoc::merge].
+    pub fn kdoc(mut self, kdoc: KDoc) -> Self {
+        self.kdoc = match self.kdoc {
+            None => { Some(kdoc) }
+            Some(old) => { Some(old.merge(kdoc)) }
+        };
+        self
+    }
 }
 
 impl RenderKotlin for Function {
     fn render(&self) -> CodeBlock {
         let mut block = CodeBlock::empty();
+
+        if let Some(kdoc) = &self.kdoc {
+            block.with_nested(kdoc.render());
+            block.with_new_line();
+        }
 
         for annotation in &self.annotations {
             block.with_nested(annotation.render());
@@ -186,7 +203,7 @@ impl RenderKotlin for Function {
 #[cfg(test)]
 mod test {
     use crate::io::RenderKotlin;
-    use crate::spec::{Annotation, ClassLikeTypeName, CodeBlock, Function, GenericParameter, Name, Package, Type};
+    use crate::spec::{Annotation, ClassLikeTypeName, CodeBlock, Function, GenericParameter, KDoc, Name, Package, Type};
     use crate::spec::function::Parameter;
 
     #[test]
@@ -257,6 +274,17 @@ mod test {
 
         assert_eq!(
             "public override fun box(): kotlin.Int {\n    return 23\n}",
+            block.render_string()
+        )
+    }
+
+    #[test]
+    fn test_kdoc() {
+        let block = Function::new(Name::from("box"))
+            .kdoc(KDoc::from("Hello\nWorld"));
+
+        assert_eq!(
+            "/**\n * Hello\n * World\n */\npublic fun box(): kotlin.Unit",
             block.render_string()
         )
     }

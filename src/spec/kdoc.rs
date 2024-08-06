@@ -5,7 +5,6 @@ use crate::tokens;
 /// Represents a Kotlin documentation comment in KDoc format.
 ///
 /// Entities that support KDoc should usually store it as singular instance and merge multiple KDocs into one.
-/// Missing KDoc is represented as [Option::None].
 #[derive(Debug, Clone)]
 pub struct KDoc {
     content: String,
@@ -62,6 +61,47 @@ impl RenderKotlin for KDoc {
         block
     }
 }
+
+/// Utility wrapper around [Option<KDoc>] that allows to store it as an option and merge multiple KDocs into one.
+#[derive(Default, Clone, Debug)]
+pub(crate) struct KdocSlot(Option<KDoc>);
+impl RenderKotlin for KdocSlot {
+    fn render(&self) -> CodeBlock {
+        let mut cb = CodeBlock::empty();
+        if let Some(kdoc) = &self.0 {
+            cb.with_nested(kdoc.render());
+            cb.with_new_line()
+        }
+        cb
+    }
+}
+
+impl KdocSlot {
+    /// Merges [other] into this KDoc slot.
+    /// If [None] sets [other] as current value.
+    pub(crate) fn merge(&mut self, other: KDoc) {
+        match self.0 {
+            None => { self.0 = Some(other) }
+            Some(ref mut old) => {
+                old.content.push_str(tokens::NEW_LINE);
+                old.content.push_str(other.content.as_str());
+            }
+        };
+    }
+}
+
+macro_rules! mixin_kdoc_mutators {
+    () => {
+        /// Adds [KDoc] to this entity.
+        /// In case of multiple calls, KDocs will be merged, see [KDoc::merge].
+        pub fn kdoc(mut self, kdoc: KDoc) -> Self {
+            self.kdoc.merge(kdoc);
+            self
+        }
+    };
+}
+
+pub(crate) use mixin_kdoc_mutators;
 
 #[cfg(test)]
 mod tests {

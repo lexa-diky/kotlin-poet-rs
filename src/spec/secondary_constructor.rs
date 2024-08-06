@@ -1,5 +1,6 @@
 use crate::io::RenderKotlin;
-use crate::spec::{VisibilityModifier, Argument, CodeBlock, Parameter, PrimaryConstructor};
+use crate::spec::{VisibilityModifier, Argument, CodeBlock, Parameter, PrimaryConstructor, KDoc};
+use crate::spec::kdoc::{KdocSlot, mixin_kdoc_mutators};
 use crate::tokens;
 
 /// Defines [Class's secondary constructor](https://kotlinlang.org/docs/classes.html#constructors)
@@ -9,6 +10,7 @@ pub struct SecondaryConstructor {
     delegate_parameters: Vec<Argument>,
     visibility_modifier: VisibilityModifier,
     body: Option<CodeBlock>,
+    kdoc: KdocSlot
 }
 
 impl SecondaryConstructor {
@@ -18,6 +20,7 @@ impl SecondaryConstructor {
             delegate_parameters: Vec::new(),
             visibility_modifier: VisibilityModifier::Public,
             body: None,
+            kdoc: KdocSlot::default()
         }
     }
 
@@ -40,11 +43,16 @@ impl SecondaryConstructor {
         self.visibility_modifier = visibility_modifier;
         self
     }
+
+    mixin_kdoc_mutators!();
 }
 
 impl RenderKotlin for SecondaryConstructor {
     fn render(&self) -> CodeBlock {
         let mut cb = CodeBlock::empty();
+
+        cb.with_nested(self.kdoc.render());
+
         let mut pc = PrimaryConstructor::new()
             .visibility_modifier(self.visibility_modifier.clone());
 
@@ -74,10 +82,10 @@ impl RenderKotlin for SecondaryConstructor {
 #[cfg(test)]
 mod tests {
     use crate::io::RenderKotlin;
-    use crate::spec::{VisibilityModifier, Argument, CodeBlock, Parameter, SecondaryConstructor, Type};
+    use crate::spec::{VisibilityModifier, Argument, CodeBlock, Parameter, SecondaryConstructor, Type, KDoc};
 
     #[test]
-    fn secondary_constructor_test() {
+    fn test_secondary_constructor() {
         let secondary_constructor = SecondaryConstructor::new()
             .visibility_modifier(VisibilityModifier::Public)
             .parameter(Parameter::new("name".into(), Type::string()))
@@ -88,6 +96,16 @@ mod tests {
 
         let rendered = secondary_constructor.render().to_string();
         let expected = "public constructor(name: kotlin.String, age: kotlin.Int) : this(name, age) {\n    println(42)\n}";
+        assert_eq!(rendered, expected);
+    }
+
+    #[test]
+    fn test_secondary_constructor_with_kdoc() {
+        let secondary_constructor = SecondaryConstructor::new()
+            .kdoc(KDoc::from("Hello\nWorld"));
+
+        let rendered = secondary_constructor.render().to_string();
+        let expected = "/**\n * Hello\n * World\n */\npublic constructor() : this() {\n}";
         assert_eq!(rendered, expected);
     }
 }

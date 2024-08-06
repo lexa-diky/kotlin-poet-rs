@@ -1,5 +1,6 @@
 use crate::io::RenderKotlin;
 use crate::spec::{VisibilityModifier, Argument, ClassInheritanceModifier, CodeBlock, CompanionObject, Function, GenericParameter, Name, PrimaryConstructor, Property, SecondaryConstructor, Type, Annotation, KDoc};
+use crate::spec::kdoc::{KdocSlot, mixin_kdoc_mutators};
 use crate::tokens;
 
 #[derive(Debug, Clone)]
@@ -57,7 +58,7 @@ pub struct Class {
     parent_classes: Vec<Type>,
     is_inner: bool,
     annotations: Vec<Annotation>,
-    kdoc: Option<KDoc>
+    kdoc: KdocSlot
 }
 
 impl Class {
@@ -74,7 +75,7 @@ impl Class {
             parent_classes: Vec::new(),
             is_inner: false,
             annotations: Vec::new(),
-            kdoc: None
+            kdoc: KdocSlot::default()
         }
     }
 
@@ -156,26 +157,13 @@ impl Class {
         self
     }
 
-    /// Adds [KDoc] to this class.
-    /// In case of multiple calls, KDocs will be merged, see [KDoc::merge].
-    pub fn kdoc(mut self, kdoc: KDoc) -> Self {
-        self.kdoc = match self.kdoc {
-            None => { Some(kdoc) }
-            Some(old) => { Some(old.merge(kdoc)) }
-        };
-        self
-    }
+    mixin_kdoc_mutators!();
 }
 
 impl RenderKotlin for Class {
     fn render(&self) -> CodeBlock {
         let mut code = CodeBlock::empty();
-
-        if let Some(kdoc) = &self.kdoc {
-            code.with_nested(kdoc.render());
-            code.with_new_line();
-        }
-
+        code.with_nested(self.kdoc.render());
         for annotation in &self.annotations {
             code.with_nested(annotation.render());
             code.with_new_line();

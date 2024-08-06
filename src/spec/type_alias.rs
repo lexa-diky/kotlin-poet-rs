@@ -1,5 +1,6 @@
 use crate::io::RenderKotlin;
 use crate::spec::{Annotation, CodeBlock, KDoc, Name, Type, VisibilityModifier};
+use crate::spec::kdoc::{KdocSlot, mixin_kdoc_mutators};
 use crate::tokens;
 
 /// Kotlin's `typealias` declaration
@@ -10,7 +11,7 @@ pub struct TypeAlias {
     actual: Type,
     visibility_modifier: VisibilityModifier,
     annotations: Vec<Annotation>,
-    kdoc: Option<KDoc>
+    kdoc: KdocSlot
 }
 
 impl TypeAlias {
@@ -23,7 +24,7 @@ impl TypeAlias {
             actual,
             visibility_modifier: VisibilityModifier::Public,
             annotations: Vec::new(),
-            kdoc: None
+            kdoc: KdocSlot::default()
         }
     }
 
@@ -46,25 +47,14 @@ impl TypeAlias {
         self
     }
 
-    /// Adds [KDoc] to this class.
-    /// In case of multiple calls, KDocs will be merged, see [KDoc::merge].
-    pub fn kdoc(mut self, kdoc: KDoc) -> Self {
-        self.kdoc = match self.kdoc {
-            None => { Some(kdoc) }
-            Some(old) => { Some(old.merge(kdoc)) }
-        };
-        self
-    }
+    mixin_kdoc_mutators!();
 }
 
 impl RenderKotlin for TypeAlias {
     fn render(&self) -> CodeBlock {
         let mut code = CodeBlock::empty();
 
-        if let Some(kdoc) = &self.kdoc {
-            code.with_nested(kdoc.render());
-            code.with_new_line();
-        }
+        code.with_nested(self.kdoc.render());
 
         for annotation in &self.annotations {
             code.with_nested(annotation.render());

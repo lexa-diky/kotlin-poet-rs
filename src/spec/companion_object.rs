@@ -12,7 +12,7 @@ impl CompanionObject {
     pub fn new() -> Self {
         CompanionObject {
             member_nodes: Vec::new(),
-            visibility_modifier: VisibilityModifier::Public
+            visibility_modifier: VisibilityModifier::default()
         }
     }
 

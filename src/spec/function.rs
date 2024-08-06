@@ -25,7 +25,7 @@ impl Function {
     pub fn new(name: Name) -> Function {
         Function {
             name,
-            visibility_modifier: VisibilityModifier::Public,
+            visibility_modifier: VisibilityModifier::default(),
             parameters: Vec::new(),
             body: None,
             returns: Type::unit(),
@@ -193,14 +193,14 @@ impl RenderKotlin for Function {
 #[cfg(test)]
 mod test {
     use crate::io::RenderKotlin;
-    use crate::spec::{Annotation, ClassLikeTypeName, CodeBlock, Function, GenericParameter, KDoc, Name, Package, Type};
+    use crate::spec::{Annotation, ClassLikeTypeName, CodeBlock, Function, GenericParameter, KDoc, Name, Package, Type, VisibilityModifier};
     use crate::spec::function::Parameter;
 
     #[test]
     fn test_function_with_multiple_parameters() {
         let block = Function::new(Name::from("main"))
             .receiver(Type::short())
-            .visibility_modifier(crate::spec::VisibilityModifier::Public)
+            .visibility_modifier(VisibilityModifier::default())
             .parameter(Parameter::new(Name::from("args"), Type::array(Type::string())))
             .parameter(Parameter::new(Name::from("args2"), Type::array(Type::int())))
             .body(CodeBlock::statement("return 23"))
@@ -219,7 +219,7 @@ mod test {
     fn test_function_with_parameter_default_value() {
         let block = Function::new(Name::from("main"))
             .receiver(Type::short())
-            .visibility_modifier(crate::spec::VisibilityModifier::Public)
+            .visibility_modifier(VisibilityModifier::Public)
             .parameter(
                 Parameter::new(Name::from("args"), Type::array(Type::string()))
                     .default_value(CodeBlock::atom("\"hello world\""))

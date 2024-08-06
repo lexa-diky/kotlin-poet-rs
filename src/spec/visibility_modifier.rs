@@ -18,6 +18,12 @@ pub enum VisibilityModifier {
     Protected,
 }
 
+impl Default for VisibilityModifier {
+    fn default() -> Self {
+        VisibilityModifier::Public
+    }
+}
+
 impl RenderKotlin for VisibilityModifier {
     fn render(&self) -> CodeBlock {
         let keyword = match self {

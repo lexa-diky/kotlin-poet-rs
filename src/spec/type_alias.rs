@@ -20,10 +20,10 @@ impl TypeAlias {
     pub fn new(name: Name, actual: Type) -> TypeAlias {
         TypeAlias {
             name,
-            generic_parameters: Vec::new(),
+            generic_parameters: Vec::default(),
             actual,
-            visibility_modifier: VisibilityModifier::Public,
-            annotations: Vec::new(),
+            visibility_modifier: VisibilityModifier::default(),
+            annotations: Vec::default(),
             kdoc: KdocSlot::default()
         }
     }

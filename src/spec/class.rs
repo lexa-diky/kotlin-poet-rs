@@ -65,7 +65,7 @@ impl Class {
     pub fn new(name: Name) -> Self {
         Class {
             name,
-            visibility_modifier: VisibilityModifier::Public,
+            visibility_modifier: VisibilityModifier::default(),
             inheritance_modifier: ClassInheritanceModifier::Final,
             member_nodes: Vec::new(),
             enum_instances: Vec::new(),

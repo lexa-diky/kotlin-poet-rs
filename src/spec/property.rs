@@ -100,7 +100,7 @@ impl PropertySetter {
     pub fn new(code: CodeBlock) -> PropertySetter {
         PropertySetter {
             code,
-            visibility_modifier: VisibilityModifier::Public,
+            visibility_modifier: VisibilityModifier::default(),
             annotations: Vec::new()
         }
     }
@@ -143,7 +143,7 @@ impl Property {
             name,
             returns,
             inheritance_modifier: MemberInheritanceModifier::Final,
-            visibility_modifier: VisibilityModifier::Public,
+            visibility_modifier: VisibilityModifier::default(),
             initializer: None,
             getter: None,
             setter: None,

@@ -18,7 +18,7 @@ impl SecondaryConstructor {
         SecondaryConstructor {
             parameters: Vec::new(),
             delegate_parameters: Vec::new(),
-            visibility_modifier: VisibilityModifier::Public,
+            visibility_modifier: VisibilityModifier::default(),
             body: None,
             kdoc: KdocSlot::default()
         }

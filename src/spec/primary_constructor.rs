@@ -28,7 +28,7 @@ impl PrimaryConstructor {
     pub fn new() -> PrimaryConstructor {
         PrimaryConstructor {
             arguments: Vec::new(),
-            visibility_modifier: VisibilityModifier::Public
+            visibility_modifier: VisibilityModifier::default()
         }
     }
 

@@ -79,7 +79,7 @@ mod tests {
 
     #[test]
     fn test_comment_normal() {
-        let mut comment = super::Comment::new()
+        let comment = super::Comment::new()
             .append("Hello, ")
             .append("World!");
         assert_eq!(
@@ -90,7 +90,7 @@ mod tests {
 
     #[test]
     fn test_comment_block() {
-        let mut comment = super::Comment::new()
+        let comment = super::Comment::new()
             .append("Hello\n")
             .append("World\n");
 

@@ -116,7 +116,7 @@ mod tests {
 
     #[test]
     fn test_kdoc_render() {
-        let mut comment = super::KDoc::new()
+        let comment = super::KDoc::new()
             .append("Hello\n")
             .append("World\n");
 
@@ -128,7 +128,7 @@ mod tests {
 
     #[test]
     fn test_comment_block() {
-        let mut comment = super::KDoc::new()
+        let comment = super::KDoc::new()
             .append("Hello\n")
             .merge(super::KDoc::new().append("World\n"));
 

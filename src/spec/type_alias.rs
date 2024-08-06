@@ -77,7 +77,7 @@ impl RenderKotlin for TypeAlias {
 
 #[cfg(test)]
 mod test {
-    use crate::spec::{Class, ClassLikeTypeName, Package, Type};
+    use crate::spec::{ClassLikeTypeName, Package, Type};
 
     use super::*;
 

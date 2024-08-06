@@ -7,11 +7,12 @@ use crate::tokens;
 /// Defaults to [ClassInheritanceModifier::Final], lack of inheritance modifier is represented as default.
 ///
 /// Class / File members use [crate::spec::MemberInheritanceModifier] instead.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub enum ClassInheritanceModifier {
     /// Corresponds open classes a.k.a. classes that can be inherited.
     Open,
     /// Default, no inheritance allowed.
+    #[default]
     Final,
     /// Denotes that class-like entity is interface.
     Interface,
@@ -25,12 +26,6 @@ pub enum ClassInheritanceModifier {
     Enum,
     /// Denotes that class-like entity is data, for simplicity final keyword is omitted
     Data,
-}
-
-impl Default for ClassInheritanceModifier {
-    fn default() -> Self {
-        ClassInheritanceModifier::Final
-    }
 }
 
 impl RenderKotlin for ClassInheritanceModifier {

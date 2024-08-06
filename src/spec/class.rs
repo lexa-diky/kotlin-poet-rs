@@ -46,6 +46,33 @@ struct EnumInstance {
     arguments: Vec<Argument>,
 }
 
+/// Defines Kotlin's class like entity. This could represent any 'flavour' of class: enum, interface, e.t.c.
+/// To change type of class please use [Class::inheritance_modifier].
+///
+/// #Example
+///
+/// ## Simple class
+/// ```
+/// use kotlin_poet_rs::io::RenderKotlin;
+/// use kotlin_poet_rs::spec::{Class, Name};
+///
+/// let class = Class::new(Name::from("Person"));
+///  let code = class.render();
+///
+///  assert_eq!(code.to_string(), "public final class Person {\n\n}");
+/// ```
+///
+/// ## Interface
+/// ```
+/// use kotlin_poet_rs::io::RenderKotlin;
+/// use kotlin_poet_rs::spec::{Class, ClassInheritanceModifier, Name};
+///
+/// let class = Class::new(Name::from("Person"))
+///     .inheritance_modifier(ClassInheritanceModifier::Interface);
+///  let code = class.render();
+///
+///  assert_eq!(code.to_string(), "public interface Person {\n\n}");
+/// ```
 #[derive(Debug, Clone)]
 pub struct Class {
     name: Name,
@@ -59,10 +86,12 @@ pub struct Class {
     parent_classes: Vec<Type>,
     is_inner: bool,
     annotations: Vec<Annotation>,
-    kdoc: KdocSlot
+    kdoc: KdocSlot,
 }
 
 impl Class {
+
+    /// Creates new plain final class.
     pub fn new(name: Name) -> Self {
         Class {
             name,
@@ -76,40 +105,48 @@ impl Class {
             parent_classes: Vec::default(),
             is_inner: false,
             annotations: Vec::default(),
-            kdoc: KdocSlot::default()
+            kdoc: KdocSlot::default(),
         }
     }
 
+    /// Marks class as inner
     pub fn inner(mut self, flag: bool) -> Self {
         self.is_inner = flag;
         self
     }
 
+    /// Set's class visibility modifier
     pub fn visibility_modifier(mut self, visibility_modifier: VisibilityModifier) -> Self {
         self.visibility_modifier = visibility_modifier;
         self
     }
 
+    /// Changes class type
     pub fn inheritance_modifier(mut self, inheritance_modifier: ClassInheritanceModifier) -> Self {
         self.inheritance_modifier = inheritance_modifier;
         self
     }
 
+    /// Adds property to this class. Properties in body will appear in order this method is called.
     pub fn property(mut self, property: Property) -> Self {
         self.member_nodes.push(ClassMemberNode::Property(property));
         self
     }
 
+    /// Adds function to this class. Functions in body will appear in order this method is called.
     pub fn function(mut self, function: Function) -> Self {
         self.member_nodes.push(ClassMemberNode::Function(function));
         self
     }
 
+    /// Adds subclass to this class. Subclasses in body will appear in order this method is called.
     pub fn subclass(mut self, subclass: Class) -> Self {
         self.member_nodes.push(ClassMemberNode::Subclass(subclass));
         self
     }
 
+    /// Adds enum instance to this class. Enum instances in body will appear in order this method is called.
+    /// This method is only valid for enum classes. To change class type to enum please use [Class::inheritance_modifier].
     pub fn enum_instance(mut self, name: Name, arguments: Vec<Argument>) -> Self {
         self.enum_instances.push(EnumInstance {
             name,
@@ -118,21 +155,25 @@ impl Class {
         self
     }
 
+    /// Adds primary constructor to this class.
     pub fn primary_constructor(mut self, primary_constructor: PrimaryConstructor) -> Self {
         self.primary_constructor = Some(primary_constructor);
         self
     }
 
+    /// Adds secondary constructor to this class. Secondary constructors in body will appear in order this method is called.
     pub fn secondary_constructor(mut self, secondary_constructor: SecondaryConstructor) -> Self {
         self.member_nodes.push(ClassMemberNode::SecondaryConstructor(secondary_constructor));
         self
     }
 
+    /// Adds init block to this class. Init blocks in body will appear in order this method is called.
     pub fn init(mut self, block: CodeBlock) -> Self {
         self.member_nodes.push(ClassMemberNode::InitBlock(block));
         self
     }
 
+    /// Adds companion object to this class.
     pub fn companion_object(mut self, companion_object: CompanionObject) -> Self {
         self.companion_object = Some(companion_object);
         self

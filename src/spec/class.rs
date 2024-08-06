@@ -1,5 +1,6 @@
 use crate::io::RenderKotlin;
 use crate::spec::{VisibilityModifier, Argument, ClassInheritanceModifier, CodeBlock, CompanionObject, Function, GenericParameter, Name, PrimaryConstructor, Property, SecondaryConstructor, Type, Annotation, KDoc};
+use crate::spec::annotation::mixin_annotation_mutators;
 use crate::spec::kdoc::{KdocSlot, mixin_kdoc_mutators};
 use crate::tokens;
 
@@ -66,15 +67,15 @@ impl Class {
         Class {
             name,
             visibility_modifier: VisibilityModifier::default(),
-            inheritance_modifier: ClassInheritanceModifier::Final,
-            member_nodes: Vec::new(),
-            enum_instances: Vec::new(),
+            inheritance_modifier: ClassInheritanceModifier::default(),
+            member_nodes: Vec::default(),
+            enum_instances: Vec::default(),
             primary_constructor: None,
             companion_object: None,
-            generic_parameters: Vec::new(),
-            parent_classes: Vec::new(),
+            generic_parameters: Vec::default(),
+            parent_classes: Vec::default(),
             is_inner: false,
-            annotations: Vec::new(),
+            annotations: Vec::default(),
             kdoc: KdocSlot::default()
         }
     }
@@ -150,13 +151,7 @@ impl Class {
         self
     }
 
-    /// Adds [Annotation] to this class.
-    /// They will appear in order this method is called.
-    pub fn annotation(mut self, annotation: Annotation) -> Self {
-        self.annotations.push(annotation);
-        self
-    }
-
+    mixin_annotation_mutators!();
     mixin_kdoc_mutators!();
 }
 

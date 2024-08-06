@@ -1,5 +1,6 @@
 use crate::io::RenderKotlin;
 use crate::spec::{Annotation, CodeBlock, KDoc, Name, Type, VisibilityModifier};
+use crate::spec::annotation::mixin_annotation_mutators;
 use crate::spec::kdoc::{KdocSlot, mixin_kdoc_mutators};
 use crate::tokens;
 
@@ -41,12 +42,7 @@ impl TypeAlias {
         self
     }
 
-    /// Adds annotation to the type alias
-    pub fn annotation(mut self, annotation: Annotation) -> Self {
-        self.annotations.push(annotation);
-        self
-    }
-
+    mixin_annotation_mutators!();
     mixin_kdoc_mutators!();
 }
 

@@ -1,5 +1,6 @@
 use crate::io::RenderKotlin;
 use crate::spec::{VisibilityModifier, CodeBlock, GenericParameter, MemberInheritanceModifier, Name, Type, Parameter, Annotation, KDoc};
+use crate::spec::annotation::mixin_annotation_mutators;
 use crate::spec::kdoc::{KdocSlot, mixin_kdoc_mutators};
 use crate::tokens;
 
@@ -96,11 +97,7 @@ impl Function {
         self
     }
 
-    pub fn annotation(mut self, annotation: Annotation) -> Function {
-        self.annotations.push(annotation);
-        self
-    }
-
+    mixin_annotation_mutators!();
     mixin_kdoc_mutators!();
 }
 

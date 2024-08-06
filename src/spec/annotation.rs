@@ -75,6 +75,19 @@ impl RenderKotlin for Annotation {
     }
 }
 
+macro_rules! mixin_annotation_mutators {
+    () => {
+        /// Adds [Annotation] to this entity.
+        /// They will appear in order this method is called.
+        pub fn annotation(mut self, annotation: Annotation) -> Self {
+            self.annotations.push(annotation);
+            self
+        }
+    };
+}
+
+pub(crate) use mixin_annotation_mutators;
+
 #[cfg(test)]
 mod test {
     use std::str::FromStr;

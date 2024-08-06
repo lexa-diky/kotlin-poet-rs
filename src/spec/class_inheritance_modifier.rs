@@ -27,6 +27,12 @@ pub enum ClassInheritanceModifier {
     Data,
 }
 
+impl Default for ClassInheritanceModifier {
+    fn default() -> Self {
+        ClassInheritanceModifier::Final
+    }
+}
+
 impl RenderKotlin for ClassInheritanceModifier {
     fn render(&self) -> CodeBlock {
         let text = match self {

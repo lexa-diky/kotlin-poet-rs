@@ -1,5 +1,6 @@
 use crate::io::RenderKotlin;
 use crate::spec::{VisibilityModifier, CodeBlock, MemberInheritanceModifier, Name, Type, Annotation, KDoc};
+use crate::spec::annotation::mixin_annotation_mutators;
 use crate::spec::kdoc::{KdocSlot, mixin_kdoc_mutators};
 use crate::tokens;
 
@@ -63,10 +64,7 @@ impl PropertyGetter {
         }
     }
 
-    pub fn annotation(mut self, annotation: Annotation) -> PropertyGetter {
-        self.annotations.push(annotation);
-        self
-    }
+    mixin_annotation_mutators!();
 }
 
 impl RenderKotlin for PropertyGetter {
@@ -110,10 +108,7 @@ impl PropertySetter {
         self
     }
 
-    pub fn annotation(mut self, annotation: Annotation) -> PropertySetter {
-        self.annotations.push(annotation);
-        self
-    }
+    mixin_annotation_mutators!();
 }
 
 impl RenderKotlin for PropertySetter {
@@ -212,12 +207,7 @@ impl Property {
         self
     }
 
-    /// Adds an annotation
-    pub fn annotation(mut self, annotation: Annotation) -> Property {
-        self.annotations.push(annotation);
-        self
-    }
-
+    mixin_annotation_mutators!();
     mixin_kdoc_mutators!();
 }
 

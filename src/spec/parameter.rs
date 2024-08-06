@@ -1,5 +1,6 @@
 use crate::io::RenderKotlin;
 use crate::spec::{Annotation, CodeBlock, Name, Type};
+use crate::spec::annotation::mixin_annotation_mutators;
 use crate::tokens;
 
 #[derive(Debug, Clone)]
@@ -47,10 +48,7 @@ impl Parameter {
         self
     }
 
-    pub fn annotation(mut self, annotation: Annotation) -> Parameter {
-        self.annotations.push(annotation);
-        self
-    }
+    mixin_annotation_mutators!();
 }
 
 #[cfg(test)]

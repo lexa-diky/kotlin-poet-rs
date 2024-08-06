@@ -1,5 +1,5 @@
 use crate::io::RenderKotlin;
-use crate::spec::{Annotation, CodeBlock, Name, Type, VisibilityModifier};
+use crate::spec::{Annotation, CodeBlock, KDoc, Name, Type, VisibilityModifier};
 use crate::tokens;
 
 /// Kotlin's `typealias` declaration
@@ -9,7 +9,8 @@ pub struct TypeAlias {
     generic_parameters: Vec<Name>,
     actual: Type,
     visibility_modifier: VisibilityModifier,
-    annotations: Vec<Annotation>
+    annotations: Vec<Annotation>,
+    kdoc: Option<KDoc>
 }
 
 impl TypeAlias {
@@ -21,7 +22,8 @@ impl TypeAlias {
             generic_parameters: Vec::new(),
             actual,
             visibility_modifier: VisibilityModifier::Public,
-            annotations: Vec::new()
+            annotations: Vec::new(),
+            kdoc: None
         }
     }
 
@@ -43,11 +45,27 @@ impl TypeAlias {
         self.annotations.push(annotation);
         self
     }
+
+    /// Adds [KDoc] to this class.
+    /// In case of multiple calls, KDocs will be merged, see [KDoc::merge].
+    pub fn kdoc(mut self, kdoc: KDoc) -> Self {
+        self.kdoc = match self.kdoc {
+            None => { Some(kdoc) }
+            Some(old) => { Some(old.merge(kdoc)) }
+        };
+        self
+    }
 }
 
 impl RenderKotlin for TypeAlias {
     fn render(&self) -> CodeBlock {
         let mut code = CodeBlock::empty();
+
+        if let Some(kdoc) = &self.kdoc {
+            code.with_nested(kdoc.render());
+            code.with_new_line();
+        }
+
         for annotation in &self.annotations {
             code.with_nested(annotation.render());
             code.with_new_line();
@@ -86,6 +104,20 @@ mod test {
 
         let actual = alias.render().to_string();
         let expected = "public typealias MyType = kotlin.String";
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn type_alias_with_kdoc() {
+        let alias = TypeAlias::new(
+            Name::from("MyType"),
+            Type::string(),
+        ).kdoc(
+            KDoc::from("Hello\nWorld")
+        );
+
+        let actual = alias.render().to_string();
+        let expected = "/**\n * Hello\n * World\n */\npublic typealias MyType = kotlin.String";
         assert_eq!(actual, expected);
     }
 

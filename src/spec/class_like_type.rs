@@ -65,10 +65,18 @@ impl FromStr for ClassLikeType {
     type Err = SemanticConversionError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let mut is_nullable = false;
+        let clean_buf = if s.ends_with(tokens::QUESTION_MARK) {
+            is_nullable = true;
+            s.trim_end_matches(tokens::QUESTION_MARK)
+        } else {
+            s
+        };
+
         Ok(
             ClassLikeType::new(
-                ClassLikeTypeName::from_str(s)?
-            )
+                ClassLikeTypeName::from_str(clean_buf)?
+            ).nullable(is_nullable)
         )
     }
 }
@@ -150,5 +158,39 @@ mod test {
                 )
             )).nullable(true);
         assert_eq!(parameter.render_string(), "io.github.lexadiky.Class<io.github.lexadiky.Generic>?");
+    }
+
+    #[test]
+    fn test_from_str() {
+        let parsed = ClassLikeType::from_str("io.github.lexadiky.Class").unwrap();
+        let expected = ClassLikeType::new(
+            ClassLikeTypeName::top_level(
+                Package::from(vec![
+                    Name::from("io"),
+                    Name::from("github"),
+                    Name::from("lexadiky")
+                ]),
+                Name::from("Class")
+            )
+        );
+
+        assert_eq!(parsed, expected);
+    }
+
+    #[test]
+    fn test_from_str_nullable() {
+        let parsed = ClassLikeType::from_str("io.github.lexadiky.Class?").unwrap();
+        let expected = ClassLikeType::new(
+            ClassLikeTypeName::top_level(
+                Package::from(vec![
+                    Name::from("io"),
+                    Name::from("github"),
+                    Name::from("lexadiky")
+                ]),
+                Name::from("Class")
+            )
+        ).nullable(true);
+
+        assert_eq!(parsed, expected);
     }
 }

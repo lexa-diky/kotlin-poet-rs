@@ -98,6 +98,13 @@ macro_rules! mixin_kdoc_mutators {
             self.kdoc.merge(kdoc);
             self
         }
+
+        /// Adds [KDoc] made from string to this entity.
+        /// In case of multiple calls, KDocs will be merged, see [KDoc::merge].
+        pub fn kdoc_str(mut self, text: &str) -> Self {
+            self.kdoc.merge(KDoc::from(text));
+            self
+        }
     };
 }
 

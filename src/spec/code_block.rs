@@ -51,37 +51,23 @@ impl CodeBlock {
     }
 
     /// Adds [CodeBlockNode::Indent] with value 1.
+    /// In case there is already [CodeBlockNode::Indent] at the end of the list, increments its value.
     pub fn push_indent(&mut self) {
-        self.push_indent_value(1);
-    }
-
-    #[inline]
-    fn push_indent_value(&mut self, value: usize) {
-        if value == 0 {
-            return;
-        }
         if let Some(CodeBlockNode::Indent(last_value)) = self.nodes.last_mut() {
-            *last_value += value;
+            *last_value += 1;
             return;
         }
-        self.nodes.push(CodeBlockNode::Indent(value));
+        self.nodes.push(CodeBlockNode::Indent(1));
     }
 
     /// Adds [CodeBlockNode::Unindent] with value 1
+    /// In case there is already [CodeBlockNode::Unindent] at the end of the list, increments its value.
     pub fn push_unindent(&mut self) {
-        self.push_unindent_value(1);
-    }
-
-    #[inline]
-    fn push_unindent_value(&mut self, value: usize) {
-        if value == 0 {
-            return;
-        }
         if let Some(CodeBlockNode::Unindent(last_value)) = self.nodes.last_mut() {
-            *last_value += value;
+            *last_value += 1;
             return;
         }
-        self.nodes.push(CodeBlockNode::Unindent(value));
+        self.nodes.push(CodeBlockNode::Unindent(1));
     }
 
     /// Adds [CodeBlockNode::NewLine]

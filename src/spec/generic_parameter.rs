@@ -1,10 +1,9 @@
-use crate::io::RenderKotlin;
 use crate::spec::{CodeBlock, GenericInvariance, Name, Type};
 use crate::tokens;
 
 /// Describes a generic parameter of a class or function.
 ///
-/// Note, because [RenderKotlin] implementation for this struct would be ambiguous, it is not implemented.
+/// Note, because [crate::io::RenderKotlin] implementation for this struct would be ambiguous, it is not implemented.
 #[derive(Debug, Clone)]
 pub struct GenericParameter {
     name: Name,

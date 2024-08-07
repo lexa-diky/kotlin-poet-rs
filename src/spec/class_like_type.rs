@@ -64,18 +64,42 @@ impl FromStr for ClassLikeType {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut is_nullable = false;
-        let clean_buf = if s.ends_with(tokens::QUESTION_MARK) {
+        let nullable_clean_buf = if s.ends_with(tokens::QUESTION_MARK) {
             is_nullable = true;
             s.trim_end_matches(tokens::QUESTION_MARK)
         } else {
             s
         };
 
-        Ok(
-            ClassLikeType::new(
-                ClassLikeTypeName::from_str(clean_buf)?
-            ).nullable(is_nullable)
-        )
+        let mut generics: Vec<Type> = Vec::new();
+        let final_buf = if nullable_clean_buf.ends_with(tokens::ANGLE_BRACKET_RIGHT) {
+            let parts = nullable_clean_buf.split(tokens::ANGLE_BRACKET_LEFT).collect::<Vec<&str>>();
+            if parts.len() != 2 {
+                return Err(SemanticConversionError::new(
+                    format!("Invalid class like type with generic like tokens: {}", s).as_str()
+                ));
+            }
+            let generic_sub_buf = parts[1].trim_end_matches(tokens::ANGLE_BRACKET_RIGHT);
+            for generic_buf in generic_sub_buf.split(tokens::COMMA) {
+                let generic_buf_type = Type::from_str(generic_buf)?;
+                generics.push(generic_buf_type);
+            }
+
+            parts[0]
+        } else {
+            nullable_clean_buf
+        };
+
+
+        let mut class_like_type = ClassLikeType::new(
+            ClassLikeTypeName::from_str(final_buf)?
+        ).nullable(is_nullable);
+
+        for generic in generics {
+            class_like_type = class_like_type.generic_argument(generic);
+        }
+
+        Ok(class_like_type)
     }
 }
 
@@ -188,6 +212,43 @@ mod test {
                 Name::from("Class"),
             )
         ).nullable(true);
+
+        assert_eq!(parsed, expected);
+    }
+
+    #[test]
+    fn test_from_str_generic() {
+        let parsed = ClassLikeType::from_str("io.github.lexadiky.Class<T, V>?").unwrap();
+        let expected = ClassLikeType::new(
+            ClassLikeTypeName::top_level(
+                Package::from(vec![
+                    Name::from("io"),
+                    Name::from("github"),
+                    Name::from("lexadiky"),
+                ]),
+                Name::from("Class"),
+            )
+        ).nullable(true)
+            .generic_argument(Type::generic("T"))
+            .generic_argument(Type::generic("V"));
+
+        assert_eq!(parsed, expected);
+    }
+
+    #[test]
+    fn test_from_str_class() {
+        let parsed = ClassLikeType::from_str("io.github.lexadiky.Class<kotlin.Int>?").unwrap();
+        let expected = ClassLikeType::new(
+            ClassLikeTypeName::top_level(
+                Package::from(vec![
+                    Name::from("io"),
+                    Name::from("github"),
+                    Name::from("lexadiky"),
+                ]),
+                Name::from("Class"),
+            )
+        ).nullable(true)
+            .generic_argument(Type::int());
 
         assert_eq!(parsed, expected);
     }

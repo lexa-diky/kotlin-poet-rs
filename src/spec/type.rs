@@ -2,6 +2,7 @@ use std::str::FromStr;
 use crate::io::{RenderKotlin};
 use crate::spec::class_like_type::ClassLikeType;
 use crate::spec::{ClassLikeTypeName, CodeBlock, FunctionType, Name, Package};
+use crate::tokens;
 use crate::util::{SemanticConversionError, yolo_from_str};
 
 // region stdlib types codegen
@@ -115,9 +116,19 @@ impl FromStr for Type {
     type Err = SemanticConversionError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let clear = s.trim();
+
+        if !clear.contains(tokens::DOT) {
+            return Ok(
+                Type::Generic(
+                    Name::from_str(clear)?
+                )
+            );
+        }
+
         Ok(
             Type::ClassLike(
-                ClassLikeType::from_str(s)?
+                ClassLikeType::from_str(clear)?
             )
         )
     }

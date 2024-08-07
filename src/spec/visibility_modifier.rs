@@ -20,7 +20,7 @@ pub enum VisibilityModifier {
 }
 
 impl RenderKotlin for VisibilityModifier {
-    fn render(&self) -> CodeBlock {
+    fn render_into(&self, block: &mut CodeBlock) {
         let keyword = match self {
             VisibilityModifier::Public => tokens::keyword::PUBLIC,
             VisibilityModifier::Internal => tokens::keyword::INTERNAL,
@@ -28,6 +28,6 @@ impl RenderKotlin for VisibilityModifier {
             VisibilityModifier::Protected => tokens::keyword::PROTECTED
         };
 
-        CodeBlock::atom(keyword)
+        block.with_atom(keyword);
     }
 }

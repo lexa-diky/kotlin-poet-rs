@@ -46,8 +46,8 @@ impl CodeBlock {
     }
 
     /// Embeds all node from [code_block] into [self].
-    pub fn with_nested(&mut self, code_block: CodeBlock) {
-        self.nodes.extend(code_block.nodes);
+    pub fn with_embedded<T: RenderKotlin>(&mut self, renderable: &T) {
+        renderable.render_into(self);
     }
 
     /// Adds [CodeBlockNode::Indent] with value 1.
@@ -124,7 +124,7 @@ impl CodeBlock {
         self.with_new_line();
         self.with_indent();
         block(&mut inner_code);
-        self.with_nested(inner_code);
+        self.with_embedded(&inner_code);
         self.with_unindent();
         self.with_atom(tokens::CURLY_BRACKET_RIGHT);
     }
@@ -138,7 +138,7 @@ impl CodeBlock {
 
         self.with_atom(tokens::ROUND_BRACKET_LEFT);
         block(&mut inner_code);
-        self.with_nested(inner_code);
+        self.with_embedded(&inner_code);
         self.with_atom(tokens::ROUND_BRACKET_RIGHT);
     }
 
@@ -151,7 +151,7 @@ impl CodeBlock {
 
         self.with_atom(tokens::ANGLE_BRACKET_LEFT);
         block(&mut inner_code);
-        self.with_nested(inner_code);
+        self.with_embedded(&inner_code);
         self.with_atom(tokens::ANGLE_BRACKET_RIGHT);
     }
 
@@ -163,14 +163,14 @@ impl CodeBlock {
         let mut code = CodeBlock::empty();
         let len = elements.len();
         for (index, renderable) in elements.iter().enumerate() {
-            code.with_nested(renderable.render());
+            code.with_embedded(renderable);
             if index != len - 1 {
                 code.with_atom(tokens::COMMA);
                 code.with_space();
             }
         }
 
-        self.with_nested(code);
+        self.with_embedded(&code);
     }
 
     fn render(&self) -> String {
@@ -220,8 +220,8 @@ impl ToString for CodeBlock {
 }
 
 impl RenderKotlin for CodeBlock {
-    fn render(&self) -> CodeBlock {
-        self.clone()
+    fn render_into(&self, block: &mut CodeBlock) {
+        block.nodes.extend(self.nodes.iter().cloned());
     }
 
     fn render_string(&self) -> String {

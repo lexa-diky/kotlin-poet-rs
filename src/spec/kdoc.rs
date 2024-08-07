@@ -39,8 +39,7 @@ impl From<&str> for KDoc {
 }
 
 impl RenderKotlin for KDoc {
-    fn render(&self) -> CodeBlock {
-        let mut block = CodeBlock::empty();
+    fn render_into(&self, block: &mut CodeBlock) {
         block.with_atom(tokens::KDOC_COMMENT_START);
         block.with_new_line();
         let split = self.content.split(tokens::NEW_LINE)
@@ -57,8 +56,6 @@ impl RenderKotlin for KDoc {
             block.with_new_line();
         }
         block.with_atom(tokens::KDOC_COMMENT_END);
-
-        block
     }
 }
 
@@ -66,13 +63,11 @@ impl RenderKotlin for KDoc {
 #[derive(Default, Clone, Debug)]
 pub(crate) struct KdocSlot(Option<KDoc>);
 impl RenderKotlin for KdocSlot {
-    fn render(&self) -> CodeBlock {
-        let mut cb = CodeBlock::empty();
+    fn render_into(&self, block: &mut CodeBlock) {
         if let Some(kdoc) = &self.0 {
-            cb.with_nested(kdoc.render());
-            cb.with_new_line()
+            block.with_embedded(kdoc);
+            block.with_new_line()
         }
-        cb
     }
 }
 

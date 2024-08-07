@@ -43,7 +43,7 @@ fn render_generic_file() -> String {
         .function(function)
         .class(class);
 
-    file.render().to_string()
+    file.render_string()
 }
 
 fn criterion_benchmark(c: &mut Criterion) {

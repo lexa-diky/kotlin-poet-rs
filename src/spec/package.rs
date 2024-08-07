@@ -2,7 +2,7 @@ use std::str::FromStr;
 use crate::io::{RenderKotlin};
 use crate::tokens::DOT;
 use crate::spec::{CodeBlock, Name};
-use crate::util::SemanticConversionError;
+use crate::util::{SemanticConversionError, yolo_from_str};
 
 /// Fully qualified package name, may be parsed from [&str]
 ///
@@ -55,7 +55,7 @@ use crate::util::SemanticConversionError;
 /// ```
 #[derive(Debug, PartialEq, Clone)]
 pub struct Package {
-    parts: Vec<Name>,
+    pub(crate) parts: Vec<Name>,
 }
 
 impl Package {
@@ -70,6 +70,7 @@ impl Package {
     }
 }
 
+yolo_from_str!(Package);
 impl FromStr for Package {
     type Err = SemanticConversionError;
 
@@ -83,16 +84,13 @@ impl FromStr for Package {
 }
 
 impl RenderKotlin for Package {
-    fn render(&self) -> CodeBlock {
-        let mut code = CodeBlock::empty();
+    fn render_into(&self, block: &mut CodeBlock) {
         for (index, part) in self.parts.iter().enumerate() {
-            code.with_nested(part.render());
+            block.with_embedded(part);
             if index != self.parts.len() - 1 {
-                code.with_atom(DOT);
+                block.with_atom(DOT);
             }
         }
-
-        code
     }
 }
 

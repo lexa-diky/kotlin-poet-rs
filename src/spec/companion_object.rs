@@ -12,7 +12,7 @@ impl CompanionObject {
     pub fn new() -> Self {
         CompanionObject {
             member_nodes: Vec::new(),
-            visibility_modifier: VisibilityModifier::default()
+            visibility_modifier: VisibilityModifier::default(),
         }
     }
 
@@ -43,21 +43,19 @@ impl CompanionObject {
 }
 
 impl RenderKotlin for CompanionObject {
-    fn render(&self) -> CodeBlock {
-        let mut code = CodeBlock::empty();
-        code.with_nested(self.visibility_modifier.render());
-        code.with_space();
-        code.with_atom(tokens::keyword::COMPANION);
-        code.with_space();
-        code.with_atom(tokens::keyword::OBJECT);
-        code.with_space();
-        code.with_curly_brackets(|code| {
+    fn render_into(&self, block: &mut CodeBlock) {
+        block.with_embedded(&self.visibility_modifier);
+        block.with_space();
+        block.with_atom(tokens::keyword::COMPANION);
+        block.with_space();
+        block.with_atom(tokens::keyword::OBJECT);
+        block.with_space();
+        block.with_curly_brackets(|code| {
             for node in &self.member_nodes {
-                code.with_nested(node.render());
+                code.with_embedded(node);
                 code.with_new_line();
             }
         });
-        code
     }
 }
 
@@ -79,7 +77,7 @@ mod tests {
                     .body(CodeBlock::statement("println(name)"))
             );
 
-        let code = companion.render().to_string();
+        let code = companion.render_string();
         assert_eq!(
             code,
             "public companion object {\n    public final val name: kotlin.String = \"John Doe\"\n    public fun printName(name: kotlin.String): kotlin.Unit {\n        println(name)\n    }\n}"
@@ -92,7 +90,7 @@ mod tests {
         let companion = CompanionObject::new()
             .subclass(subclass);
 
-        let code = companion.render().to_string();
+        let code = companion.render_string();
         assert_eq!(code, "public companion object {\n    public final class Subclass {\n\n    }\n}");
     }
 
@@ -101,7 +99,7 @@ mod tests {
         let companion = CompanionObject::new()
             .init(CodeBlock::statement("println(\"init block\")"));
 
-        let code = companion.render().to_string();
+        let code = companion.render_string();
         assert_eq!(code, "public companion object {\n    init{\n        println(\"init block\")\n    }\n}");
     }
 }

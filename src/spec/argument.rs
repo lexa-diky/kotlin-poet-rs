@@ -18,7 +18,7 @@ use crate::tokens;
 ///      Name::from("name"), CodeBlock::atom("value")
 /// );
 ///
-/// assert_eq!(argument.render().to_string(), "name = value");
+/// assert_eq!(argument.render_string(), "name = value");
 /// ```
 ///
 /// ## Positional argument
@@ -30,7 +30,7 @@ use crate::tokens;
 ///     CodeBlock::statement("value")
 /// );
 ///
-/// assert_eq!(argument.render().to_string(), "value");
+/// assert_eq!(argument.render_string(), "value");
 /// ```
 #[derive(Debug, Clone)]
 pub struct Argument {
@@ -57,16 +57,14 @@ impl Argument {
 }
 
 impl RenderKotlin for Argument {
-    fn render(&self) -> CodeBlock {
-        let mut block = CodeBlock::empty();
+    fn render_into(&self, block: &mut CodeBlock) {
         if let Some(name) = &self.name {
-            block.with_nested(name.render());
+            block.with_embedded(name);
             block.with_space();
             block.with_atom(tokens::ASSIGN);
             block.with_space();
         }
         block.with_atom(self.value.to_string().as_str());
-        block
     }
 }
 
@@ -78,10 +76,10 @@ mod tests {
     #[test]
     fn test_rendering() {
         let argument = Argument::new_positional(CodeBlock::statement("value"));
-        assert_eq!(argument.render().to_string(), "value");
+        assert_eq!(argument.render_string(), "value");
 
         let argument = Argument::new_named(Name::from("name"), CodeBlock::atom("value"), );
-        println!("{}", argument.render().to_string());
-        assert_eq!(argument.render().to_string(), "name = value");
+        println!("{}", argument.render_string());
+        assert_eq!(argument.render_string(), "name = value");
     }
 }

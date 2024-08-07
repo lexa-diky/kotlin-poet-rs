@@ -43,29 +43,27 @@ impl FunctionType {
 }
 
 impl RenderKotlin for FunctionType {
-    fn render(&self) -> CodeBlock {
-        let mut lambda = CodeBlock::empty();
+    fn render_into(&self, block: &mut CodeBlock) {
         if let Some(receiver) = &*self.receiver {
-            lambda.with_nested(receiver.render());
-            lambda.with_atom(tokens::DOT)
+            block.with_embedded(receiver);
+            block.with_atom(tokens::DOT)
         }
 
         if self.is_suspended {
-            lambda.with_atom(tokens::keyword::SUSPEND);
-            lambda.with_space()
+            block.with_atom(tokens::keyword::SUSPEND);
+            block.with_space()
         }
 
-        lambda.with_round_brackets(|parameters_code| {
+        block.with_round_brackets(|parameters_code| {
             parameters_code.with_comma_separated(
                 &self.parameters
             );
         });
 
-        lambda.with_space();
-        lambda.with_atom(tokens::ARROW);
-        lambda.with_space();
-        lambda.with_nested(self.returns.render());
-        lambda
+        block.with_space();
+        block.with_atom(tokens::ARROW);
+        block.with_space();
+        block.with_embedded(self.returns.as_ref());
     }
 }
 

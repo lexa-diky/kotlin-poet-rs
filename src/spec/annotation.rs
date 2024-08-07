@@ -58,20 +58,16 @@ impl Annotation {
 }
 
 impl RenderKotlin for Annotation {
-    fn render(&self) -> CodeBlock {
-        let mut code = CodeBlock::empty();
-
-        code.with_atom(tokens::AT);
+    fn render_into(&self, block: &mut CodeBlock) {
+        block.with_atom(tokens::AT);
         if let Some(target) = &self.target {
-            code.with_nested(target.render());
-            code.with_atom(tokens::COLON);
+            block.with_embedded(target);
+            block.with_atom(tokens::COLON);
         }
-        code.with_nested(self.type_name.render());
-        code.with_round_brackets(|inner_code| {
+        block.with_embedded(&self.type_name);
+        block.with_round_brackets(|inner_code| {
             inner_code.with_comma_separated(&self.arguments)
         });
-
-        code
     }
 }
 

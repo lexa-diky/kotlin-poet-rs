@@ -46,7 +46,7 @@ fn generic_file() {
 
     assert_rendered(
         "tests/samples/generic_file.kt",
-        &file.render(),
+        file.render_string().as_str(),
     )
 }
 
@@ -88,7 +88,7 @@ fn class_with_companion_object() {
 
     assert_rendered(
         "tests/samples/class_with_companion_object.kt",
-        &&class.render(),
+        &&class.render_string().as_str(),
     )
 }
 
@@ -99,25 +99,25 @@ fn kdoc_comment() {
         &KDoc::new()
             .append("Hello\nWorld")
             .merge(KDoc::new().append("Wow such documentation"))
-            .render()
+            .render_string().as_str()
     )
 }
 
 pub fn assert_rendered(
     expected_path: &str,
-    code: &CodeBlock,
+    code: &str,
 ) {
     let expected_path = Path::new(expected_path);
     if !expected_path.exists() {
         std::fs::write(
             expected_path,
-            code.to_string(),
+            code,
         ).unwrap();
     } else {
         let expected_code = std::fs::read_to_string(expected_path);
         assert_eq!(
             expected_code.unwrap(),
-            code.to_string(),
+            code,
         );
     }
 }

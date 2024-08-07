@@ -62,11 +62,13 @@ impl FromStr for Name {
 }
 
 impl RenderKotlin for Name {
-    fn render(&self) -> CodeBlock {
+    fn render_into(&self, block: &mut CodeBlock) {
         if self.should_be_escaped {
-            return CodeBlock::atom(format!("`{}`", self.value).as_str());
+            block.with_atom(format!("`{}`", self.value).as_str());
+            return;
         }
-        return CodeBlock::atom(self.value.as_str());
+
+        block.with_atom(self.value.as_str());
     }
 }
 

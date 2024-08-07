@@ -10,30 +10,29 @@ pub enum GenericInvariance {
     /// Corresponds to [tokens::keyword::IN]
     In,
     /// Corresponds to [tokens::keyword::OUT]
-    Out
+    Out,
 }
 
 impl RenderKotlin for GenericInvariance {
-    fn render(&self) -> CodeBlock {
+    fn render_into(&self, block: &mut CodeBlock) {
         match self {
-            GenericInvariance::In => CodeBlock::atom(tokens::keyword::IN),
-            GenericInvariance::Out => CodeBlock::atom(tokens::keyword::OUT),
+            GenericInvariance::In => block.with_atom(tokens::keyword::IN),
+            GenericInvariance::Out => block.with_atom(tokens::keyword::OUT),
         }
     }
 }
 
 #[cfg(test)]
 mod tests {
-
     use crate::io::RenderKotlin;
     use super::*;
 
     #[test]
     fn test_generic_invariance() {
         let invariance = GenericInvariance::In;
-        assert_eq!(invariance.render().to_string(), "in");
+        assert_eq!(invariance.render_string(), "in");
 
         let invariance = GenericInvariance::Out;
-        assert_eq!(invariance.render().to_string(), "out");
+        assert_eq!(invariance.render_string(), "out");
     }
 }

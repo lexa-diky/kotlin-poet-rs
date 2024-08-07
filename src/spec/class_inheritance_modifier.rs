@@ -29,7 +29,7 @@ pub enum ClassInheritanceModifier {
 }
 
 impl RenderKotlin for ClassInheritanceModifier {
-    fn render(&self) -> CodeBlock {
+    fn render_into(&self, block: &mut CodeBlock) {
         let text = match self {
             ClassInheritanceModifier::Open => tokens::keyword::OPEN,
             ClassInheritanceModifier::Final => tokens::keyword::FINAL,
@@ -41,7 +41,7 @@ impl RenderKotlin for ClassInheritanceModifier {
             ClassInheritanceModifier::Data => tokens::keyword::DATA
         };
 
-        CodeBlock::atom(text)
+        block.with_atom(text);
     }
 }
 

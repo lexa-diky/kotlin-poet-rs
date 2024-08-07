@@ -35,28 +35,26 @@ impl ClassLikeType {
 }
 
 impl RenderKotlin for ClassLikeType {
-    fn render(&self) -> CodeBlock {
-        let mut type_name = self.type_name.render();
+    fn render_into(&self, block: &mut CodeBlock) {
+        block.with_embedded(&self.type_name);
 
         if !self.generic_arguments.is_empty() {
-            type_name.with_atom(tokens::ANGLE_BRACKET_LEFT);
+            block.with_atom(tokens::ANGLE_BRACKET_LEFT);
 
             for (idx, generic_argument) in self.generic_arguments.iter().enumerate() {
-                type_name.with_nested(generic_argument.render());
+                block.with_embedded(generic_argument);
                 if idx != self.generic_arguments.len() - 1 {
-                    type_name.with_atom(tokens::COMMA);
-                    type_name.with_space();
+                    block.with_atom(tokens::COMMA);
+                    block.with_space();
                 }
             }
 
-            type_name.with_atom(tokens::ANGLE_BRACKET_RIGHT);
+            block.with_atom(tokens::ANGLE_BRACKET_RIGHT);
         }
 
         if self.nullable {
-            type_name.with_atom(tokens::QUESTION_MARK);
+            block.with_atom(tokens::QUESTION_MARK);
         };
-
-        type_name
     }
 }
 
@@ -168,9 +166,9 @@ mod test {
                 Package::from(vec![
                     Name::from("io"),
                     Name::from("github"),
-                    Name::from("lexadiky")
+                    Name::from("lexadiky"),
                 ]),
-                Name::from("Class")
+                Name::from("Class"),
             )
         );
 
@@ -185,9 +183,9 @@ mod test {
                 Package::from(vec![
                     Name::from("io"),
                     Name::from("github"),
-                    Name::from("lexadiky")
+                    Name::from("lexadiky"),
                 ]),
-                Name::from("Class")
+                Name::from("Class"),
             )
         ).nullable(true);
 

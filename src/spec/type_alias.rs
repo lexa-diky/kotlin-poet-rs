@@ -47,31 +47,28 @@ impl TypeAlias {
 }
 
 impl RenderKotlin for TypeAlias {
-    fn render(&self) -> CodeBlock {
-        let mut code = CodeBlock::empty();
-
-        code.with_nested(self.kdoc.render());
+    fn render_into(&self, block: &mut CodeBlock) {
+        block.with_embedded(&self.kdoc);
 
         for annotation in &self.annotations {
-            code.with_nested(annotation.render());
-            code.with_new_line();
+            block.with_embedded(annotation);
+            block.with_new_line();
         }
-        code.with_nested(self.visibility_modifier.render());
-        code.with_space();
-        code.with_atom(tokens::keyword::TYPEALIAS);
-        code.with_space();
-        code.with_nested(self.name.render());
+        block.with_embedded(&self.visibility_modifier);
+        block.with_space();
+        block.with_atom(tokens::keyword::TYPEALIAS);
+        block.with_space();
+        block.with_embedded(&self.name);
         if !self.generic_parameters.is_empty() {
-            code.with_atom(tokens::ANGLE_BRACKET_LEFT);
-            code.with_comma_separated(&self.generic_parameters);
-            code.with_atom(tokens::ANGLE_BRACKET_RIGHT);
+            block.with_atom(tokens::ANGLE_BRACKET_LEFT);
+            block.with_comma_separated(&self.generic_parameters);
+            block.with_atom(tokens::ANGLE_BRACKET_RIGHT);
         }
 
-        code.with_space();
-        code.with_atom(tokens::ASSIGN);
-        code.with_space();
-        code.with_nested(self.actual.render());
-        code
+        block.with_space();
+        block.with_atom(tokens::ASSIGN);
+        block.with_space();
+        block.with_embedded(&self.actual);
     }
 }
 
@@ -88,7 +85,7 @@ mod test {
             Type::string(),
         );
 
-        let actual = alias.render().to_string();
+        let actual = alias.render_string();
         let expected = "public typealias MyType = kotlin.String";
         assert_eq!(actual, expected);
     }
@@ -102,7 +99,7 @@ mod test {
             KDoc::from("Hello\nWorld")
         );
 
-        let actual = alias.render().to_string();
+        let actual = alias.render_string();
         let expected = "/**\n * Hello\n * World\n */\npublic typealias MyType = kotlin.String";
         assert_eq!(actual, expected);
     }
@@ -114,7 +111,7 @@ mod test {
             Type::string(),
         ).visibility_modifier(VisibilityModifier::Private);
 
-        let actual = alias.render().to_string();
+        let actual = alias.render_string();
         let expected = "private typealias MyType = kotlin.String";
         assert_eq!(actual, expected);
     }
@@ -127,7 +124,7 @@ mod test {
         ).generic_parameter(Name::from("T"))
             .generic_parameter(Name::from("B"));
 
-        let actual = alias.render().to_string();
+        let actual = alias.render_string();
         let expected = "public typealias Vec<T, B> = kotlin.collections.List<T>";
         assert_eq!(actual, expected);
     }
@@ -146,7 +143,7 @@ mod test {
             )
         );
 
-        let actual = alias.render().to_string();
+        let actual = alias.render_string();
         let expected = "@JvmName()\npublic typealias Vec = kotlin.collections.List<kotlin.String>";
         assert_eq!(actual, expected);
     }

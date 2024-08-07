@@ -14,14 +14,14 @@ pub enum MemberInheritanceModifier {
 }
 
 impl RenderKotlin for MemberInheritanceModifier {
-    fn render(&self) -> CodeBlock {
+    fn render_into(&self, block: &mut CodeBlock) {
         let text = match self {
             MemberInheritanceModifier::Open => tokens::keyword::OPEN,
             MemberInheritanceModifier::Final => tokens::keyword::FINAL,
             MemberInheritanceModifier::Abstract => tokens::keyword::ABSTRACT
         };
 
-        CodeBlock::atom(text)
+        block.with_atom(text);
     }
 }
 

@@ -44,8 +44,7 @@ impl Comment {
 }
 
 impl RenderKotlin for Comment {
-    fn render(&self) -> CodeBlock {
-        let mut block = CodeBlock::empty();
+    fn render_into(&self, block: &mut CodeBlock) {
         if self.is_block_render {
             block.with_atom(tokens::BLOCK_COMMENT_START);
             block.with_new_line();
@@ -68,8 +67,6 @@ impl RenderKotlin for Comment {
             block.with_space();
             block.with_atom(self.content.as_str());
         }
-
-        block
     }
 }
 

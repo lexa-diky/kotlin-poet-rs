@@ -19,7 +19,7 @@ pub struct Function {
     is_override: bool,
     generic_parameters: Vec<GenericParameter>,
     annotations: Vec<Annotation>,
-    kdoc: KdocSlot
+    kdoc: KdocSlot,
 }
 
 impl Function {
@@ -38,7 +38,7 @@ impl Function {
             generic_parameters: Vec::new(),
             is_override: false,
             annotations: Vec::new(),
-            kdoc: KdocSlot::default()
+            kdoc: KdocSlot::default(),
         }
     }
 
@@ -102,17 +102,15 @@ impl Function {
 }
 
 impl RenderKotlin for Function {
-    fn render(&self) -> CodeBlock {
-        let mut block = CodeBlock::empty();
-
-        block.with_nested(self.kdoc.render());
+    fn render_into(&self, block: &mut CodeBlock) {
+        block.with_embedded(&self.kdoc);
 
         for annotation in &self.annotations {
-            block.with_nested(annotation.render());
+            block.with_embedded(annotation);
             block.with_new_line()
         }
 
-        block.with_nested(self.visibility_modifier.render());
+        block.with_embedded(&self.visibility_modifier);
         block.with_space();
 
         if self.is_suspended {
@@ -149,15 +147,15 @@ impl RenderKotlin for Function {
         }
 
         if let Some(receiver) = &self.receiver {
-            block.with_nested(receiver.render());
+            block.with_embedded(receiver);
             block.with_atom(tokens::DOT);
         }
-        block.with_nested(self.name.render());
+        block.with_embedded(&self.name);
 
         block.with_round_brackets(|parameters_code| {
             let total_parameters = self.parameters.len();
             for (index, parameter) in self.parameters.iter().enumerate() {
-                parameters_code.with_nested(parameter.render());
+                parameters_code.with_embedded(parameter);
                 if index != total_parameters - 1 {
                     parameters_code.with_atom(tokens::COMMA);
                     parameters_code.with_space()
@@ -167,11 +165,11 @@ impl RenderKotlin for Function {
 
         block.with_atom(tokens::COLON);
         block.with_space();
-        block.with_nested(self.returns.render());
+        block.with_embedded(&self.returns);
 
         block.with_space();
-        block.with_nested(
-            GenericParameter::render_type_boundaries_vec_if_required(
+        block.with_embedded(
+            &GenericParameter::render_type_boundaries_vec_if_required(
                 &self.generic_parameters
             )
         );
@@ -179,11 +177,9 @@ impl RenderKotlin for Function {
         if let Some(body) = &self.body {
             block.with_space();
             block.with_curly_brackets(|inner| {
-                inner.with_nested(body.clone());
+                inner.with_embedded(body);
             });
         }
-
-        block
     }
 }
 

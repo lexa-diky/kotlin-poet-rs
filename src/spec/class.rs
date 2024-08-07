@@ -14,29 +14,27 @@ pub(crate) enum ClassMemberNode {
 }
 
 impl RenderKotlin for ClassMemberNode {
-    fn render(&self) -> CodeBlock {
-        let mut class_body_code = CodeBlock::empty();
+    fn render_into(&self, block: &mut CodeBlock) {
         match self {
             ClassMemberNode::Property(property) => {
-                class_body_code.with_nested(property.render());
+                block.with_embedded(property);
             }
             ClassMemberNode::Function(function) => {
-                class_body_code.with_nested(function.render());
+                block.with_embedded(function);
             }
             ClassMemberNode::Subclass(subclass) => {
-                class_body_code.with_nested(subclass.render());
+                block.with_embedded(subclass);
             }
             ClassMemberNode::SecondaryConstructor(secondary_constructor) => {
-                class_body_code.with_nested(secondary_constructor.render());
+                block.with_embedded(secondary_constructor);
             }
             ClassMemberNode::InitBlock(code) => {
-                class_body_code.with_atom(tokens::keyword::INIT);
-                class_body_code.with_curly_brackets(|block| {
-                    block.with_nested(code.clone());
+                block.with_atom(tokens::keyword::INIT);
+                block.with_curly_brackets(|block| {
+                    block.with_embedded(code);
                 });
             }
         }
-        class_body_code
     }
 }
 
@@ -57,9 +55,8 @@ struct EnumInstance {
 /// use kotlin_poet_rs::spec::{Class, Name};
 ///
 /// let class = Class::new(Name::from("Person"));
-///  let code = class.render();
 ///
-///  assert_eq!(code.to_string(), "public final class Person {\n\n}");
+///  assert_eq!(class.render_string(), "public final class Person {\n\n}");
 /// ```
 ///
 /// ## Interface
@@ -69,9 +66,8 @@ struct EnumInstance {
 ///
 /// let class = Class::new(Name::from("Person"))
 ///     .inheritance_modifier(ClassInheritanceModifier::Interface);
-///  let code = class.render();
 ///
-///  assert_eq!(code.to_string(), "public interface Person {\n\n}");
+///  assert_eq!(class.render_string(), "public interface Person {\n\n}");
 /// ```
 #[derive(Debug, Clone)]
 pub struct Class {
@@ -90,7 +86,6 @@ pub struct Class {
 }
 
 impl Class {
-
     /// Creates new plain final class.
     pub fn new(name: Name) -> Self {
         Class {
@@ -197,68 +192,67 @@ impl Class {
 }
 
 impl RenderKotlin for Class {
-    fn render(&self) -> CodeBlock {
-        let mut code = CodeBlock::empty();
-        code.with_nested(self.kdoc.render());
+    fn render_into(&self, block: &mut CodeBlock) {
+        block.with_embedded(&self.kdoc);
         for annotation in &self.annotations {
-            code.with_nested(annotation.render());
-            code.with_new_line();
+            block.with_embedded(annotation);
+            block.with_new_line();
         }
 
-        code.with_nested(self.visibility_modifier.render());
-        code.with_space();
+        block.with_embedded(&self.visibility_modifier);
+        block.with_space();
         if self.is_inner {
-            code.with_atom(tokens::keyword::INNER);
-            code.with_space();
+            block.with_atom(tokens::keyword::INNER);
+            block.with_space();
         }
-        code.with_nested(self.inheritance_modifier.render());
-        code.with_space();
+        block.with_embedded(&self.inheritance_modifier);
+        block.with_space();
         if !matches!(
             self.inheritance_modifier,
             ClassInheritanceModifier::Interface |
             ClassInheritanceModifier::Object
         ) {
-            code.with_atom(tokens::keyword::CLASS);
-            code.with_space();
+            block.with_atom(tokens::keyword::CLASS);
+            block.with_space();
         }
-        code.with_nested(self.name.render());
+        block.with_embedded(&self.name);
         if !self.generic_parameters.is_empty() {
-            code.with_angle_brackets(|code| {
+            block.with_angle_brackets(|code| {
                 code.with_comma_separated(
                     &self.generic_parameters.iter().map(|it| it.render_definition())
                         .collect::<Vec<CodeBlock>>()
                 );
             });
         }
-        code.with_space();
+        block.with_space();
 
         if let Some(primary_constructor) = &self.primary_constructor {
-            code.with_nested(primary_constructor.render());
-            code.with_space();
+            block.with_embedded(primary_constructor);
+            block.with_space();
         }
 
         if !self.parent_classes.is_empty() {
-            code.with_pop_space();
-            code.with_atom(tokens::COLON);
-            code.with_space();
-            code.with_comma_separated(
+            block.with_pop_space();
+            block.with_atom(tokens::COLON);
+            block.with_space();
+            block.with_comma_separated(
                 &self.parent_classes
             );
-            code.with_space();
+            block.with_space();
         }
 
-        code.with_nested(
-            GenericParameter::render_type_boundaries_vec_if_required(
+        block.with_embedded(
+            &GenericParameter::render_type_boundaries_vec_if_required(
                 &self.generic_parameters
             )
         );
 
-        code.with_curly_brackets(|class_body_code| {
+        block.with_curly_brackets(|class_body_code| {
             class_body_code.with_new_line();
 
             if !self.enum_instances.is_empty() {
                 for (inst_idx, instance) in self.enum_instances.iter().enumerate() {
-                    class_body_code.with_nested(instance.name.render());
+                    class_body_code.with_embedded(&instance.name);
                     class_body_code.with_round_brackets(|arg_code| {
                         arg_code.with_comma_separated(&instance.arguments);
                     });
@@ -273,17 +267,15 @@ impl RenderKotlin for Class {
             }
 
             for node in &self.member_nodes {
-                class_body_code.with_nested(node.render());
+                class_body_code.with_embedded(node);
                 class_body_code.with_new_line();
             }
 
             if let Some(companion_object) = &self.companion_object {
-                class_body_code.with_nested(companion_object.render());
+                class_body_code.with_embedded(companion_object);
                 class_body_code.with_new_line();
             }
         });
-
-        code
     }
 }
 
@@ -295,9 +287,9 @@ mod tests {
     #[test]
     fn test_class() {
         let class = Class::new(Name::from("Person"));
-        let code = class.render();
+        let code = class.render_string();
 
-        assert_eq!(code.to_string(), "public final class Person {\n\n}");
+        assert_eq!(code, "public final class Person {\n\n}");
     }
 
     #[test]
@@ -307,10 +299,10 @@ mod tests {
                 KDoc::from("hello world")
                     .merge(KDoc::from("at here"))
             );
-        let code = class.render();
+        let code = class.render_string();
 
         assert_eq!(
-            code.to_string(),
+            code,
             "/**\n * hello world\n * at here\n */\npublic final class Person {\n\n}"
         );
     }
@@ -335,10 +327,10 @@ mod tests {
         let class = Class::new(Name::from("Person"))
             .property(property.clone());
 
-        let code = class.render();
+        let code = class.render_string();
 
         assert_eq!(
-            code.to_string(),
+            code,
             "public final class Person {\n\n    public final var name: kotlin.String = \"\"\n        set(value) {\n            field = value\n        }\n        get() {\n            return field\n        }\n\n}"
         );
     }
@@ -354,10 +346,10 @@ mod tests {
                 Argument::new_positional(CodeBlock::atom("23"))
             ])
             ;
-        let code = class.render();
+        let code = class.render_string();
 
         assert_eq!(
-            code.to_string(),
+            code,
             "public enum class Person {\n\n    Alex(23),\n    Vova(23);}"
         );
     }
@@ -382,7 +374,7 @@ mod tests {
             );
 
         assert_eq!(
-            class.render().to_string(),
+            class.render_string(),
             "public final class Person public constructor(public final val name: kotlin.String, age: kotlin.Int) {\n\n}"
         );
     }
@@ -395,7 +387,7 @@ mod tests {
             );
 
         assert_eq!(
-            class.render().to_string(),
+            class.render_string(),
             "public final class Person public constructor() {\n\n}"
         );
     }
@@ -408,7 +400,7 @@ mod tests {
             );
 
         assert_eq!(
-            class.render().to_string(),
+            class.render_string(),
             "public final class Person {\n\n    init{\n        println(42)\n    }\n}"
         );
     }
@@ -430,7 +422,7 @@ mod tests {
             );
 
         assert_eq!(
-            class.render().to_string(),
+            class.render_string(),
             "public data class Person public constructor(public final val name: kotlin.String = \"\") {\n\n}"
         );
     }
@@ -478,7 +470,7 @@ mod tests {
             );
 
         assert_eq!(
-            class.render().to_string(),
+            class.render_string(),
             "public data class Person public constructor(public final val name: kotlin.String, public final val age: kotlin.Int) {\n\n    public constructor(name: kotlin.String) : this(name, 23) {\n        println(42)\n    }\n}"
         );
     }
@@ -487,27 +479,24 @@ mod tests {
     fn test_interface() {
         let class = Class::new(Name::from("Person"))
             .inheritance_modifier(ClassInheritanceModifier::Interface);
-        let code = class.render();
 
-        assert_eq!(code.to_string(), "public interface Person {\n\n}");
+        assert_eq!(class.render_string(), "public interface Person {\n\n}");
     }
 
     #[test]
     fn test_abstract() {
         let class = Class::new(Name::from("Person"))
             .inheritance_modifier(ClassInheritanceModifier::Abstract);
-        let code = class.render();
 
-        assert_eq!(code.to_string(), "public abstract class Person {\n\n}");
+        assert_eq!(class.render_string(), "public abstract class Person {\n\n}");
     }
 
     #[test]
     fn test_object() {
         let class = Class::new(Name::from("Person"))
             .inheritance_modifier(ClassInheritanceModifier::Object);
-        let code = class.render();
 
-        assert_eq!(code.to_string(), "public object Person {\n\n}");
+        assert_eq!(class.render_string(), "public object Person {\n\n}");
     }
 
     #[test]
@@ -518,10 +507,9 @@ mod tests {
                     .inheritance_modifier(ClassInheritanceModifier::Abstract)
                     .inner(true)
             );
-        let code = class.render();
 
         assert_eq!(
-            code.to_string(),
+            class.render_string(),
             "public final class Person {\n\n    public inner abstract class InnerPerson {\n\n    }\n}"
         );
     }
@@ -530,9 +518,8 @@ mod tests {
     fn test_sealed() {
         let class = Class::new(Name::from("Person"))
             .inheritance_modifier(ClassInheritanceModifier::Sealed);
-        let code = class.render();
 
-        assert_eq!(code.to_string(), "public sealed class Person {\n\n}");
+        assert_eq!(class.render_string(), "public sealed class Person {\n\n}");
     }
 
     #[test]
@@ -550,9 +537,7 @@ mod tests {
                     .invariance(GenericInvariance::Out)
             );
 
-        let code = class.render();
-
-        assert_eq!(code.to_string(), "public final class Box<A, in B, out C> {\n\n}");
+        assert_eq!(class.render_string(), "public final class Box<A, in B, out C> {\n\n}");
     }
 
     #[test]
@@ -567,10 +552,8 @@ mod tests {
                 Type::int()
             );
 
-        let code = class.render();
-
         assert_eq!(
-            code.to_string(),
+            class.render_string(),
             "public final class Box<in A>: kotlin.Int where A: kotlin.String {\n\n}"
         );
     }
@@ -592,9 +575,7 @@ mod tests {
                     .invariance(GenericInvariance::Out)
             );
 
-        let code = class.render();
-
-        assert_eq!(code.to_string(), "public final class Box<A, in B, out C> where B: kotlin.String, B: kotlin.Int {\n\n}");
+        assert_eq!(class.render_string(), "public final class Box<A, in B, out C> where B: kotlin.String, B: kotlin.Int {\n\n}");
     }
 
     #[test]
@@ -606,8 +587,7 @@ mod tests {
                     Name::from("Deprecated"),
                 ))
             );
-        let code = class.render();
 
-        assert_eq!(code.to_string(), "@Deprecated()\npublic final class Person {\n\n}");
+        assert_eq!(class.render_string(), "@Deprecated()\npublic final class Person {\n\n}");
     }
 }

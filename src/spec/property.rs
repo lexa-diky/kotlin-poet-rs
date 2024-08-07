@@ -11,25 +11,21 @@ enum PropertyInitializer {
 }
 
 impl RenderKotlin for PropertyInitializer {
-
-    fn render(&self) -> CodeBlock {
-        let mut block = CodeBlock::empty();
+    fn render_into(&self, block: &mut CodeBlock) {
         match self {
             PropertyInitializer::Value(initializer) => {
                 block.with_space();
                 block.with_atom(tokens::ASSIGN);
                 block.with_space();
-                block.with_nested(initializer.clone())
+                block.with_embedded(initializer)
             }
             PropertyInitializer::Delegate(delegate) => {
                 block.with_space();
                 block.with_atom(tokens::keyword::BY);
                 block.with_space();
-                block.with_nested(delegate.clone())
+                block.with_embedded(delegate)
             }
         }
-
-        block
     }
 }
 
@@ -68,10 +64,9 @@ impl PropertyGetter {
 }
 
 impl RenderKotlin for PropertyGetter {
-    fn render(&self) -> CodeBlock {
-        let mut block = CodeBlock::empty();
+    fn render_into(&self, block: &mut CodeBlock) {
         for annotation in &self.annotations {
-            block.with_nested(annotation.render());
+            block.with_embedded(annotation);
             block.with_new_line();
         }
         block.with_atom(tokens::keyword::GET);
@@ -80,11 +75,10 @@ impl RenderKotlin for PropertyGetter {
         block.with_atom(tokens::CURLY_BRACKET_LEFT);
         block.with_new_line();
         block.with_indent();
-        block.with_nested(self.code.clone());
+        block.with_embedded(&self.code);
         block.with_unindent();
         block.with_atom(tokens::CURLY_BRACKET_RIGHT);
         block.with_new_line();
-        block
     }
 }
 
@@ -113,23 +107,20 @@ impl PropertySetter {
 }
 
 impl RenderKotlin for PropertySetter {
-
-    fn render(&self) -> CodeBlock {
-        let mut code = CodeBlock::empty();
+    fn render_into(&self, block: &mut CodeBlock) {
         for annotation in &self.annotations {
-            code.with_nested(annotation.render());
-            code.with_new_line();
+            block.with_embedded(annotation);
+            block.with_new_line();
         }
-        code.with_atom(tokens::keyword::SET);
-        code.with_round_brackets(|parameters_code| {
+        block.with_atom(tokens::keyword::SET);
+        block.with_round_brackets(|parameters_code| {
             parameters_code.with_atom(tokens::CONV_VAR_VALUE);
         });
-        code.with_space();
-        code.with_curly_brackets(|set_body| {
-            set_body.with_nested(self.code.clone());
+        block.with_space();
+        block.with_curly_brackets(|set_body| {
+            set_body.with_embedded(&self.code);
         });
-        code.with_new_line();
-        code
+        block.with_new_line();
     }
 }
 
@@ -213,19 +204,17 @@ impl Property {
 }
 
 impl RenderKotlin for Property {
-    fn render(&self) -> CodeBlock {
-        let mut block = CodeBlock::empty();
-
-        block.with_nested(self.kdoc.render());
+    fn render_into(&self, block: &mut CodeBlock) {
+        block.with_embedded(&self.kdoc);
 
         for annotation in &self.annotations {
-            block.with_nested(annotation.render());
+            block.with_embedded(annotation);
             block.with_new_line();
         }
 
-        block.with_nested(self.visibility_modifier.render());
+        block.with_embedded(&self.visibility_modifier);
         block.with_space();
-        block.with_nested(self.inheritance_modifier.render());
+        block.with_embedded(&self.inheritance_modifier);
         block.with_space();
 
         if self.is_const {
@@ -245,22 +234,21 @@ impl RenderKotlin for Property {
         }
         block.with_space();
 
-        block.with_nested(self.name.render());
+        block.with_embedded(&self.name);
         block.with_atom(tokens::COLON);
         block.with_space();
-        block.with_nested(self.returns.render());
+        block.with_embedded(&self.returns);
         block.with_indent();
         if let Some(initializer) = &self.initializer {
-            block.with_nested(initializer.render());
+            block.with_embedded(initializer);
         }
         if let Some(setter) = &self.setter {
-            block.with_nested(setter.render());
+            block.with_embedded(setter);
         }
         if let Some(getter) = &self.getter {
-            block.with_nested(getter.render());
+            block.with_embedded(getter);
         }
         block.with_unindent();
-        block
     }
 }
 
@@ -287,7 +275,7 @@ mod test {
             )
         );
 
-        let rendered = property.render().to_string();
+        let rendered = property.render_string();
         let expected = "public final var name: kotlin.String = \"\"\n    set(value) {\n        field = value\n    }\n    get() {\n        return field\n    }";
         assert_eq!(rendered, expected);
     }
@@ -300,7 +288,7 @@ mod test {
 
         assert_eq!(
             "public final const val name: kotlin.String = \"Alex\"",
-            property.render().to_string()
+            property.render_string()
         )
     }
 
@@ -312,7 +300,7 @@ mod test {
 
         assert_eq!(
             "public final const val name: kotlin.String by lazy { \"Alex\" }",
-            property.render().to_string()
+            property.render_string()
         )
     }
 
@@ -324,7 +312,7 @@ mod test {
 
         assert_eq!(
             "public final override val age: kotlin.Int = 22",
-            property.render().to_string()
+            property.render_string()
         )
     }
 
@@ -335,7 +323,7 @@ mod test {
 
         assert_eq!(
             "/**\n * Hello\n * World\n */\npublic final val age: kotlin.Int",
-            property.render().to_string()
+            property.render_string()
         )
     }
 
@@ -355,7 +343,7 @@ mod test {
 
         assert_eq!(
             "@io.github.lexadiky.MyAnnotation()\n@io.github.lexadiky.OtherAnnotation()\npublic final override val age: kotlin.Int = 22",
-            property.render().to_string()
+            property.render_string()
         )
     }
 

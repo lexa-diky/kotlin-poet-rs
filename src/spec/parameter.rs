@@ -8,28 +8,25 @@ pub struct Parameter {
     name: Name,
     parameter_type: Type,
     default_value: Option<CodeBlock>,
-    annotations: Vec<Annotation>
+    annotations: Vec<Annotation>,
 }
 
 impl RenderKotlin for Parameter {
-    fn render(&self) -> CodeBlock {
-        let mut block = CodeBlock::empty();
-        for annotation in& self.annotations {
-            block.with_nested(annotation.render());
+    fn render_into(&self, block: &mut CodeBlock) {
+        for annotation in &self.annotations {
+            block.with_embedded(annotation);
             block.with_space();
         }
-        block.with_nested(self.name.render());
+        block.with_embedded(&self.name);
         block.with_atom(tokens::COLON);
         block.with_space();
-        block.with_nested(self.parameter_type.render());
+        block.with_embedded(&self.parameter_type);
         if let Some(default_value) = &self.default_value {
             block.with_space();
             block.with_atom(tokens::ASSIGN);
             block.with_space();
-            block.with_nested(default_value.clone());
+            block.with_embedded(default_value);
         }
-
-        block
     }
 }
 
@@ -61,12 +58,12 @@ mod tests {
     fn test_rendering() {
         let parameter = Parameter::new(
             Name::from("name"),
-            Type::string()
+            Type::string(),
         );
 
         assert_eq!(
             "name: kotlin.String",
-            parameter.render().to_string()
+            parameter.render_string()
         )
     }
 
@@ -74,12 +71,12 @@ mod tests {
     fn test_rendering_with_default() {
         let parameter = Parameter::new(
             Name::from("age"),
-            Type::int()
+            Type::int(),
         ).default_value(CodeBlock::atom("25"));
 
         assert_eq!(
             "age: kotlin.Int = 25",
-            parameter.render().to_string()
+            parameter.render_string()
         )
     }
 
@@ -87,7 +84,7 @@ mod tests {
     fn test_rendering_with_annotation() {
         let parameter = Parameter::new(
             Name::from("age"),
-            Type::int()
+            Type::int(),
         ).annotation(
             Annotation::new(
                 ClassLikeTypeName::from_str("io.github.lexadiky.MyAnnotation")
@@ -102,7 +99,7 @@ mod tests {
 
         assert_eq!(
             "@io.github.lexadiky.MyAnnotation() @io.github.lexadiky.OtherAnnotation() age: kotlin.Int",
-            parameter.render().to_string()
+            parameter.render_string()
         )
     }
 }

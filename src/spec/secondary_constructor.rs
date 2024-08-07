@@ -48,10 +48,8 @@ impl SecondaryConstructor {
 }
 
 impl RenderKotlin for SecondaryConstructor {
-    fn render(&self) -> CodeBlock {
-        let mut cb = CodeBlock::empty();
-
-        cb.with_nested(self.kdoc.render());
+    fn render_into(&self, block: &mut CodeBlock) {
+        block.with_embedded(&self.kdoc);
 
         let mut pc = PrimaryConstructor::new()
             .visibility_modifier(self.visibility_modifier.clone());
@@ -60,22 +58,20 @@ impl RenderKotlin for SecondaryConstructor {
             pc = pc.parameter(parameter.clone());
         }
 
-        cb.with_nested(pc.render());
-        cb.with_space();
-        cb.with_atom(tokens::COLON);
-        cb.with_space();
-        cb.with_atom(tokens::keyword::THIS);
-        cb.with_round_brackets(|params_block| {
+        block.with_embedded(&pc);
+        block.with_space();
+        block.with_atom(tokens::COLON);
+        block.with_space();
+        block.with_atom(tokens::keyword::THIS);
+        block.with_round_brackets(|params_block| {
             params_block.with_comma_separated(&self.delegate_parameters);
         });
-        cb.with_space();
-        cb.with_curly_brackets(|body_block| {
+        block.with_space();
+        block.with_curly_brackets(|body_block| {
             if let Some(body) = &self.body {
-                body_block.with_nested(body.clone());
+                body_block.with_embedded(body);
             }
         });
-
-        cb
     }
 }
 
@@ -94,7 +90,7 @@ mod tests {
             .delegate_argument(Argument::new_positional(CodeBlock::atom("age")))
             .body(CodeBlock::statement("println(42)"));
 
-        let rendered = secondary_constructor.render().to_string();
+        let rendered = secondary_constructor.render_string();
         let expected = "public constructor(name: kotlin.String, age: kotlin.Int) : this(name, age) {\n    println(42)\n}";
         assert_eq!(rendered, expected);
     }
@@ -104,7 +100,7 @@ mod tests {
         let secondary_constructor = SecondaryConstructor::new()
             .kdoc(KDoc::from("Hello\nWorld"));
 
-        let rendered = secondary_constructor.render().to_string();
+        let rendered = secondary_constructor.render_string();
         let expected = "/**\n * Hello\n * World\n */\npublic constructor() : this() {\n}";
         assert_eq!(rendered, expected);
     }

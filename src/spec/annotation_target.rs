@@ -31,8 +31,7 @@ pub enum AnnotationTarget {
 }
 
 impl RenderKotlin for AnnotationTarget {
-
-    fn render(&self) -> CodeBlock {
+    fn render_into(&self, block: &mut CodeBlock) {
         let atom = match self {
             AnnotationTarget::File => tokens::keyword::FILE,
             AnnotationTarget::Property => tokens::keyword::PROPERTY,
@@ -44,8 +43,7 @@ impl RenderKotlin for AnnotationTarget {
             AnnotationTarget::SetParam => tokens::keyword::SET_PARAM,
             AnnotationTarget::Delegate => tokens::keyword::DELEGATE,
         };
-
-        CodeBlock::atom(atom)
+        block.with_atom(atom)
     }
 }
 
@@ -66,5 +64,4 @@ mod tests {
         assert_eq!(AnnotationTarget::SetParam.render_string(), "setparam");
         assert_eq!(AnnotationTarget::Delegate.render_string(), "delegate");
     }
-
 }

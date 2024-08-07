@@ -45,36 +45,33 @@ impl Import {
 }
 
 impl RenderKotlin for Import {
-    fn render(&self) -> CodeBlock {
-        let mut code = CodeBlock::empty();
-        code.with_atom(tokens::keyword::IMPORT);
-        code.with_space();
+    fn render_into(&self, block: &mut CodeBlock) {
+        block.with_atom(tokens::keyword::IMPORT);
+        block.with_space();
 
         match self {
             Import::ClassLikeType { type_name, alias } => {
-                code.with_nested(type_name.render());
+                block.with_embedded(type_name);
                 if let Some(alias) = alias {
-                    code.with_space();
-                    code.with_atom(tokens::keyword::AS);
-                    code.with_space();
-                    code.with_nested(alias.render());
+                    block.with_space();
+                    block.with_atom(tokens::keyword::AS);
+                    block.with_space();
+                    block.with_embedded(alias);
                 }
             }
             Import::Projection(package) => {
-                code.with_nested(package.render());
-                code.with_atom(tokens::DOT);
-                code.with_atom(tokens::STAR);
+                block.with_embedded(package);
+                block.with_atom(tokens::DOT);
+                block.with_atom(tokens::STAR);
             }
             Import::TopLevel { package, name } => {
-                code.with_nested(package.render());
-                code.with_atom(tokens::DOT);
-                code.with_nested(name.render());
+                block.with_embedded(package);
+                block.with_atom(tokens::DOT);
+                block.with_embedded(name);
             }
         }
 
-        code.with_new_line();
-
-        code
+        block.with_new_line();
     }
 }
 

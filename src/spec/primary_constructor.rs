@@ -9,10 +9,12 @@ enum PrimaryConstructorParameter {
 }
 
 impl RenderKotlin for PrimaryConstructorParameter {
-    fn render(&self) -> CodeBlock {
+    fn render_into(&self, block: &mut CodeBlock) {
         match self {
-            PrimaryConstructorParameter::PropertyParameter(property) => property.render(),
-            PrimaryConstructorParameter::FunctionLike(param) => param.render()
+            PrimaryConstructorParameter::PropertyParameter(property) =>
+                block.with_embedded(property),
+            PrimaryConstructorParameter::FunctionLike(param) =>
+                block.with_embedded(param)
         }
     }
 }
@@ -21,14 +23,14 @@ impl RenderKotlin for PrimaryConstructorParameter {
 #[derive(Debug, Clone)]
 pub struct PrimaryConstructor {
     arguments: Vec<PrimaryConstructorParameter>,
-    visibility_modifier: VisibilityModifier
+    visibility_modifier: VisibilityModifier,
 }
 
 impl PrimaryConstructor {
     pub fn new() -> PrimaryConstructor {
         PrimaryConstructor {
             arguments: Vec::new(),
-            visibility_modifier: VisibilityModifier::default()
+            visibility_modifier: VisibilityModifier::default(),
         }
     }
 
@@ -49,16 +51,13 @@ impl PrimaryConstructor {
 }
 
 impl RenderKotlin for PrimaryConstructor {
-    fn render(&self) -> CodeBlock {
-        let mut block = CodeBlock::empty();
-        block.with_nested(self.visibility_modifier.render());
+    fn render_into(&self, block: &mut CodeBlock) {
+        block.with_embedded(&self.visibility_modifier);
         block.with_space();
         block.with_atom(tokens::keyword::CONSTRUCTOR);
         block.with_round_brackets(|params_block| {
             params_block.with_comma_separated(&self.arguments)
         });
-
-        block
     }
 }
 
@@ -78,7 +77,7 @@ mod tests {
 
         let function_parameter = Parameter::new(
             "age".into(),
-            Type::int()
+            Type::int(),
         );
 
         let primary_constructor = PrimaryConstructor::new()
@@ -86,7 +85,7 @@ mod tests {
             .parameter(function_parameter);
 
         assert_eq!(
-            primary_constructor.render().to_string(),
+            primary_constructor.render_string(),
             "public constructor(public final val name: kotlin.String = \"\", age: kotlin.Int)"
         );
     }
@@ -97,7 +96,7 @@ mod tests {
             .visibility_modifier(VisibilityModifier::Private);
 
         assert_eq!(
-            primary_constructor.render().to_string(),
+            primary_constructor.render_string(),
             "private constructor()"
         );
     }

@@ -82,7 +82,8 @@ impl RenderKotlin for PropertyGetter {
         block.with_indent();
         block.with_nested(self.code.clone());
         block.with_unindent();
-        block.with_statement(tokens::CURLY_BRACKET_RIGHT);
+        block.with_atom(tokens::CURLY_BRACKET_RIGHT);
+        block.with_new_line();
         block
     }
 }

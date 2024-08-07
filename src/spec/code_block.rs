@@ -2,7 +2,7 @@ use crate::io::{CodeBuffer, RenderKotlin};
 use crate::tokens;
 
 /// Node of a code block that can be rendered to a Kotlin code.
-/// You can treat this nodes as commands for rendering, like "add atom", "add new line", etc.
+/// You can treat these nodes as commands for rendering, like "add atom", "add new line", etc.
 #[derive(Debug, Clone)]
 pub(crate) enum CodeBlockNode {
     Atom(String),
@@ -40,23 +40,14 @@ impl CodeBlock {
 
     /// Creates code block with a single atom node and empty line.
     pub fn statement(text: &str) -> CodeBlock {
-        let mut cb = CodeBlock::empty();
-        cb.with_statement(text);
+        let mut cb = CodeBlock::atom(text);
+        cb.with_new_line();
         cb
-    }
-
-    /// Shortcut for [RenderKotlin::with_atom] + [RenderKotlin::with_new_line]
-    pub fn with_statement(&mut self, text: &str) {
-        self.with_atom(text);
-        self.with_new_line();
     }
 
     /// Embeds all node from [code_block] into [self].
     pub fn with_nested(&mut self, code_block: CodeBlock) {
-        self.nodes.reserve(code_block.nodes.len());
-        for node in code_block.nodes {
-            self.nodes.push(node);
-        }
+        self.nodes.extend(code_block.nodes);
     }
 
     /// Adds [CodeBlockNode::Indent] with value 1.

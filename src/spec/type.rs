@@ -1,7 +1,8 @@
 use std::str::FromStr;
-use crate::io::{RenderKotlin};
-use crate::spec::class_like_type::ClassLikeType;
+
+use crate::io::RenderKotlin;
 use crate::spec::{ClassLikeTypeName, CodeBlock, FunctionType, Name, Package};
+use crate::spec::class_like_type::ClassLikeType;
 use crate::tokens;
 use crate::util::{SemanticConversionError, yolo_from_str};
 
@@ -126,13 +127,20 @@ impl FromStr for Type {
             );
         }
 
+        if clear.contains(tokens::ROUND_BRACKET_LEFT) {
+            return Err(
+                SemanticConversionError::new(
+                    "Function types are not supported by Type::from_str"
+                )
+            );
+        }
+
         Ok(
             Type::ClassLike(
                 ClassLikeType::from_str(clear)?
             )
         )
     }
-
 }
 
 impl RenderKotlin for Type {
@@ -157,5 +165,14 @@ mod test {
         let name = Name::from_str("T").unwrap();
         let parameter = Type::Generic(name);
         assert_eq!(parameter.render_string(), "T");
+    }
+
+    #[test]
+    fn parse_fn_type() {
+        let new_type = Type::from_str("() -> String");
+        assert!(matches!(
+            new_type,
+            Err(_)
+        ));
     }
 }

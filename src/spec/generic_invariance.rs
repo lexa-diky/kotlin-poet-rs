@@ -16,8 +16,8 @@ pub enum GenericInvariance {
 impl RenderKotlin for GenericInvariance {
     fn render_into(&self, block: &mut CodeBlock) {
         match self {
-            GenericInvariance::In => block.with_atom(tokens::keyword::IN),
-            GenericInvariance::Out => block.with_atom(tokens::keyword::OUT),
+            GenericInvariance::In => block.push_atom(tokens::keyword::IN),
+            GenericInvariance::Out => block.push_atom(tokens::keyword::OUT),
         }
     }
 }

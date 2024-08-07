@@ -48,27 +48,27 @@ impl TypeAlias {
 
 impl RenderKotlin for TypeAlias {
     fn render_into(&self, block: &mut CodeBlock) {
-        block.with_embedded(&self.kdoc);
+        block.push_renderable(&self.kdoc);
 
         for annotation in &self.annotations {
-            block.with_embedded(annotation);
-            block.with_new_line();
+            block.push_renderable(annotation);
+            block.push_new_line();
         }
-        block.with_embedded(&self.visibility_modifier);
-        block.with_space();
-        block.with_atom(tokens::keyword::TYPEALIAS);
-        block.with_space();
-        block.with_embedded(&self.name);
+        block.push_renderable(&self.visibility_modifier);
+        block.push_space();
+        block.push_atom(tokens::keyword::TYPEALIAS);
+        block.push_space();
+        block.push_renderable(&self.name);
         if !self.generic_parameters.is_empty() {
-            block.with_atom(tokens::ANGLE_BRACKET_LEFT);
-            block.with_comma_separated(&self.generic_parameters);
-            block.with_atom(tokens::ANGLE_BRACKET_RIGHT);
+            block.push_atom(tokens::ANGLE_BRACKET_LEFT);
+            block.push_comma_separated(&self.generic_parameters);
+            block.push_atom(tokens::ANGLE_BRACKET_RIGHT);
         }
 
-        block.with_space();
-        block.with_atom(tokens::ASSIGN);
-        block.with_space();
-        block.with_embedded(&self.actual);
+        block.push_space();
+        block.push_atom(tokens::ASSIGN);
+        block.push_space();
+        block.push_renderable(&self.actual);
     }
 }
 

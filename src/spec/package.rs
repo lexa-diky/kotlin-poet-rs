@@ -86,9 +86,9 @@ impl FromStr for Package {
 impl RenderKotlin for Package {
     fn render_into(&self, block: &mut CodeBlock) {
         for (index, part) in self.parts.iter().enumerate() {
-            block.with_embedded(part);
+            block.push_renderable(part);
             if index != self.parts.len() - 1 {
-                block.with_atom(DOT);
+                block.push_atom(DOT);
             }
         }
     }

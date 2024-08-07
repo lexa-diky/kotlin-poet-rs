@@ -36,24 +36,24 @@ impl ClassLikeType {
 
 impl RenderKotlin for ClassLikeType {
     fn render_into(&self, block: &mut CodeBlock) {
-        block.with_embedded(&self.type_name);
+        block.push_renderable(&self.type_name);
 
         if !self.generic_arguments.is_empty() {
-            block.with_atom(tokens::ANGLE_BRACKET_LEFT);
+            block.push_atom(tokens::ANGLE_BRACKET_LEFT);
 
             for (idx, generic_argument) in self.generic_arguments.iter().enumerate() {
-                block.with_embedded(generic_argument);
+                block.push_renderable(generic_argument);
                 if idx != self.generic_arguments.len() - 1 {
-                    block.with_atom(tokens::COMMA);
-                    block.with_space();
+                    block.push_atom(tokens::COMMA);
+                    block.push_space();
                 }
             }
 
-            block.with_atom(tokens::ANGLE_BRACKET_RIGHT);
+            block.push_atom(tokens::ANGLE_BRACKET_RIGHT);
         }
 
         if self.nullable {
-            block.with_atom(tokens::QUESTION_MARK);
+            block.push_atom(tokens::QUESTION_MARK);
         };
     }
 }

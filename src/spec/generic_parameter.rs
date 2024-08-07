@@ -39,22 +39,22 @@ impl GenericParameter {
     pub(crate) fn render_definition(&self) -> CodeBlock {
         let mut code = CodeBlock::empty();
         if let Some(invariance) = &self.invariance {
-            code.with_embedded(invariance);
-            code.with_space();
+            code.push_renderable(invariance);
+            code.push_space();
         }
-        code.with_embedded(&self.name);
+        code.push_renderable(&self.name);
         code
     }
 
     pub(crate) fn render_type_boundaries(&self) -> CodeBlock {
         let mut code = CodeBlock::empty();
-        code.with_comma_separated(
+        code.push_comma_separated(
             &self.type_boundaries.iter().map(|boundary| {
                 let mut inner = CodeBlock::empty();
-                inner.with_embedded(&self.name);
-                inner.with_atom(tokens::COLON);
-                inner.with_space();
-                inner.with_embedded(boundary);
+                inner.push_renderable(&self.name);
+                inner.push_atom(tokens::COLON);
+                inner.push_space();
+                inner.push_renderable(boundary);
                 inner
             }).collect::<Vec<CodeBlock>>()
         );
@@ -73,10 +73,10 @@ impl GenericParameter {
         }
 
         let mut code = CodeBlock::empty();
-        code.with_atom(tokens::keyword::WHERE);
-        code.with_space();
-        code.with_comma_separated(&boundary_code_blocks);
-        code.with_space();
+        code.push_atom(tokens::keyword::WHERE);
+        code.push_space();
+        code.push_comma_separated(&boundary_code_blocks);
+        code.push_space();
 
         code
     }

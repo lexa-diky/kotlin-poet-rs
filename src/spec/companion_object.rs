@@ -44,16 +44,16 @@ impl CompanionObject {
 
 impl RenderKotlin for CompanionObject {
     fn render_into(&self, block: &mut CodeBlock) {
-        block.with_embedded(&self.visibility_modifier);
-        block.with_space();
-        block.with_atom(tokens::keyword::COMPANION);
-        block.with_space();
-        block.with_atom(tokens::keyword::OBJECT);
-        block.with_space();
-        block.with_curly_brackets(|code| {
+        block.push_renderable(&self.visibility_modifier);
+        block.push_space();
+        block.push_atom(tokens::keyword::COMPANION);
+        block.push_space();
+        block.push_atom(tokens::keyword::OBJECT);
+        block.push_space();
+        block.push_curly_brackets(|code| {
             for node in &self.member_nodes {
-                code.with_embedded(node);
-                code.with_new_line();
+                code.push_renderable(node);
+                code.push_new_line();
             }
         });
     }

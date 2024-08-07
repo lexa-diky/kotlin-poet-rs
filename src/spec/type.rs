@@ -127,9 +127,9 @@ impl FromStr for Type {
 impl RenderKotlin for Type {
     fn render_into(&self, block: &mut CodeBlock) {
         match self {
-            Type::ClassLike(class_like) => block.with_embedded(class_like),
-            Type::Generic(name) => block.with_embedded(name),
-            Type::Function(lambda) => block.with_embedded(lambda)
+            Type::ClassLike(class_like) => block.push_renderable(class_like),
+            Type::Generic(name) => block.push_renderable(name),
+            Type::Function(lambda) => block.push_renderable(lambda)
         }
     }
 }

@@ -14,16 +14,16 @@ impl RenderKotlin for PropertyInitializer {
     fn render_into(&self, block: &mut CodeBlock) {
         match self {
             PropertyInitializer::Value(initializer) => {
-                block.with_space();
-                block.with_atom(tokens::ASSIGN);
-                block.with_space();
-                block.with_embedded(initializer)
+                block.push_space();
+                block.push_atom(tokens::ASSIGN);
+                block.push_space();
+                block.push_renderable(initializer)
             }
             PropertyInitializer::Delegate(delegate) => {
-                block.with_space();
-                block.with_atom(tokens::keyword::BY);
-                block.with_space();
-                block.with_embedded(delegate)
+                block.push_space();
+                block.push_atom(tokens::keyword::BY);
+                block.push_space();
+                block.push_renderable(delegate)
             }
         }
     }
@@ -66,19 +66,19 @@ impl PropertyGetter {
 impl RenderKotlin for PropertyGetter {
     fn render_into(&self, block: &mut CodeBlock) {
         for annotation in &self.annotations {
-            block.with_embedded(annotation);
-            block.with_new_line();
+            block.push_renderable(annotation);
+            block.push_new_line();
         }
-        block.with_atom(tokens::keyword::GET);
-        block.with_round_brackets(|_| {});
-        block.with_space();
-        block.with_atom(tokens::CURLY_BRACKET_LEFT);
-        block.with_new_line();
-        block.with_indent();
-        block.with_embedded(&self.code);
-        block.with_unindent();
-        block.with_atom(tokens::CURLY_BRACKET_RIGHT);
-        block.with_new_line();
+        block.push_atom(tokens::keyword::GET);
+        block.push_round_brackets(|_| {});
+        block.push_space();
+        block.push_atom(tokens::CURLY_BRACKET_LEFT);
+        block.push_new_line();
+        block.push_indent();
+        block.push_renderable(&self.code);
+        block.push_unindent();
+        block.push_atom(tokens::CURLY_BRACKET_RIGHT);
+        block.push_new_line();
     }
 }
 
@@ -109,18 +109,18 @@ impl PropertySetter {
 impl RenderKotlin for PropertySetter {
     fn render_into(&self, block: &mut CodeBlock) {
         for annotation in &self.annotations {
-            block.with_embedded(annotation);
-            block.with_new_line();
+            block.push_renderable(annotation);
+            block.push_new_line();
         }
-        block.with_atom(tokens::keyword::SET);
-        block.with_round_brackets(|parameters_code| {
-            parameters_code.with_atom(tokens::CONV_VAR_VALUE);
+        block.push_atom(tokens::keyword::SET);
+        block.push_round_brackets(|parameters_code| {
+            parameters_code.push_atom(tokens::CONV_VAR_VALUE);
         });
-        block.with_space();
-        block.with_curly_brackets(|set_body| {
-            set_body.with_embedded(&self.code);
+        block.push_space();
+        block.push_curly_brackets(|set_body| {
+            set_body.push_renderable(&self.code);
         });
-        block.with_new_line();
+        block.push_new_line();
     }
 }
 
@@ -205,50 +205,50 @@ impl Property {
 
 impl RenderKotlin for Property {
     fn render_into(&self, block: &mut CodeBlock) {
-        block.with_embedded(&self.kdoc);
+        block.push_renderable(&self.kdoc);
 
         for annotation in &self.annotations {
-            block.with_embedded(annotation);
-            block.with_new_line();
+            block.push_renderable(annotation);
+            block.push_new_line();
         }
 
-        block.with_embedded(&self.visibility_modifier);
-        block.with_space();
-        block.with_embedded(&self.inheritance_modifier);
-        block.with_space();
+        block.push_renderable(&self.visibility_modifier);
+        block.push_space();
+        block.push_renderable(&self.inheritance_modifier);
+        block.push_space();
 
         if self.is_const {
-            block.with_atom(tokens::keyword::CONST);
-            block.with_space()
+            block.push_atom(tokens::keyword::CONST);
+            block.push_space()
         }
 
         if self.is_override {
-            block.with_atom(tokens::keyword::OVERRIDE);
-            block.with_space();
+            block.push_atom(tokens::keyword::OVERRIDE);
+            block.push_space();
         }
 
         if self.is_mutable {
-            block.with_atom(tokens::keyword::VAR);
+            block.push_atom(tokens::keyword::VAR);
         } else {
-            block.with_atom(tokens::keyword::VAL);
+            block.push_atom(tokens::keyword::VAL);
         }
-        block.with_space();
+        block.push_space();
 
-        block.with_embedded(&self.name);
-        block.with_atom(tokens::COLON);
-        block.with_space();
-        block.with_embedded(&self.returns);
-        block.with_indent();
+        block.push_renderable(&self.name);
+        block.push_atom(tokens::COLON);
+        block.push_space();
+        block.push_renderable(&self.returns);
+        block.push_indent();
         if let Some(initializer) = &self.initializer {
-            block.with_embedded(initializer);
+            block.push_renderable(initializer);
         }
         if let Some(setter) = &self.setter {
-            block.with_embedded(setter);
+            block.push_renderable(setter);
         }
         if let Some(getter) = &self.getter {
-            block.with_embedded(getter);
+            block.push_renderable(getter);
         }
-        block.with_unindent();
+        block.push_unindent();
     }
 }
 

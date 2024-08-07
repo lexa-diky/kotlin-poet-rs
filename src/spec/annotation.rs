@@ -59,14 +59,14 @@ impl Annotation {
 
 impl RenderKotlin for Annotation {
     fn render_into(&self, block: &mut CodeBlock) {
-        block.with_atom(tokens::AT);
+        block.push_atom(tokens::AT);
         if let Some(target) = &self.target {
-            block.with_embedded(target);
-            block.with_atom(tokens::COLON);
+            block.push_renderable(target);
+            block.push_atom(tokens::COLON);
         }
-        block.with_embedded(&self.type_name);
-        block.with_round_brackets(|inner_code| {
-            inner_code.with_comma_separated(&self.arguments)
+        block.push_renderable(&self.type_name);
+        block.push_round_brackets(|inner_code| {
+            inner_code.push_comma_separated(&self.arguments)
         });
     }
 }

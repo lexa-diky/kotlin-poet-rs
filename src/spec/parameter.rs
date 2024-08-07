@@ -14,18 +14,18 @@ pub struct Parameter {
 impl RenderKotlin for Parameter {
     fn render_into(&self, block: &mut CodeBlock) {
         for annotation in &self.annotations {
-            block.with_embedded(annotation);
-            block.with_space();
+            block.push_renderable(annotation);
+            block.push_space();
         }
-        block.with_embedded(&self.name);
-        block.with_atom(tokens::COLON);
-        block.with_space();
-        block.with_embedded(&self.parameter_type);
+        block.push_renderable(&self.name);
+        block.push_atom(tokens::COLON);
+        block.push_space();
+        block.push_renderable(&self.parameter_type);
         if let Some(default_value) = &self.default_value {
-            block.with_space();
-            block.with_atom(tokens::ASSIGN);
-            block.with_space();
-            block.with_embedded(default_value);
+            block.push_space();
+            block.push_atom(tokens::ASSIGN);
+            block.push_space();
+            block.push_renderable(default_value);
         }
     }
 }

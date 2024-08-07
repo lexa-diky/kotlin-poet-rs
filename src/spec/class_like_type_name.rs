@@ -75,14 +75,14 @@ impl FromStr for ClassLikeTypeName {
 impl RenderKotlin for ClassLikeTypeName {
     fn render_into(&self, block: &mut CodeBlock) {
         if !self.package.parts.is_empty() {
-            block.with_embedded(&self.package);
-            block.with_atom(tokens::DOT);
+            block.push_renderable(&self.package);
+            block.push_atom(tokens::DOT);
         }
 
         for (index, part) in self.names.iter().enumerate() {
-            block.with_embedded(part);
+            block.push_renderable(part);
             if index != self.names.len() - 1 {
-                block.with_atom(tokens::DOT);
+                block.push_atom(tokens::DOT);
             }
         }
     }

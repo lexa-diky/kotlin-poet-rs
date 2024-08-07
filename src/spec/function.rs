@@ -103,81 +103,81 @@ impl Function {
 
 impl RenderKotlin for Function {
     fn render_into(&self, block: &mut CodeBlock) {
-        block.with_embedded(&self.kdoc);
+        block.push_renderable(&self.kdoc);
 
         for annotation in &self.annotations {
-            block.with_embedded(annotation);
-            block.with_new_line()
+            block.push_renderable(annotation);
+            block.push_new_line()
         }
 
-        block.with_embedded(&self.visibility_modifier);
-        block.with_space();
+        block.push_renderable(&self.visibility_modifier);
+        block.push_space();
 
         if self.is_suspended {
-            block.with_atom(tokens::keyword::SUSPEND);
-            block.with_space();
+            block.push_atom(tokens::keyword::SUSPEND);
+            block.push_space();
         }
 
         if self.is_inline {
-            block.with_atom(tokens::keyword::INLINE);
-            block.with_space();
+            block.push_atom(tokens::keyword::INLINE);
+            block.push_space();
         }
 
         if self.is_operator {
-            block.with_atom(tokens::keyword::OPERATOR);
-            block.with_space();
+            block.push_atom(tokens::keyword::OPERATOR);
+            block.push_space();
         }
 
         if self.is_override {
-            block.with_atom(tokens::keyword::OVERRIDE);
-            block.with_space();
+            block.push_atom(tokens::keyword::OVERRIDE);
+            block.push_space();
         }
 
-        block.with_atom(tokens::keyword::FUN);
-        block.with_space();
+        block.push_atom(tokens::keyword::FUN);
+        block.push_space();
 
         if !self.generic_parameters.is_empty() {
-            block.with_angle_brackets(|code| {
-                code.with_comma_separated(
+            block.push_angle_brackets(|code| {
+                code.push_comma_separated(
                     &self.generic_parameters.iter().map(|it| it.render_definition())
                         .collect::<Vec<CodeBlock>>()
                 );
             });
-            block.with_space();
+            block.push_space();
         }
 
         if let Some(receiver) = &self.receiver {
-            block.with_embedded(receiver);
-            block.with_atom(tokens::DOT);
+            block.push_renderable(receiver);
+            block.push_atom(tokens::DOT);
         }
-        block.with_embedded(&self.name);
+        block.push_renderable(&self.name);
 
-        block.with_round_brackets(|parameters_code| {
+        block.push_round_brackets(|parameters_code| {
             let total_parameters = self.parameters.len();
             for (index, parameter) in self.parameters.iter().enumerate() {
-                parameters_code.with_embedded(parameter);
+                parameters_code.push_renderable(parameter);
                 if index != total_parameters - 1 {
-                    parameters_code.with_atom(tokens::COMMA);
-                    parameters_code.with_space()
+                    parameters_code.push_atom(tokens::COMMA);
+                    parameters_code.push_space()
                 }
             }
         });
 
-        block.with_atom(tokens::COLON);
-        block.with_space();
-        block.with_embedded(&self.returns);
+        block.push_atom(tokens::COLON);
+        block.push_space();
+        block.push_renderable(&self.returns);
 
-        block.with_space();
-        block.with_embedded(
+        block.push_space();
+        block.push_renderable(
             &GenericParameter::render_type_boundaries_vec_if_required(
                 &self.generic_parameters
             )
         );
 
         if let Some(body) = &self.body {
-            block.with_space();
-            block.with_curly_brackets(|inner| {
-                inner.with_embedded(body);
+            block.push_space();
+            block.push_curly_brackets(|inner| {
+                inner.push_renderable(body);
             });
         }
     }

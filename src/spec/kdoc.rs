@@ -40,8 +40,8 @@ impl From<&str> for KDoc {
 
 impl RenderKotlin for KDoc {
     fn render_into(&self, block: &mut CodeBlock) {
-        block.with_atom(tokens::KDOC_COMMENT_START);
-        block.with_new_line();
+        block.push_atom(tokens::KDOC_COMMENT_START);
+        block.push_new_line();
         let split = self.content.split(tokens::NEW_LINE)
             .enumerate().collect::<Vec<_>>();
         let split_len = split.len();
@@ -50,12 +50,12 @@ impl RenderKotlin for KDoc {
                 break;
             }
 
-            block.with_atom(tokens::KDOC_COMMENT_MIDDLE);
-            block.with_space();
-            block.with_atom(line);
-            block.with_new_line();
+            block.push_atom(tokens::KDOC_COMMENT_MIDDLE);
+            block.push_space();
+            block.push_atom(line);
+            block.push_new_line();
         }
-        block.with_atom(tokens::KDOC_COMMENT_END);
+        block.push_atom(tokens::KDOC_COMMENT_END);
     }
 }
 
@@ -65,8 +65,8 @@ pub(crate) struct KdocSlot(Option<KDoc>);
 impl RenderKotlin for KdocSlot {
     fn render_into(&self, block: &mut CodeBlock) {
         if let Some(kdoc) = &self.0 {
-            block.with_embedded(kdoc);
-            block.with_new_line()
+            block.push_renderable(kdoc);
+            block.push_new_line()
         }
     }
 }

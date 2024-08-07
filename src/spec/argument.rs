@@ -59,12 +59,12 @@ impl Argument {
 impl RenderKotlin for Argument {
     fn render_into(&self, block: &mut CodeBlock) {
         if let Some(name) = &self.name {
-            block.with_embedded(name);
-            block.with_space();
-            block.with_atom(tokens::ASSIGN);
-            block.with_space();
+            block.push_renderable(name);
+            block.push_space();
+            block.push_atom(tokens::ASSIGN);
+            block.push_space();
         }
-        block.with_atom(self.value.to_string().as_str());
+        block.push_atom(self.value.to_string().as_str());
     }
 }
 

@@ -27,7 +27,7 @@ impl CodeBlock {
     }
 
     /// Creates code block with a single atom node.
-    /// Please avoid using it in [RenderKotlin::render], prefer [CodeBlock::empty] and [CodeBlock::with_atom] instead.
+    /// Please avoid using it in [RenderKotlin::render], prefer [CodeBlock::empty] and [CodeBlock::push_atom] instead.
     pub fn atom(text: &str) -> CodeBlock {
         CodeBlock {
             nodes: vec![
@@ -41,22 +41,22 @@ impl CodeBlock {
     /// Creates code block with a single atom node and empty line.
     pub fn statement(text: &str) -> CodeBlock {
         let mut cb = CodeBlock::atom(text);
-        cb.with_new_line();
+        cb.push_new_line();
         cb
     }
 
     /// Embeds all node from [code_block] into [self].
-    pub fn with_embedded<T: RenderKotlin>(&mut self, renderable: &T) {
+    pub fn push_renderable<T: RenderKotlin>(&mut self, renderable: &T) {
         renderable.render_into(self);
     }
 
     /// Adds [CodeBlockNode::Indent] with value 1.
-    pub fn with_indent(&mut self) {
-        self.with_indent_value(1);
+    pub fn push_indent(&mut self) {
+        self.push_indent_value(1);
     }
 
     #[inline]
-    fn with_indent_value(&mut self, value: usize) {
+    fn push_indent_value(&mut self, value: usize) {
         if value == 0 {
             return;
         }
@@ -68,12 +68,12 @@ impl CodeBlock {
     }
 
     /// Adds [CodeBlockNode::Unindent] with value 1
-    pub fn with_unindent(&mut self) {
-        self.with_unindent_value(1);
+    pub fn push_unindent(&mut self) {
+        self.push_unindent_value(1);
     }
 
     #[inline]
-    fn with_unindent_value(&mut self, value: usize) {
+    fn push_unindent_value(&mut self, value: usize) {
         if value == 0 {
             return;
         }
@@ -85,12 +85,12 @@ impl CodeBlock {
     }
 
     /// Adds [CodeBlockNode::NewLine]
-    pub fn with_new_line(&mut self) {
+    pub fn push_new_line(&mut self) {
         self.nodes.push(CodeBlockNode::NewLine);
     }
 
     /// Adds [CodeBlockNode::Atom]
-    pub fn with_atom(&mut self, text: &str) {
+    pub fn push_atom(&mut self, text: &str) {
         if let Some(CodeBlockNode::Atom(inner_buffer)) = self.nodes.last_mut() {
             inner_buffer.push_str(text);
             return;
@@ -99,7 +99,7 @@ impl CodeBlock {
     }
 
     /// Adds [CodeBlockNode::Space]
-    pub fn with_space(&mut self) {
+    pub fn push_space(&mut self) {
         if matches!(self.nodes.last(), Some(CodeBlockNode::Space)) {
             return; // no double spaces
         }
@@ -107,70 +107,70 @@ impl CodeBlock {
     }
 
     /// Removes last [CodeBlockNode::Space] if exists
-    pub fn with_pop_space(&mut self) {
+    pub fn pop_space(&mut self) {
         if matches!(self.nodes.last(), Some(CodeBlockNode::Space)) {
             self.nodes.remove(self.nodes.len() - 1);
         }
     }
 
     /// Surrounds first parameter [block] with curly brackets + indent and adds it to [self].
-    pub fn with_curly_brackets<F>(&mut self, block: F)
+    pub fn push_curly_brackets<F>(&mut self, block: F)
     where
         F: FnOnce(&mut CodeBlock),
     {
         let mut inner_code = CodeBlock::empty();
 
-        self.with_atom(tokens::CURLY_BRACKET_LEFT);
-        self.with_new_line();
-        self.with_indent();
+        self.push_atom(tokens::CURLY_BRACKET_LEFT);
+        self.push_new_line();
+        self.push_indent();
         block(&mut inner_code);
-        self.with_embedded(&inner_code);
-        self.with_unindent();
-        self.with_atom(tokens::CURLY_BRACKET_RIGHT);
+        self.push_renderable(&inner_code);
+        self.push_unindent();
+        self.push_atom(tokens::CURLY_BRACKET_RIGHT);
     }
 
     /// Surrounds first parameter [block] with round brackets and adds it to [self].
-    pub fn with_round_brackets<F>(&mut self, block: F)
+    pub fn push_round_brackets<F>(&mut self, block: F)
     where
         F: FnOnce(&mut CodeBlock),
     {
         let mut inner_code = CodeBlock::empty();
 
-        self.with_atom(tokens::ROUND_BRACKET_LEFT);
+        self.push_atom(tokens::ROUND_BRACKET_LEFT);
         block(&mut inner_code);
-        self.with_embedded(&inner_code);
-        self.with_atom(tokens::ROUND_BRACKET_RIGHT);
+        self.push_renderable(&inner_code);
+        self.push_atom(tokens::ROUND_BRACKET_RIGHT);
     }
 
     /// Surrounds first parameter [block] with angle brackets and adds it to [self].
-    pub fn with_angle_brackets<F>(&mut self, block: F)
+    pub fn push_angle_brackets<F>(&mut self, block: F)
     where
         F: FnOnce(&mut CodeBlock),
     {
         let mut inner_code = CodeBlock::empty();
 
-        self.with_atom(tokens::ANGLE_BRACKET_LEFT);
+        self.push_atom(tokens::ANGLE_BRACKET_LEFT);
         block(&mut inner_code);
-        self.with_embedded(&inner_code);
-        self.with_atom(tokens::ANGLE_BRACKET_RIGHT);
+        self.push_renderable(&inner_code);
+        self.push_atom(tokens::ANGLE_BRACKET_RIGHT);
     }
 
     /// Adds all elements from [elements] with comma separation, except for last one
-    pub fn with_comma_separated<F>(&mut self, elements: &[F])
+    pub fn push_comma_separated<F>(&mut self, elements: &[F])
     where
         F: RenderKotlin,
     {
         let mut code = CodeBlock::empty();
         let len = elements.len();
         for (index, renderable) in elements.iter().enumerate() {
-            code.with_embedded(renderable);
+            code.push_renderable(renderable);
             if index != len - 1 {
-                code.with_atom(tokens::COMMA);
-                code.with_space();
+                code.push_atom(tokens::COMMA);
+                code.push_space();
             }
         }
 
-        self.with_embedded(&code);
+        self.push_renderable(&code);
     }
 
     fn render(&self) -> String {

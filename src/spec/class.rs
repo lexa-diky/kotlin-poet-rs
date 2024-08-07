@@ -17,21 +17,21 @@ impl RenderKotlin for ClassMemberNode {
     fn render_into(&self, block: &mut CodeBlock) {
         match self {
             ClassMemberNode::Property(property) => {
-                block.with_embedded(property);
+                block.push_renderable(property);
             }
             ClassMemberNode::Function(function) => {
-                block.with_embedded(function);
+                block.push_renderable(function);
             }
             ClassMemberNode::Subclass(subclass) => {
-                block.with_embedded(subclass);
+                block.push_renderable(subclass);
             }
             ClassMemberNode::SecondaryConstructor(secondary_constructor) => {
-                block.with_embedded(secondary_constructor);
+                block.push_renderable(secondary_constructor);
             }
             ClassMemberNode::InitBlock(code) => {
-                block.with_atom(tokens::keyword::INIT);
-                block.with_curly_brackets(|block| {
-                    block.with_embedded(code);
+                block.push_atom(tokens::keyword::INIT);
+                block.push_curly_brackets(|block| {
+                    block.push_renderable(code);
                 });
             }
         }
@@ -193,87 +193,87 @@ impl Class {
 
 impl RenderKotlin for Class {
     fn render_into(&self, block: &mut CodeBlock) {
-        block.with_embedded(&self.kdoc);
+        block.push_renderable(&self.kdoc);
         for annotation in &self.annotations {
-            block.with_embedded(annotation);
-            block.with_new_line();
+            block.push_renderable(annotation);
+            block.push_new_line();
         }
 
-        block.with_embedded(&self.visibility_modifier);
-        block.with_space();
+        block.push_renderable(&self.visibility_modifier);
+        block.push_space();
         if self.is_inner {
-            block.with_atom(tokens::keyword::INNER);
-            block.with_space();
+            block.push_atom(tokens::keyword::INNER);
+            block.push_space();
         }
-        block.with_embedded(&self.inheritance_modifier);
-        block.with_space();
+        block.push_renderable(&self.inheritance_modifier);
+        block.push_space();
         if !matches!(
             self.inheritance_modifier,
             ClassInheritanceModifier::Interface |
             ClassInheritanceModifier::Object
         ) {
-            block.with_atom(tokens::keyword::CLASS);
-            block.with_space();
+            block.push_atom(tokens::keyword::CLASS);
+            block.push_space();
         }
-        block.with_embedded(&self.name);
+        block.push_renderable(&self.name);
         if !self.generic_parameters.is_empty() {
-            block.with_angle_brackets(|code| {
-                code.with_comma_separated(
+            block.push_angle_brackets(|code| {
+                code.push_comma_separated(
                     &self.generic_parameters.iter().map(|it| it.render_definition())
                         .collect::<Vec<CodeBlock>>()
                 );
             });
         }
-        block.with_space();
+        block.push_space();
 
         if let Some(primary_constructor) = &self.primary_constructor {
-            block.with_embedded(primary_constructor);
-            block.with_space();
+            block.push_renderable(primary_constructor);
+            block.push_space();
         }
 
         if !self.parent_classes.is_empty() {
-            block.with_pop_space();
-            block.with_atom(tokens::COLON);
-            block.with_space();
-            block.with_comma_separated(
+            block.pop_space();
+            block.push_atom(tokens::COLON);
+            block.push_space();
+            block.push_comma_separated(
                 &self.parent_classes
             );
-            block.with_space();
+            block.push_space();
         }
 
-        block.with_embedded(
+        block.push_renderable(
             &GenericParameter::render_type_boundaries_vec_if_required(
                 &self.generic_parameters
             )
         );
 
-        block.with_curly_brackets(|class_body_code| {
-            class_body_code.with_new_line();
+        block.push_curly_brackets(|class_body_code| {
+            class_body_code.push_new_line();
 
             if !self.enum_instances.is_empty() {
                 for (inst_idx, instance) in self.enum_instances.iter().enumerate() {
-                    class_body_code.with_embedded(&instance.name);
-                    class_body_code.with_round_brackets(|arg_code| {
-                        arg_code.with_comma_separated(&instance.arguments);
+                    class_body_code.push_renderable(&instance.name);
+                    class_body_code.push_round_brackets(|arg_code| {
+                        arg_code.push_comma_separated(&instance.arguments);
                     });
 
                     if inst_idx != self.enum_instances.len() - 1 {
-                        class_body_code.with_atom(tokens::COMMA);
-                        class_body_code.with_new_line();
+                        class_body_code.push_atom(tokens::COMMA);
+                        class_body_code.push_new_line();
                     }
                 }
 
-                class_body_code.with_atom(tokens::SEMICOLON);
+                class_body_code.push_atom(tokens::SEMICOLON);
             }
 
             for node in &self.member_nodes {
-                class_body_code.with_embedded(node);
-                class_body_code.with_new_line();
+                class_body_code.push_renderable(node);
+                class_body_code.push_new_line();
             }
 
             if let Some(companion_object) = &self.companion_object {
-                class_body_code.with_embedded(companion_object);
-                class_body_code.with_new_line();
+                class_body_code.push_renderable(companion_object);
+                class_body_code.push_new_line();
             }
         });
     }

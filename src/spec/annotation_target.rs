@@ -43,7 +43,7 @@ impl RenderKotlin for AnnotationTarget {
             AnnotationTarget::SetParam => tokens::keyword::SET_PARAM,
             AnnotationTarget::Delegate => tokens::keyword::DELEGATE,
         };
-        block.with_atom(atom)
+        block.push_atom(atom)
     }
 }
 

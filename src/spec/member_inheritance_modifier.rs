@@ -21,7 +21,7 @@ impl RenderKotlin for MemberInheritanceModifier {
             MemberInheritanceModifier::Abstract => tokens::keyword::ABSTRACT
         };
 
-        block.with_atom(text);
+        block.push_atom(text);
     }
 }
 

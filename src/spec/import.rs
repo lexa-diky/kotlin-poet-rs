@@ -46,32 +46,32 @@ impl Import {
 
 impl RenderKotlin for Import {
     fn render_into(&self, block: &mut CodeBlock) {
-        block.with_atom(tokens::keyword::IMPORT);
-        block.with_space();
+        block.push_atom(tokens::keyword::IMPORT);
+        block.push_space();
 
         match self {
             Import::ClassLikeType { type_name, alias } => {
-                block.with_embedded(type_name);
+                block.push_renderable(type_name);
                 if let Some(alias) = alias {
-                    block.with_space();
-                    block.with_atom(tokens::keyword::AS);
-                    block.with_space();
-                    block.with_embedded(alias);
+                    block.push_space();
+                    block.push_atom(tokens::keyword::AS);
+                    block.push_space();
+                    block.push_renderable(alias);
                 }
             }
             Import::Projection(package) => {
-                block.with_embedded(package);
-                block.with_atom(tokens::DOT);
-                block.with_atom(tokens::STAR);
+                block.push_renderable(package);
+                block.push_atom(tokens::DOT);
+                block.push_atom(tokens::STAR);
             }
             Import::TopLevel { package, name } => {
-                block.with_embedded(package);
-                block.with_atom(tokens::DOT);
-                block.with_embedded(name);
+                block.push_renderable(package);
+                block.push_atom(tokens::DOT);
+                block.push_renderable(name);
             }
         }
 
-        block.with_new_line();
+        block.push_new_line();
     }
 }
 

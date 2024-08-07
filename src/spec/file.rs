@@ -73,46 +73,46 @@ impl From<ClassLikeTypeName> for KotlinFile {
 impl RenderKotlin for KotlinFile {
     fn render_into(&self, block: &mut CodeBlock) {
         for annotation in &self.annotations {
-            block.with_embedded(annotation);
-            block.with_new_line();
+            block.push_renderable(annotation);
+            block.push_new_line();
         }
         if !self.annotations.is_empty() {
-            block.with_new_line();
+            block.push_new_line();
         }
 
         if let Some(package) = &self.package {
-            block.with_atom(tokens::keyword::PACKAGE);
-            block.with_space();
-            block.with_embedded(package);
-            block.with_new_line();
+            block.push_atom(tokens::keyword::PACKAGE);
+            block.push_space();
+            block.push_renderable(package);
+            block.push_new_line();
         }
 
         for import in &self.imports {
-            block.with_embedded(import);
-            block.with_new_line();
+            block.push_renderable(import);
+            block.push_new_line();
         }
 
         for node in &self.nodes {
             match node {
                 KotlinFileNode::Property(property) => {
-                    block.with_new_line();
-                    block.with_embedded(property);
-                    block.with_new_line();
+                    block.push_new_line();
+                    block.push_renderable(property);
+                    block.push_new_line();
                 }
                 KotlinFileNode::Function(function) => {
-                    block.with_new_line();
-                    block.with_embedded(function);
-                    block.with_new_line();
+                    block.push_new_line();
+                    block.push_renderable(function);
+                    block.push_new_line();
                 }
                 KotlinFileNode::TypeAlias(type_alias) => {
-                    block.with_new_line();
-                    block.with_embedded(type_alias);
-                    block.with_new_line();
+                    block.push_new_line();
+                    block.push_renderable(type_alias);
+                    block.push_new_line();
                 }
                 KotlinFileNode::Class(class) => {
-                    block.with_new_line();
-                    block.with_embedded(class);
-                    block.with_new_line();
+                    block.push_new_line();
+                    block.push_renderable(class);
+                    block.push_new_line();
                 }
             }
         }

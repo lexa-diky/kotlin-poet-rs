@@ -41,7 +41,7 @@ impl RenderKotlin for ClassInheritanceModifier {
             ClassInheritanceModifier::Data => tokens::keyword::DATA
         };
 
-        block.with_atom(text);
+        block.push_atom(text);
     }
 }
 

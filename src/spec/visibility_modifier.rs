@@ -28,6 +28,6 @@ impl RenderKotlin for VisibilityModifier {
             VisibilityModifier::Protected => tokens::keyword::PROTECTED
         };
 
-        block.with_atom(keyword);
+        block.push_atom(keyword);
     }
 }

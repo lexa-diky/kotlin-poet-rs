@@ -21,6 +21,7 @@ pub struct KotlinFile {
 }
 
 impl KotlinFile {
+    /// Creates file in specified [package]
     pub fn new(package: Package) -> Self {
         KotlinFile {
             package: Some(package),
@@ -31,6 +32,7 @@ impl KotlinFile {
         }
     }
 
+    /// Creates new file without package statement
     pub fn root() -> Self {
         KotlinFile {
             package: None,
@@ -41,36 +43,47 @@ impl KotlinFile {
         }
     }
 
+    /// Adds new comment in first line.
+    ///
+    /// This method can be called multiple times to add multiple comments,
+    /// they will appear in order on enw lines.
     pub fn header_comment(mut self, comment: Comment) -> Self {
         self.header_comments.push(comment);
         self
     }
 
+    /// Adds new import to the file.
     pub fn import(mut self, import: Import) -> Self {
         self.imports.push(import);
         self
     }
 
+    /// Adds new property to the file.
     pub fn property(mut self, property: Property) -> Self {
         self.nodes.push(KotlinFileNode::Property(property));
         self
     }
 
+    /// Adds new function to the file.
     pub fn function(mut self, function: Function) -> Self {
         self.nodes.push(KotlinFileNode::Function(function));
         self
     }
 
+    /// Adds new type alias to the file.
     pub fn type_alias(mut self, type_alias: TypeAlias) -> Self {
         self.nodes.push(KotlinFileNode::TypeAlias(type_alias));
         self
     }
 
+    /// Adds new class to the file.
     pub fn class(mut self, class: Class) -> Self {
         self.nodes.push(KotlinFileNode::Class(class));
         self
     }
 
+    /// Adds new annotation to the file.
+    /// Added annotation will be forced to have [AnnotationTarget::File] target.
     pub fn annotation(mut self, annotation: Annotation) -> Self {
         self.annotations.push(
             annotation

@@ -175,4 +175,13 @@ mod test {
             Err(_)
         ));
     }
+
+    #[test]
+    fn parse_generic() {
+        let new_type = Type::from_str("T");
+        assert_eq!(
+            new_type.unwrap(),
+            Type::generic("T")
+        );
+    }
 }

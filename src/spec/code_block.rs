@@ -1,3 +1,4 @@
+use std::fmt::{Display, Formatter, Write};
 use crate::io::{CodeBuffer, RenderKotlin};
 use crate::tokens;
 
@@ -43,6 +44,12 @@ impl CodeBlock {
         let mut cb = CodeBlock::atom(text);
         cb.push_new_line();
         cb
+    }
+
+    /// Pushes [text] as atom and adds new line after it.
+    pub fn push_statement(&mut self, text: &str) {
+        self.push_atom(text);
+        self.push_new_line();
     }
 
     /// Embeds all node from [code_block] into [self].
@@ -197,20 +204,14 @@ impl CodeBlock {
     }
 }
 
-//noinspection RsImplToString
-#[allow(clippy::to_string_trait_impl)]
-impl ToString for CodeBlock {
-    fn to_string(&self) -> String {
-        self.render()
+impl Display for CodeBlock {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.render().as_str())
     }
 }
 
 impl RenderKotlin for CodeBlock {
     fn render_into(&self, block: &mut CodeBlock) {
         block.nodes.extend(self.nodes.iter().cloned());
-    }
-
-    fn render_string(&self) -> String {
-        self.to_string()
     }
 }

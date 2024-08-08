@@ -5,6 +5,29 @@ use crate::spec::{ClassLikeTypeName, CodeBlock, Type};
 use crate::tokens;
 use crate::util::{SemanticConversionError, yolo_from_str};
 
+/// Represents a class like type, such as a class, interface, or enum.
+/// This type can be nullable and can have generic arguments and nullability mark.
+///
+/// # Examples
+/// ```rust
+/// use std::str::FromStr;
+/// use kotlin_poet_rs::io::RenderKotlin;
+/// use kotlin_poet_rs::spec::{ClassLikeType, ClassLikeTypeName, Type};
+/// let class_like_type = ClassLikeType::from("io.github.lexadiky.Class<T>?");
+///
+/// assert_eq!(
+///     "io.github.lexadiky.Class<T>?",
+///     class_like_type.render_string()
+/// );
+///
+/// assert_eq!(
+///     ClassLikeType::new(
+///         ClassLikeTypeName::from("io.github.lexadiky.Class")
+///     ).generic_argument(Type::generic("T"))
+///         .nullable(true),
+///     class_like_type
+/// )
+/// ```
 #[derive(PartialEq, Debug, Clone)]
 pub struct ClassLikeType {
     type_name: ClassLikeTypeName,

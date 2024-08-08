@@ -26,7 +26,7 @@ impl RenderKotlin for MemberInheritanceModifier {
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
     use crate::io::RenderKotlin;
     use crate::spec::MemberInheritanceModifier;
 

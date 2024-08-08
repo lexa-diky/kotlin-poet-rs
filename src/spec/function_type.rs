@@ -68,7 +68,7 @@ impl RenderKotlin for FunctionType {
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
 
     use crate::io::RenderKotlin;
     use crate::spec::{FunctionType, Type};

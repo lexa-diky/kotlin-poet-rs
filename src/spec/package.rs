@@ -95,7 +95,7 @@ impl RenderKotlin for Package {
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
     use std::str::FromStr;
     use crate::io::RenderKotlin;
     use crate::spec::{Name, Package};

@@ -85,7 +85,7 @@ macro_rules! mixin_annotation_mutators {
 pub(crate) use mixin_annotation_mutators;
 
 #[cfg(test)]
-mod test {
+mod tests {
     use std::str::FromStr;
     use crate::io::RenderKotlin;
     use crate::spec::{Annotation, AnnotationTarget, Argument, ClassLikeTypeName, CodeBlock, Package};

@@ -166,7 +166,7 @@ impl RenderKotlin for Type {
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
     use std::str::FromStr;
 
     use crate::io::RenderKotlin;

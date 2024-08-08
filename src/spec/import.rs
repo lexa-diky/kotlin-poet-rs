@@ -79,7 +79,7 @@ impl RenderKotlin for Import {
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
     use std::str::FromStr;
     use super::*;
     use crate::spec::{ClassLikeTypeName, Name};

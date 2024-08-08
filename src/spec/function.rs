@@ -184,7 +184,7 @@ impl RenderKotlin for Function {
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
     use crate::io::RenderKotlin;
     use crate::spec::{Annotation, ClassLikeTypeName, CodeBlock, Function, GenericParameter, KDoc, Name, Package, Type, VisibilityModifier};
     use crate::spec::function::Parameter;

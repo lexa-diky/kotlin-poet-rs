@@ -253,7 +253,7 @@ impl RenderKotlin for Property {
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
     use std::str::FromStr;
     use crate::spec::ClassLikeTypeName;
     use super::*;

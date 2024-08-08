@@ -79,7 +79,7 @@ pub enum Type {
 
 impl Type {
     /// Creates generic type
-    pub fn generic<T: Into<Name>>(name: T) -> Type {
+    pub fn generic<NameLike: Into<Name>>(name: NameLike) -> Type {
         Type::Generic(name.into())
     }
 
@@ -110,6 +110,18 @@ impl Type {
     fn_generic_type_factory!(list, kotlin.collections, List<value>);
     fn_generic_type_factory!(set, kotlin.collections, Set<value>);
     fn_generic_type_factory!(array, kotlin, Array<value>);
+}
+
+impl From<ClassLikeTypeName> for Type {
+    fn from(value: ClassLikeTypeName) -> Self {
+        Type::ClassLike(ClassLikeType::new(value))
+    }
+}
+
+impl From<ClassLikeType> for Type {
+    fn from(value: ClassLikeType) -> Self {
+        Type::ClassLike(value)
+    }
 }
 
 yolo_from_str!(Type);

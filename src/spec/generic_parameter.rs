@@ -14,7 +14,7 @@ pub struct GenericParameter {
 
 impl GenericParameter {
     /// Creates new [GenericParameter] with a given name, no invariance modifier or type boundaries.
-    pub fn new<T: Into<Name>>(name: T) -> Self {
+    pub fn new<NameLike: Into<Name>>(name: NameLike) -> Self {
         GenericParameter {
             name: name.into(),
             invariance: None,
@@ -30,8 +30,8 @@ impl GenericParameter {
 
     /// Adds new type boundary to the generic parameter.
     /// This method could be called multiple times to add multiple type boundaries.
-    pub fn type_boundary(mut self, boundary: Type) -> Self {
-        self.type_boundaries.push(boundary);
+    pub fn type_boundary<TypeLike: Into<Type>>(mut self, boundary: TypeLike) -> Self {
+        self.type_boundaries.push(boundary.into());
         self
     }
 

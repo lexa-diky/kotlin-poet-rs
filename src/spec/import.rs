@@ -23,7 +23,7 @@ impl Import {
     }
 
     /// Creates an import statement for a class-like type with an alias
-    pub fn class_like_alias<T: Into<Name>>(type_name: ClassLikeTypeName, alias: T) -> Self {
+    pub fn class_like_alias<NameLike: Into<Name>>(type_name: ClassLikeTypeName, alias: NameLike) -> Self {
         Import::ClassLikeType {
             type_name,
             alias: Some(alias.into()),
@@ -31,14 +31,14 @@ impl Import {
     }
 
     /// Creates an import statement for all types in a package
-    pub fn projection(package: Package) -> Self {
-        Import::Projection(package)
+    pub fn projection<PackageLike: Into<Package>>(package: PackageLike) -> Self {
+        Import::Projection(package.into())
     }
 
     /// Creates an import statement for a function or property
-    pub fn top_level<T: Into<Name>>(package: Package, name: T) -> Self {
+    pub fn top_level<NameLike: Into<Name>, PackageLike: Into<Package>>(package: Package, name: NameLike) -> Self {
         Import::TopLevel {
-            package,
+            package: package.into(),
             name: name.into(),
         }
     }

@@ -22,9 +22,9 @@ pub struct KotlinFile {
 
 impl KotlinFile {
     /// Creates file in specified [package]
-    pub fn new(package: Package) -> Self {
+    pub fn new<PackageLike: Into<Package>>(package: PackageLike) -> Self {
         KotlinFile {
-            package: Some(package),
+            package: Some(package.into()),
             imports: Vec::new(),
             nodes: Vec::new(),
             annotations: Vec::new(),
@@ -175,7 +175,7 @@ mod tests {
 
     #[test]
     fn test_file_with_header_comments() {
-        let file = KotlinFile::new("com.example".into())
+        let file = KotlinFile::new("com.example")
             .header_comment(Comment::from("This is a header comment"))
             .header_comment(Comment::from("This is another header comment"));
 

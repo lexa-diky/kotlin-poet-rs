@@ -31,10 +31,10 @@ impl RenderKotlin for Parameter {
 }
 
 impl Parameter {
-    pub fn new<T: Into<Name>>(name: T, parameter_type: Type) -> Parameter {
+    pub fn new<NameLike: Into<Name>, TypeLike: Into<Type>>(name: NameLike, parameter_type: TypeLike) -> Parameter {
         Parameter {
             name: name.into(),
-            parameter_type,
+            parameter_type: parameter_type.into(),
             default_value: None,
             annotations: Vec::new(),
         }

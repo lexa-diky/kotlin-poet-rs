@@ -87,7 +87,7 @@ pub struct Class {
 
 impl Class {
     /// Creates new plain final class.
-    pub fn new<T: Into<Name>>(name: T) -> Self {
+    pub fn new<NameLike: Into<Name>>(name: NameLike) -> Self {
         Class {
             name: name.into(),
             visibility_modifier: VisibilityModifier::default(),
@@ -142,7 +142,7 @@ impl Class {
 
     /// Adds enum instance to this class. Enum instances in body will appear in order this method is called.
     /// This method is only valid for enum classes. To change class type to enum please use [Class::inheritance_modifier].
-    pub fn enum_instance<T: Into<Name>>(mut self, name: T, arguments: Vec<Argument>) -> Self {
+    pub fn enum_instance<NameLike: Into<Name>>(mut self, name: NameLike, arguments: Vec<Argument>) -> Self {
         self.enum_instances.push(EnumInstance {
             name: name.into(),
             arguments,
@@ -182,8 +182,8 @@ impl Class {
     }
 
     /// Adds parent class / interface to this class.
-    pub fn inherits(mut self, parent_type: Type) -> Self {
-        self.parent_classes.push(parent_type);
+    pub fn inherits<TypeLike: Into<Type>>(mut self, parent_type: TypeLike) -> Self {
+        self.parent_classes.push(parent_type.into());
         self
     }
 

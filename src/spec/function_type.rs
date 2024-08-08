@@ -12,27 +12,27 @@ pub struct FunctionType {
 
 impl FunctionType {
 
-    pub fn new(returns: Type) -> Self {
+    pub fn new<TypeLike: Into<Type>>(returns: TypeLike) -> Self {
         FunctionType {
             receiver: Box::new(None),
             parameters: Vec::new(),
-            returns: Box::new(returns),
+            returns: Box::new(returns.into()),
             is_suspended: false
         }
     }
 
-    pub fn receiver(mut self, receiver: Type) -> Self {
-        self.receiver = Box::new(Some(receiver));
+    pub fn receiver<TypeLike: Into<Type>>(mut self, receiver: TypeLike) -> Self {
+        self.receiver = Box::new(Some(receiver.into()));
         self
     }
 
-    pub fn parameter(mut self, parameters: Type) -> Self {
-        self.parameters.push(parameters);
+    pub fn parameter<TypeLike: Into<Type>>(mut self, parameters: TypeLike) -> Self {
+        self.parameters.push(parameters.into());
         self
     }
 
-    pub fn returns(mut self, returns: Type) -> Self {
-        *self.returns = returns;
+    pub fn returns<TypeLike: Into<Type>>(mut self, returns: TypeLike) -> Self {
+        *self.returns = returns.into();
         self
     }
 

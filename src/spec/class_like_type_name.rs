@@ -16,19 +16,21 @@ pub struct ClassLikeTypeName {
 }
 
 impl ClassLikeTypeName {
-
     /// Creates top level class name, for example `com.example.MyClass`
-    pub fn top_level<T: Into<Name>>(package: Package, name: T) -> ClassLikeTypeName {
+    pub fn top_level<NameLike: Into<Name>, PackageLike: Into<Package>>(
+        package: PackageLike,
+        name: NameLike
+    ) -> ClassLikeTypeName {
         ClassLikeTypeName {
-            package,
+            package: package.into(),
             names: vec![name.into()],
         }
     }
 
     /// Creates nested class name, for example `com.example.MyClass.InnerClass`
-    pub fn nested(package: Package, names: Vec<Name>) -> ClassLikeTypeName {
+    pub fn nested<PackageLike: Into<Package>>(package: PackageLike, names: Vec<Name>) -> ClassLikeTypeName {
         ClassLikeTypeName {
-            package,
+            package: package.into(),
             names,
         }
     }
@@ -112,9 +114,8 @@ mod test {
 
     #[test]
     fn render_simple_kotlin() {
-        let package: Package = "io.github.lexadiky".parse().unwrap();
         let class_like_type_name = ClassLikeTypeName::top_level(
-            package,
+            "io.github.lexadiky",
             Name::from_str("Class").unwrap(),
         );
         assert_eq!(class_like_type_name.render_string(), "io.github.lexadiky.Class");

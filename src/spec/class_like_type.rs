@@ -51,8 +51,8 @@ impl ClassLikeType {
     }
 
     /// Adds a generic argument to the type
-    pub fn generic_argument(mut self, parameter: Type) -> ClassLikeType {
-        self.generic_arguments.push(parameter);
+    pub fn generic_argument<TypeLike: Into<Type>>(mut self, parameter: TypeLike) -> ClassLikeType {
+        self.generic_arguments.push(parameter.into());
         self
     }
 }

@@ -23,7 +23,7 @@ pub struct Function {
 }
 
 impl Function {
-    pub fn new<T: Into<Name>>(name: T) -> Function {
+    pub fn new<NameLike: Into<Name>>(name: NameLike) -> Function {
         Function {
             name: name.into(),
             visibility_modifier: VisibilityModifier::default(),
@@ -62,13 +62,13 @@ impl Function {
         self
     }
 
-    pub fn returns(mut self, returns: Type) -> Function {
-        self.returns = returns;
+    pub fn returns<TypeLike: Into<Type>>(mut self, returns: TypeLike) -> Function {
+        self.returns = returns.into();
         self
     }
 
-    pub fn receiver(mut self, receiver: Type) -> Function {
-        self.receiver = Some(receiver);
+    pub fn receiver<TypeLike: Into<Type>>(mut self, receiver: TypeLike) -> Function {
+        self.receiver = Some(receiver.into());
         self
     }
 

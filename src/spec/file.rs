@@ -47,8 +47,8 @@ impl KotlinFile {
     ///
     /// This method can be called multiple times to add multiple comments,
     /// they will appear in order on enw lines.
-    pub fn header_comment(mut self, comment: Comment) -> Self {
-        self.header_comments.push(comment);
+    pub fn header_comment<CommentLike: Into<Comment>>(mut self, comment: CommentLike) -> Self {
+        self.header_comments.push(comment.into());
         self
     }
 

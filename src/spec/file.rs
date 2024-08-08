@@ -17,7 +17,7 @@ pub struct KotlinFile {
     imports: Vec<Import>,
     nodes: Vec<KotlinFileNode>,
     annotations: Vec<Annotation>,
-    header_comments: Vec<Comment>
+    header_comments: Vec<Comment>,
 }
 
 impl KotlinFile {
@@ -27,7 +27,17 @@ impl KotlinFile {
             imports: Vec::new(),
             nodes: Vec::new(),
             annotations: Vec::new(),
-            header_comments: Vec::new()
+            header_comments: Vec::new(),
+        }
+    }
+
+    pub fn root() -> Self {
+        KotlinFile {
+            package: None,
+            imports: Vec::new(),
+            nodes: Vec::new(),
+            annotations: Vec::new(),
+            header_comments: Vec::new(),
         }
     }
 
@@ -136,12 +146,22 @@ impl RenderKotlin for KotlinFile {
 
 #[cfg(test)]
 mod tests {
+    use crate::spec::{Comment, Function, KotlinFile};
+    use crate::io::RenderKotlin;
+
+    #[test]
+    fn test_root_file() {
+        let file = KotlinFile::root()
+            .function(Function::new("main".into()));
+
+        assert_eq!(
+            file.render_string(),
+            "public fun main(): kotlin.Unit",
+        )
+    }
 
     #[test]
     fn test_file_with_header_comments() {
-        use crate::spec::{Comment, KotlinFile};
-        use crate::io::RenderKotlin;
-
         let file = KotlinFile::new("com.example".into())
             .header_comment(Comment::from("This is a header comment"))
             .header_comment(Comment::from("This is another header comment"));

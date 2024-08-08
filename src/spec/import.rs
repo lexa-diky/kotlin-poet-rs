@@ -15,17 +15,17 @@ pub enum Import {
 
 impl Import {
     /// Creates an import statement for a class-like type
-    pub fn class_like(type_name: ClassLikeTypeName) -> Self {
+    pub fn class_like<ClassLikeTypeNameLike: Into<ClassLikeTypeName>>(type_name: ClassLikeTypeNameLike) -> Self {
         Import::ClassLikeType {
-            type_name,
+            type_name: type_name.into(),
             alias: None,
         }
     }
 
     /// Creates an import statement for a class-like type with an alias
-    pub fn class_like_alias<NameLike: Into<Name>>(type_name: ClassLikeTypeName, alias: NameLike) -> Self {
+    pub fn class_like_alias<NameLike: Into<Name>, ClassLikeTypeNameLike: Into<ClassLikeTypeName>>(type_name: ClassLikeTypeNameLike, alias: NameLike) -> Self {
         Import::ClassLikeType {
-            type_name,
+            type_name: type_name.into(),
             alias: Some(alias.into()),
         }
     }

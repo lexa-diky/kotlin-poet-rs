@@ -38,9 +38,9 @@ pub struct Annotation {
 }
 
 impl Annotation {
-    pub fn new(type_name: ClassLikeTypeName) -> Self {
+    pub fn new<ClassLikeTypeNameLike: Into<ClassLikeTypeName>>(type_name: ClassLikeTypeNameLike) -> Self {
         Annotation {
-            type_name,
+            type_name: type_name.into(),
             arguments: Vec::new(),
             target: None,
         }

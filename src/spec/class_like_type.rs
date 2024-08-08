@@ -36,9 +36,9 @@ pub struct ClassLikeType {
 }
 
 impl ClassLikeType {
-    pub fn new(type_name: ClassLikeTypeName) -> ClassLikeType {
+    pub fn new<ClassLikeTypeNameLike: Into<ClassLikeTypeName>>(type_name: ClassLikeTypeNameLike) -> ClassLikeType {
         ClassLikeType {
-            type_name,
+            type_name: type_name.into(),
             nullable: false,
             generic_arguments: vec![],
         }

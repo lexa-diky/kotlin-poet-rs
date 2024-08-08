@@ -1,5 +1,5 @@
 use crate::io::RenderKotlin;
-use crate::spec::{Annotation, AnnotationTarget, Class, ClassLikeTypeName, CodeBlock, Function, Import, Package, Property, TypeAlias};
+use crate::spec::{Annotation, AnnotationTarget, Class, ClassLikeTypeName, CodeBlock, Comment, Function, Import, Package, Property, TypeAlias};
 use crate::tokens;
 
 #[derive(Debug, Clone)]
@@ -16,7 +16,8 @@ pub struct KotlinFile {
     package: Option<Package>,
     imports: Vec<Import>,
     nodes: Vec<KotlinFileNode>,
-    annotations: Vec<Annotation>
+    annotations: Vec<Annotation>,
+    header_comments: Vec<Comment>
 }
 
 impl KotlinFile {
@@ -25,8 +26,14 @@ impl KotlinFile {
             package: Some(package),
             imports: Vec::new(),
             nodes: Vec::new(),
-            annotations: Vec::new()
+            annotations: Vec::new(),
+            header_comments: Vec::new()
         }
+    }
+
+    pub fn header_comment(mut self, comment: Comment) -> Self {
+        self.header_comments.push(comment);
+        self
     }
 
     pub fn import(mut self, import: Import) -> Self {
@@ -72,6 +79,14 @@ impl From<ClassLikeTypeName> for KotlinFile {
 
 impl RenderKotlin for KotlinFile {
     fn render_into(&self, block: &mut CodeBlock) {
+        if !self.header_comments.is_empty() {
+            for comment in &self.header_comments {
+                block.push_renderable(comment);
+                block.push_new_line();
+            }
+            block.push_new_line()
+        }
+
         for annotation in &self.annotations {
             block.push_renderable(annotation);
             block.push_new_line();
@@ -116,5 +131,24 @@ impl RenderKotlin for KotlinFile {
                 }
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+
+    #[test]
+    fn test_file_with_header_comments() {
+        use crate::spec::{Comment, KotlinFile};
+        use crate::io::RenderKotlin;
+
+        let file = KotlinFile::new("com.example".into())
+            .header_comment(Comment::from("This is a header comment"))
+            .header_comment(Comment::from("This is another header comment"));
+
+        assert_eq!(
+            file.render_string(),
+            "// This is a header comment\n// This is another header comment\n\npackage com.example"
+        )
     }
 }

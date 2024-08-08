@@ -1,6 +1,8 @@
+use std::str::FromStr;
 use crate::io::RenderKotlin;
 use crate::spec::CodeBlock;
 use crate::tokens;
+use crate::util::yolo_from_str;
 
 /// Represents a 'normal', non documentation comment in Kotlin.
 ///
@@ -40,6 +42,15 @@ impl Comment {
         if self.is_block_render { return self; }
         self.is_block_render = self.content.contains(tokens::NEW_LINE);
         self
+    }
+}
+
+yolo_from_str!(Comment);
+impl FromStr for Comment {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(Comment::new().append(s))
     }
 }
 

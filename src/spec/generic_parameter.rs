@@ -14,9 +14,9 @@ pub struct GenericParameter {
 
 impl GenericParameter {
     /// Creates new [GenericParameter] with a given name, no invariance modifier or type boundaries.
-    pub fn new(name: Name) -> Self {
+    pub fn new<T: Into<Name>>(name: T) -> Self {
         GenericParameter {
-            name,
+            name: name.into(),
             invariance: None,
             type_boundaries: Vec::new(),
         }

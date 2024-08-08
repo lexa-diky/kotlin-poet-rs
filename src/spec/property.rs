@@ -125,9 +125,9 @@ impl RenderKotlin for PropertySetter {
 }
 
 impl Property {
-    pub fn new(name: Name, returns: Type) -> Property {
+    pub fn new<T: Into<Name>>(name: T, returns: Type) -> Property {
         Property {
-            name,
+            name: name.into(),
             returns,
             inheritance_modifier: MemberInheritanceModifier::Final,
             visibility_modifier: VisibilityModifier::default(),

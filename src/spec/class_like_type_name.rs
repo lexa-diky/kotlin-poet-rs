@@ -18,10 +18,10 @@ pub struct ClassLikeTypeName {
 impl ClassLikeTypeName {
 
     /// Creates top level class name, for example `com.example.MyClass`
-    pub fn top_level(package: Package, name: Name) -> ClassLikeTypeName {
+    pub fn top_level<T: Into<Name>>(package: Package, name: T) -> ClassLikeTypeName {
         ClassLikeTypeName {
             package,
-            names: vec![name],
+            names: vec![name.into()],
         }
     }
 

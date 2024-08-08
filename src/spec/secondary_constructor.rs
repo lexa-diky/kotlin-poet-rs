@@ -78,14 +78,14 @@ impl RenderKotlin for SecondaryConstructor {
 #[cfg(test)]
 mod tests {
     use crate::io::RenderKotlin;
-    use crate::spec::{VisibilityModifier, Argument, CodeBlock, Parameter, SecondaryConstructor, Type, KDoc};
+    use crate::spec::{VisibilityModifier, Argument, CodeBlock, Parameter, SecondaryConstructor, Type, KDoc, Name};
 
     #[test]
     fn test_secondary_constructor() {
         let secondary_constructor = SecondaryConstructor::new()
             .visibility_modifier(VisibilityModifier::Public)
-            .parameter(Parameter::new("name".into(), Type::string()))
-            .parameter(Parameter::new("age".into(), Type::int()))
+            .parameter(Parameter::new(Name::from("name"), Type::string()))
+            .parameter(Parameter::new(Name::from("age"), Type::int()))
             .delegate_argument(Argument::new_positional(CodeBlock::atom("name")))
             .delegate_argument(Argument::new_positional(CodeBlock::atom("age")))
             .body(CodeBlock::statement("println(42)"));

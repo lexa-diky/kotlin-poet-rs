@@ -69,14 +69,14 @@ mod tests {
     #[test]
     fn primary_constructor_test() {
         let property = Property::new(
-            "name".into(),
+            "name",
             Type::string(),
         ).initializer(
             CodeBlock::atom("\"\"")
         );
 
         let function_parameter = Parameter::new(
-            "age".into(),
+            "age",
             Type::int(),
         );
 

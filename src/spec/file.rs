@@ -165,7 +165,7 @@ mod tests {
     #[test]
     fn test_root_file() {
         let file = KotlinFile::root()
-            .function(Function::new("main".into()));
+            .function(Function::new("main"));
 
         assert_eq!(
             file.render_string(),

@@ -18,9 +18,9 @@ pub struct TypeAlias {
 impl TypeAlias {
 
     /// Creates [TypeAlias] binding [name] to [actual] [Type]
-    pub fn new(name: Name, actual: Type) -> TypeAlias {
+    pub fn new<T: Into<Name>>(name: T, actual: Type) -> TypeAlias {
         TypeAlias {
-            name,
+            name: name.into(),
             generic_parameters: Vec::default(),
             actual,
             visibility_modifier: VisibilityModifier::default(),
@@ -31,8 +31,8 @@ impl TypeAlias {
 
     /// Adds generic parameter to the type alias
     /// Multiple generic parameters can be added, they will appear in order this method is called.
-    pub fn generic_parameter(mut self, name: Name) -> Self {
-        self.generic_parameters.push(name);
+    pub fn generic_parameter<T: Into<Name>>(mut self, name: T) -> Self {
+        self.generic_parameters.push(name.into());
         self
     }
 

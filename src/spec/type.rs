@@ -79,8 +79,8 @@ pub enum Type {
 
 impl Type {
     /// Creates generic type
-    pub fn generic(name: &str) -> Type {
-        Type::Generic(Name::from(name))
+    pub fn generic<T: Into<Name>>(name: T) -> Type {
+        Type::Generic(name.into())
     }
 
     // Integer numbers

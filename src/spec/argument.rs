@@ -48,9 +48,9 @@ impl Argument {
     }
 
     /// Creates new named argument
-    pub fn new_named(name: Name, value: CodeBlock) -> Self {
+    pub fn new_named<T: Into<Name>>(name: T, value: CodeBlock) -> Self {
         Argument {
-            name: Some(name),
+            name: Some(name.into()),
             value,
         }
     }

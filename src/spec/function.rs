@@ -23,9 +23,9 @@ pub struct Function {
 }
 
 impl Function {
-    pub fn new(name: Name) -> Function {
+    pub fn new<T: Into<Name>>(name: T) -> Function {
         Function {
-            name,
+            name: name.into(),
             visibility_modifier: VisibilityModifier::default(),
             parameters: Vec::new(),
             body: None,

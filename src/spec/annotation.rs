@@ -20,9 +20,9 @@ use crate::tokens;
 ///         Name::from("MyAnnotation")
 ///     )
 /// ).argument(
-///     Argument::new_named("value".into(), CodeBlock::atom("1"))
+///     Argument::new_named("value", CodeBlock::atom("1"))
 /// ).argument(
-///     Argument::new_named("name".into(), CodeBlock::atom("\"name_value\""))
+///     Argument::new_named("name", CodeBlock::atom("\"name_value\""))
 /// );
 ///
 /// assert_eq!(
@@ -93,11 +93,11 @@ mod test {
     #[test]
     fn test_annotation() {
         let annotation = Annotation::new(
-            ClassLikeTypeName::top_level(Package::from_str("a.b.c").unwrap(), "MyAnnotation".into())
+            ClassLikeTypeName::top_level(Package::from_str("a.b.c").unwrap(), "MyAnnotation")
         ).argument(
-            Argument::new_named("value".into(), CodeBlock::atom("1"))
+            Argument::new_named("value", CodeBlock::atom("1"))
         ).argument(
-            Argument::new_named("name".into(), CodeBlock::atom("\"name_value\""))
+            Argument::new_named("name", CodeBlock::atom("\"name_value\""))
         );
 
         let code = annotation.render_string();
@@ -111,11 +111,11 @@ mod test {
     #[test]
     fn test_annotation_with_target() {
         let annotation = Annotation::new(
-            ClassLikeTypeName::top_level(Package::from_str("a.b.c").unwrap(), "MyAnnotation".into())
+            ClassLikeTypeName::top_level(Package::from_str("a.b.c").unwrap(), "MyAnnotation")
         ).argument(
-            Argument::new_named("value".into(), CodeBlock::atom("1"))
+            Argument::new_named("value", CodeBlock::atom("1"))
         ).argument(
-            Argument::new_named("name".into(), CodeBlock::atom("\"name_value\""))
+            Argument::new_named("name", CodeBlock::atom("\"name_value\""))
         ).target(
             AnnotationTarget::Field
         );

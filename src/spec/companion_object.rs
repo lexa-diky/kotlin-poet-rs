@@ -99,7 +99,7 @@ mod tests {
 
     #[test]
     fn companion_object_with_subclass() {
-        let subclass = Class::new("Subclass".into());
+        let subclass = Class::new("Subclass");
         let companion = CompanionObject::new()
             .subclass(subclass);
 

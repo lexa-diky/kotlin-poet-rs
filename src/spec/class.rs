@@ -1,5 +1,5 @@
 use crate::io::RenderKotlin;
-use crate::spec::{VisibilityModifier, Argument, ClassInheritanceModifier, CodeBlock, CompanionObject, Function, GenericParameter, Name, PrimaryConstructor, Property, SecondaryConstructor, Type, Annotation, KDoc};
+use crate::spec::{VisibilityModifier, Argument, ClassInheritanceModifier, CodeBlock, CompanionObject, Function, GenericParameter, Name, PrimaryConstructor, Property, SecondaryConstructor, Type, Annotation};
 use crate::spec::annotation::mixin_annotation_mutators;
 use crate::spec::kdoc::{KdocSlot, mixin_kdoc_mutators};
 use crate::tokens;
@@ -163,8 +163,8 @@ impl Class {
     }
 
     /// Adds init block to this class. Init blocks in body will appear in order this method is called.
-    pub fn init(mut self, block: CodeBlock) -> Self {
-        self.member_nodes.push(ClassMemberNode::InitBlock(block));
+    pub fn init<CodeBlockLike: Into<CodeBlock>>(mut self, block: CodeBlockLike) -> Self {
+        self.member_nodes.push(ClassMemberNode::InitBlock(block.into()));
         self
     }
 
@@ -281,7 +281,7 @@ impl RenderKotlin for Class {
 
 #[cfg(test)]
 mod tests {
-    use crate::spec::{Parameter, GenericInvariance, PropertyGetter, PropertySetter, Type, ClassLikeTypeName, Package};
+    use crate::spec::{Parameter, GenericInvariance, PropertyGetter, PropertySetter, Type, ClassLikeTypeName, Package, KDoc};
     use super::*;
 
     #[test]

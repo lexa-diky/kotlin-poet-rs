@@ -36,7 +36,10 @@ impl Import {
     }
 
     /// Creates an import statement for a function or property
-    pub fn top_level<NameLike: Into<Name>, PackageLike: Into<Package>>(package: Package, name: NameLike) -> Self {
+    pub fn top_level<NameLike: Into<Name>, PackageLike: Into<Package>>(
+        package: PackageLike,
+        name: NameLike
+    ) -> Self {
         Import::TopLevel {
             package: package.into(),
             name: name.into(),

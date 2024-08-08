@@ -40,8 +40,8 @@ impl Parameter {
         }
     }
 
-    pub fn default_value(mut self, default_value: CodeBlock) -> Parameter {
-        self.default_value = Some(default_value);
+    pub fn default_value<CodeBlockLike: Into<CodeBlock>>(mut self, default_value: CodeBlockLike) -> Parameter {
+        self.default_value = Some(default_value.into());
         self
     }
 

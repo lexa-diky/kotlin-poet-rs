@@ -1,5 +1,5 @@
 use crate::io::RenderKotlin;
-use crate::spec::{VisibilityModifier, CodeBlock, MemberInheritanceModifier, Name, Type, Annotation, KDoc};
+use crate::spec::{VisibilityModifier, CodeBlock, MemberInheritanceModifier, Name, Type, Annotation};
 use crate::spec::annotation::mixin_annotation_mutators;
 use crate::spec::kdoc::{KdocSlot, mixin_kdoc_mutators};
 use crate::tokens;
@@ -53,9 +53,9 @@ pub struct PropertyGetter {
 }
 
 impl PropertyGetter {
-    pub fn new(code: CodeBlock) -> PropertyGetter {
+    pub fn new<CodeBlockLike: Into<CodeBlock>>(code: CodeBlockLike) -> PropertyGetter {
         PropertyGetter {
-            code,
+            code: code.into(),
             annotations: Vec::new()
         }
     }
@@ -90,9 +90,9 @@ pub struct PropertySetter {
 }
 
 impl PropertySetter {
-    pub fn new(code: CodeBlock) -> PropertySetter {
+    pub fn new<CodeBlockLike: Into<CodeBlock>>(code: CodeBlockLike) -> PropertySetter {
         PropertySetter {
-            code,
+            code: code.into(),
             visibility_modifier: VisibilityModifier::default(),
             annotations: Vec::new()
         }
@@ -162,15 +162,15 @@ impl Property {
 
     /// Sets property initializer `val some = <initializer>`
     /// Exclusive with [Property::delegate]
-    pub fn initializer(mut self, initializer: CodeBlock) -> Property {
-        self.initializer = Some(PropertyInitializer::Value(initializer));
+    pub fn initializer<CodeBlockLike: Into<CodeBlock>>(mut self, initializer: CodeBlockLike) -> Property {
+        self.initializer = Some(PropertyInitializer::Value(initializer.into()));
         self
     }
 
     /// Sets property delegate `val some by <delegate>`
     /// Exclusive with [Property::initializer]
-    pub fn delegate(mut self, delegate: CodeBlock) -> Property {
-        self.initializer = Some(PropertyInitializer::Delegate(delegate));
+    pub fn delegate<CodeBlockLike: Into<CodeBlock>>(mut self, delegate: CodeBlockLike) -> Property {
+        self.initializer = Some(PropertyInitializer::Delegate(delegate.into()));
         self
     }
 
@@ -284,7 +284,7 @@ mod test {
     fn test_constant() {
         let property = Property::new(Name::from("name"), Type::string())
             .constant(true)
-            .initializer(CodeBlock::atom("\"Alex\""));
+            .initializer("\"Alex\"");
 
         assert_eq!(
             "public final const val name: kotlin.String = \"Alex\"",
@@ -319,7 +319,7 @@ mod test {
     #[test]
     fn test_kdoc() {
         let property = Property::new(Name::from("age"), Type::int())
-            .kdoc(KDoc::from("Hello\nWorld"));
+            .kdoc("Hello\nWorld");
 
         assert_eq!(
             "/**\n * Hello\n * World\n */\npublic final val age: kotlin.Int",

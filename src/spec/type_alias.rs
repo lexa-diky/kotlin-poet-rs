@@ -1,5 +1,5 @@
 use crate::io::RenderKotlin;
-use crate::spec::{Annotation, CodeBlock, KDoc, Name, Type, VisibilityModifier};
+use crate::spec::{Annotation, CodeBlock, Name, Type, VisibilityModifier};
 use crate::spec::annotation::mixin_annotation_mutators;
 use crate::spec::kdoc::{KdocSlot, mixin_kdoc_mutators};
 use crate::tokens;
@@ -98,9 +98,7 @@ mod test {
         let alias = TypeAlias::new(
             Name::from("MyType"),
             Type::string(),
-        ).kdoc(
-            KDoc::from("Hello\nWorld")
-        );
+        ).kdoc("Hello\nWorld");
 
         let actual = alias.render_string();
         let expected = "/**\n * Hello\n * World\n */\npublic typealias MyType = kotlin.String";

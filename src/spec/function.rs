@@ -1,5 +1,5 @@
 use crate::io::RenderKotlin;
-use crate::spec::{VisibilityModifier, CodeBlock, GenericParameter, MemberInheritanceModifier, Name, Type, Parameter, Annotation, KDoc};
+use crate::spec::{VisibilityModifier, CodeBlock, GenericParameter, MemberInheritanceModifier, Name, Type, Parameter, Annotation};
 use crate::spec::annotation::mixin_annotation_mutators;
 use crate::spec::kdoc::{KdocSlot, mixin_kdoc_mutators};
 use crate::tokens;
@@ -57,8 +57,8 @@ impl Function {
         self
     }
 
-    pub fn body(mut self, body: CodeBlock) -> Function {
-        self.body = Some(body);
+    pub fn body<CodeBlockLike: Into<CodeBlock>>(mut self, body: CodeBlockLike) -> Function {
+        self.body = Some(body.into());
         self
     }
 

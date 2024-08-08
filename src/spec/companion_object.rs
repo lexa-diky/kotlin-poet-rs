@@ -40,8 +40,8 @@ impl CompanionObject {
     }
 
     /// Adds an init block to the companion object
-    pub fn init(mut self, block: CodeBlock) -> Self {
-        self.member_nodes.push(crate::spec::class::ClassMemberNode::InitBlock(block));
+    pub fn init<CodeBlockLike: Into<CodeBlock>>(mut self, block: CodeBlockLike) -> Self {
+        self.member_nodes.push(crate::spec::class::ClassMemberNode::InitBlock(block.into()));
         self
     }
 

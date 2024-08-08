@@ -34,24 +34,24 @@ use crate::tokens;
 /// ```
 #[derive(Debug, Clone)]
 pub struct Argument {
-    pub name: Option<Name>,
-    pub value: CodeBlock,
+    name: Option<Name>,
+    value: CodeBlock,
 }
 
 impl Argument {
     /// Creates new positional argument
-    pub fn new_positional(value: CodeBlock) -> Self {
+    pub fn new_positional<CodeBlockLike: Into<CodeBlock>>(value: CodeBlockLike) -> Self {
         Argument {
             name: None,
-            value,
+            value: value.into(),
         }
     }
 
     /// Creates new named argument
-    pub fn new_named<NameLike: Into<Name>>(name: NameLike, value: CodeBlock) -> Self {
+    pub fn new_named<NameLike: Into<Name>, CodeBlockLike: Into<CodeBlock>>(name: NameLike, value: CodeBlockLike) -> Self {
         Argument {
             name: Some(name.into()),
-            value,
+            value: value.into(),
         }
     }
 }

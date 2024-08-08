@@ -1,6 +1,8 @@
-use std::fmt::{Display, Formatter, Write};
+use std::fmt::{Display, Formatter};
+use std::str::FromStr;
 use crate::io::{CodeBuffer, RenderKotlin};
 use crate::tokens;
+use crate::util::{SemanticConversionError, yolo_from_str};
 
 /// Node of a code block that can be rendered to a Kotlin code.
 /// You can treat these nodes as commands for rendering, like "add atom", "add new line", etc.
@@ -207,6 +209,15 @@ impl CodeBlock {
 impl Display for CodeBlock {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str(self.render().as_str())
+    }
+}
+
+yolo_from_str!(CodeBlock);
+impl FromStr for CodeBlock {
+    type Err = SemanticConversionError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(CodeBlock::atom(s))
     }
 }
 

@@ -1,5 +1,5 @@
 use crate::io::RenderKotlin;
-use crate::spec::{VisibilityModifier, Argument, CodeBlock, Parameter, PrimaryConstructor, KDoc};
+use crate::spec::{VisibilityModifier, Argument, CodeBlock, Parameter, PrimaryConstructor};
 use crate::spec::kdoc::{KdocSlot, mixin_kdoc_mutators};
 use crate::tokens;
 
@@ -34,8 +34,8 @@ impl SecondaryConstructor {
         self
     }
 
-    pub fn body(mut self, body: CodeBlock) -> SecondaryConstructor {
-        self.body = Some(body);
+    pub fn body<CodeBlockLike: Into<CodeBlock>>(mut self, body: CodeBlockLike) -> SecondaryConstructor {
+        self.body = Some(body.into());
         self
     }
 

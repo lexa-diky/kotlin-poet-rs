@@ -89,15 +89,8 @@ macro_rules! mixin_kdoc_mutators {
     () => {
         /// Adds [KDoc] to this entity.
         /// In case of multiple calls, KDocs will be merged, see [KDoc::merge].
-        pub fn kdoc(mut self, kdoc: crate::spec::KDoc) -> Self {
-            self.kdoc.merge(kdoc);
-            self
-        }
-
-        /// Adds [KDoc] made from string to this entity.
-        /// In case of multiple calls, KDocs will be merged, see [KDoc::merge].
-        pub fn kdoc_str(mut self, text: &str) -> Self {
-            self.kdoc.merge(crate::spec::KDoc::from(text));
+        pub fn kdoc<KDocLike: Into<crate::spec::KDoc>> (mut self, kdoc: KDocLike) -> Self {
+            self.kdoc.merge(kdoc.into());
             self
         }
     };

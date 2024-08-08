@@ -110,7 +110,7 @@ mod tests {
     #[test]
     fn companion_object_with_kdoc() {
         let companion = CompanionObject::new()
-            .kdoc_str("Hello\nWorld");
+            .kdoc("Hello\nWorld");
 
         let code = companion.render_string();
         assert_eq!(code, "/**\n * Hello\n * World\n */\npublic companion object {\n}");

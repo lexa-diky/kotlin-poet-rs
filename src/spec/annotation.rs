@@ -3,7 +3,6 @@ use crate::spec::{AnnotationTarget, Argument, ClassLikeTypeName, CodeBlock};
 use crate::tokens;
 
 /// Represents an annotation in Kotlin. Used for adding meta information for code entities.
-/// Multiple/None annotations are represented with [Vec<Annotation>]
 ///
 /// [Official documentation reference](https://kotlinlang.org/docs/annotations.html)
 ///
@@ -35,6 +34,52 @@ pub struct Annotation {
     type_name: ClassLikeTypeName,
     arguments: Vec<Argument>,
     target: Option<AnnotationTarget>,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) enum  AnnotationSlotRenderMode { Vertical, Horizontal }
+
+#[derive(Debug, Clone)]
+pub(crate) struct AnnotationSlot {
+    inner: Vec<Annotation>,
+    render_mode: AnnotationSlotRenderMode
+}
+
+impl AnnotationSlot {
+
+    pub(crate) fn vertical() -> AnnotationSlot {
+        AnnotationSlot {
+            inner: Vec::new(),
+            render_mode: AnnotationSlotRenderMode::Vertical
+        }
+    }
+
+    pub(crate) fn horizontal() -> AnnotationSlot {
+        AnnotationSlot {
+            inner: Vec::new(),
+            render_mode: AnnotationSlotRenderMode::Horizontal
+        }
+    }
+
+    pub(crate) fn push(&mut self, new: Annotation) {
+        self.inner.push(new)
+    }
+}
+
+impl RenderKotlin for AnnotationSlot {
+    fn render_into(&self, block: &mut CodeBlock) {
+        for annotation in &self.inner {
+            block.push_renderable(annotation);
+            match self.render_mode {
+                AnnotationSlotRenderMode::Vertical => {
+                    block.push_new_line()
+                }
+                AnnotationSlotRenderMode::Horizontal => {
+                    block.push_space()
+                }
+            }
+        }
+    }
 }
 
 impl Annotation {
@@ -76,7 +121,7 @@ macro_rules! mixin_annotation_mutators {
         /// Adds [Annotation] to this entity.
         /// They will appear in order this method is called.
         pub fn annotation(mut self, annotation: Annotation) -> Self {
-            self.annotations.push(annotation);
+            self.annotation_slot.push(annotation);
             self
         }
     };

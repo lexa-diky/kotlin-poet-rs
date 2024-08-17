@@ -1,6 +1,6 @@
 use crate::io::RenderKotlin;
 use crate::spec::{VisibilityModifier, CodeBlock, MemberInheritanceModifier, Name, Type, Annotation};
-use crate::spec::annotation::mixin_annotation_mutators;
+use crate::spec::annotation::{mixin_annotation_mutators, AnnotationSlot};
 use crate::spec::kdoc::{KdocSlot, mixin_kdoc_mutators};
 use crate::tokens;
 
@@ -42,21 +42,21 @@ pub struct Property {
     is_mutable: bool,
     is_const: bool,
     is_override: bool,
-    annotations: Vec<Annotation>,
+    annotation_slot: AnnotationSlot,
     kdoc: KdocSlot
 }
 
 #[derive(Debug, Clone)]
 pub struct PropertyGetter {
     code: CodeBlock,
-    annotations: Vec<Annotation>
+    annotation_slot: AnnotationSlot
 }
 
 impl PropertyGetter {
     pub fn new<CodeBlockLike: Into<CodeBlock>>(code: CodeBlockLike) -> PropertyGetter {
         PropertyGetter {
             code: code.into(),
-            annotations: Vec::new()
+            annotation_slot: AnnotationSlot::vertical()
         }
     }
 
@@ -65,10 +65,7 @@ impl PropertyGetter {
 
 impl RenderKotlin for PropertyGetter {
     fn render_into(&self, block: &mut CodeBlock) {
-        for annotation in &self.annotations {
-            block.push_renderable(annotation);
-            block.push_new_line();
-        }
+        block.push_renderable(&self.annotation_slot);
         block.push_atom(tokens::keyword::GET);
         block.push_round_brackets(|_| {});
         block.push_space();
@@ -86,7 +83,7 @@ impl RenderKotlin for PropertyGetter {
 pub struct PropertySetter {
     code: CodeBlock,
     visibility_modifier: VisibilityModifier,
-    annotations: Vec<Annotation>
+    annotation_slot: AnnotationSlot
 }
 
 impl PropertySetter {
@@ -94,7 +91,7 @@ impl PropertySetter {
         PropertySetter {
             code: code.into(),
             visibility_modifier: VisibilityModifier::default(),
-            annotations: Vec::new()
+            annotation_slot: AnnotationSlot::vertical()
         }
     }
 
@@ -108,10 +105,7 @@ impl PropertySetter {
 
 impl RenderKotlin for PropertySetter {
     fn render_into(&self, block: &mut CodeBlock) {
-        for annotation in &self.annotations {
-            block.push_renderable(annotation);
-            block.push_new_line();
-        }
+        block.push_renderable(&self.annotation_slot);
         block.push_atom(tokens::keyword::SET);
         block.push_round_brackets(|parameters_code| {
             parameters_code.push_atom(tokens::CONV_VAR_VALUE);
@@ -137,7 +131,7 @@ impl Property {
             is_mutable: false,
             is_const: false,
             is_override: false,
-            annotations: Vec::new(),
+            annotation_slot: AnnotationSlot::vertical(),
             kdoc: KdocSlot::default()
         }
     }
@@ -206,11 +200,7 @@ impl Property {
 impl RenderKotlin for Property {
     fn render_into(&self, block: &mut CodeBlock) {
         block.push_renderable(&self.kdoc);
-
-        for annotation in &self.annotations {
-            block.push_renderable(annotation);
-            block.push_new_line();
-        }
+        block.push_renderable(&self.annotation_slot);
 
         block.push_renderable(&self.visibility_modifier);
         block.push_space();

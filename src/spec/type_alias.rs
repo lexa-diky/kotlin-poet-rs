@@ -1,6 +1,6 @@
 use crate::io::RenderKotlin;
 use crate::spec::{Annotation, CodeBlock, Name, Type, VisibilityModifier};
-use crate::spec::annotation::mixin_annotation_mutators;
+use crate::spec::annotation::{mixin_annotation_mutators, AnnotationSlot};
 use crate::spec::kdoc::{KdocSlot, mixin_kdoc_mutators};
 use crate::tokens;
 
@@ -11,7 +11,7 @@ pub struct TypeAlias {
     generic_parameters: Vec<Name>,
     actual: Type,
     visibility_modifier: VisibilityModifier,
-    annotations: Vec<Annotation>,
+    annotation_slot: AnnotationSlot,
     kdoc: KdocSlot
 }
 
@@ -27,7 +27,7 @@ impl TypeAlias {
             generic_parameters: Vec::default(),
             actual: actual.into(),
             visibility_modifier: VisibilityModifier::default(),
-            annotations: Vec::default(),
+            annotation_slot: AnnotationSlot::vertical(),
             kdoc: KdocSlot::default()
         }
     }
@@ -52,11 +52,7 @@ impl TypeAlias {
 impl RenderKotlin for TypeAlias {
     fn render_into(&self, block: &mut CodeBlock) {
         block.push_renderable(&self.kdoc);
-
-        for annotation in &self.annotations {
-            block.push_renderable(annotation);
-            block.push_new_line();
-        }
+        block.push_renderable(&self.annotation_slot);
         block.push_renderable(&self.visibility_modifier);
         block.push_space();
         block.push_atom(tokens::keyword::TYPEALIAS);

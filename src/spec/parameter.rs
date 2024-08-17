@@ -1,6 +1,6 @@
 use crate::io::RenderKotlin;
 use crate::spec::{Annotation, CodeBlock, Name, Type};
-use crate::spec::annotation::mixin_annotation_mutators;
+use crate::spec::annotation::{mixin_annotation_mutators, AnnotationSlot};
 use crate::tokens;
 
 #[derive(Debug, Clone)]
@@ -8,15 +8,12 @@ pub struct Parameter {
     name: Name,
     parameter_type: Type,
     default_value: Option<CodeBlock>,
-    annotations: Vec<Annotation>,
+    annotation_slot: AnnotationSlot,
 }
 
 impl RenderKotlin for Parameter {
     fn render_into(&self, block: &mut CodeBlock) {
-        for annotation in &self.annotations {
-            block.push_renderable(annotation);
-            block.push_space();
-        }
+        block.push_renderable(&self.annotation_slot);
         block.push_renderable(&self.name);
         block.push_atom(tokens::COLON);
         block.push_space();
@@ -36,7 +33,7 @@ impl Parameter {
             name: name.into(),
             parameter_type: parameter_type.into(),
             default_value: None,
-            annotations: Vec::new(),
+            annotation_slot: AnnotationSlot::horizontal(),
         }
     }
 

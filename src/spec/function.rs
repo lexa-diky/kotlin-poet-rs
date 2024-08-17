@@ -1,6 +1,6 @@
 use crate::io::RenderKotlin;
 use crate::spec::{VisibilityModifier, CodeBlock, GenericParameter, MemberInheritanceModifier, Name, Type, Parameter, Annotation};
-use crate::spec::annotation::mixin_annotation_mutators;
+use crate::spec::annotation::{mixin_annotation_mutators, AnnotationSlot};
 use crate::spec::kdoc::{KdocSlot, mixin_kdoc_mutators};
 use crate::tokens;
 
@@ -18,7 +18,7 @@ pub struct Function {
     is_operator: bool,
     is_override: bool,
     generic_parameters: Vec<GenericParameter>,
-    annotations: Vec<Annotation>,
+    annotation_slot: AnnotationSlot,
     kdoc: KdocSlot,
 }
 
@@ -37,7 +37,7 @@ impl Function {
             is_operator: false,
             generic_parameters: Vec::new(),
             is_override: false,
-            annotations: Vec::new(),
+            annotation_slot: AnnotationSlot::vertical(),
             kdoc: KdocSlot::default(),
         }
     }
@@ -104,11 +104,7 @@ impl Function {
 impl RenderKotlin for Function {
     fn render_into(&self, block: &mut CodeBlock) {
         block.push_renderable(&self.kdoc);
-
-        for annotation in &self.annotations {
-            block.push_renderable(annotation);
-            block.push_new_line()
-        }
+        block.push_renderable(&self.annotation_slot);
 
         block.push_renderable(&self.visibility_modifier);
         block.push_space();

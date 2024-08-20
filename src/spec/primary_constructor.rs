@@ -54,7 +54,7 @@ impl RenderKotlin for PrimaryConstructor {
     fn render_into(&self, block: &mut CodeBlock) {
         block.push_renderable(&self.visibility_modifier);
         block.push_space();
-        block.push_atom(tokens::keyword::CONSTRUCTOR);
+        block.push_static_atom(tokens::keyword::CONSTRUCTOR);
         block.push_round_brackets(|params_block| {
             params_block.push_comma_separated(&self.arguments)
         });

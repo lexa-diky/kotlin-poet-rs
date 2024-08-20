@@ -59,9 +59,9 @@ impl RenderKotlin for CompanionObject {
         block.push_renderable(&self.kdoc);
         block.push_renderable(&self.visibility_modifier);
         block.push_space();
-        block.push_atom(tokens::keyword::COMPANION);
+        block.push_static_atom(tokens::keyword::COMPANION);
         block.push_space();
-        block.push_atom(tokens::keyword::OBJECT);
+        block.push_static_atom(tokens::keyword::OBJECT);
         block.push_space();
         block.push_curly_brackets(|code| {
             for node in &self.member_nodes {

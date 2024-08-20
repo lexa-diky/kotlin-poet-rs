@@ -9,6 +9,7 @@ use crate::util::{SemanticConversionError, yolo_from_str};
 #[derive(Debug, Clone)]
 pub(crate) enum CodeBlockNode {
     Atom(String),
+    StaticAtom(&'static str),
     Space,
     NewLine,
     Indent(usize),
@@ -93,6 +94,11 @@ impl CodeBlock {
         self.nodes.push(CodeBlockNode::Atom(text.to_string()));
     }
 
+    /// Adds [CodeBlockNode::Atom]
+    pub(crate) fn push_static_atom(&mut self, text: &'static str) {
+        self.nodes.push(CodeBlockNode::StaticAtom(text));
+    }
+
     /// Adds [CodeBlockNode::Space]
     pub fn push_space(&mut self) {
         if matches!(self.nodes.last(), Some(CodeBlockNode::Space)) {
@@ -115,13 +121,13 @@ impl CodeBlock {
     {
         let mut inner_code = CodeBlock::empty();
 
-        self.push_atom(tokens::CURLY_BRACKET_LEFT);
+        self.push_static_atom(tokens::CURLY_BRACKET_LEFT);
         self.push_new_line();
         self.push_indent();
         block(&mut inner_code);
         self.push_renderable(&inner_code);
         self.push_unindent();
-        self.push_atom(tokens::CURLY_BRACKET_RIGHT);
+        self.push_static_atom(tokens::CURLY_BRACKET_RIGHT);
     }
 
     /// Surrounds first parameter [block] with round brackets and adds it to [self].
@@ -131,10 +137,10 @@ impl CodeBlock {
     {
         let mut inner_code = CodeBlock::empty();
 
-        self.push_atom(tokens::ROUND_BRACKET_LEFT);
+        self.push_static_atom(tokens::ROUND_BRACKET_LEFT);
         block(&mut inner_code);
         self.push_renderable(&inner_code);
-        self.push_atom(tokens::ROUND_BRACKET_RIGHT);
+        self.push_static_atom(tokens::ROUND_BRACKET_RIGHT);
     }
 
     /// Surrounds first parameter [block] with angle brackets and adds it to [self].
@@ -144,10 +150,10 @@ impl CodeBlock {
     {
         let mut inner_code = CodeBlock::empty();
 
-        self.push_atom(tokens::ANGLE_BRACKET_LEFT);
+        self.push_static_atom(tokens::ANGLE_BRACKET_LEFT);
         block(&mut inner_code);
         self.push_renderable(&inner_code);
-        self.push_atom(tokens::ANGLE_BRACKET_RIGHT);
+        self.push_static_atom(tokens::ANGLE_BRACKET_RIGHT);
     }
 
     /// Adds all elements from [elements] with comma separation, except for last one
@@ -160,12 +166,20 @@ impl CodeBlock {
         for (index, renderable) in elements.iter().enumerate() {
             code.push_renderable(renderable);
             if index != len - 1 {
-                code.push_atom(tokens::COMMA);
+                code.push_static_atom(tokens::COMMA);
                 code.push_space();
             }
         }
 
         self.push_renderable(&code);
+    }
+
+    fn push_indent_into(indent: usize, root_buffer: &mut CodeBuffer) {
+        if matches!(root_buffer.last_char(), Some(tokens::NEW_LINE_CH)) {
+            for _ in 0..indent {
+                root_buffer.push(tokens::INDENT)
+            }
+        }
     }
 
     fn render(&self) -> String {
@@ -175,12 +189,12 @@ impl CodeBlock {
         for node in &self.nodes {
             match node {
                 CodeBlockNode::Atom(buffer) => {
-                    if matches!(root_buffer.last_char(), Some(tokens::NEW_LINE_CH)) {
-                        for _ in 0..indent {
-                            root_buffer.push(tokens::INDENT)
-                        }
-                    }
+                    Self::push_indent_into(indent, &mut root_buffer);
                     root_buffer.push(buffer.as_str());
+                }
+                CodeBlockNode::StaticAtom(buffer) => {
+                    Self::push_indent_into(indent, &mut root_buffer);
+                    root_buffer.push(buffer);
                 }
                 CodeBlockNode::Indent(size) => {
                     indent += size;

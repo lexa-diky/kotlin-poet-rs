@@ -49,7 +49,7 @@ impl Import {
 
 impl RenderKotlin for Import {
     fn render_into(&self, block: &mut CodeBlock) {
-        block.push_atom(tokens::keyword::IMPORT);
+        block.push_static_atom(tokens::keyword::IMPORT);
         block.push_space();
 
         match self {
@@ -57,19 +57,19 @@ impl RenderKotlin for Import {
                 block.push_renderable(type_name);
                 if let Some(alias) = alias {
                     block.push_space();
-                    block.push_atom(tokens::keyword::AS);
+                    block.push_static_atom(tokens::keyword::AS);
                     block.push_space();
                     block.push_renderable(alias);
                 }
             }
             Import::Projection(package) => {
                 block.push_renderable(package);
-                block.push_atom(tokens::DOT);
-                block.push_atom(tokens::STAR);
+                block.push_static_atom(tokens::DOT);
+                block.push_static_atom(tokens::STAR);
             }
             Import::TopLevel { package, name } => {
                 block.push_renderable(package);
-                block.push_atom(tokens::DOT);
+                block.push_static_atom(tokens::DOT);
                 block.push_renderable(name);
             }
         }

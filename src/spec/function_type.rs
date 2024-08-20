@@ -46,11 +46,11 @@ impl RenderKotlin for FunctionType {
     fn render_into(&self, block: &mut CodeBlock) {
         if let Some(receiver) = &*self.receiver {
             block.push_renderable(receiver);
-            block.push_atom(tokens::DOT)
+            block.push_static_atom(tokens::DOT)
         }
 
         if self.is_suspended {
-            block.push_atom(tokens::keyword::SUSPEND);
+            block.push_static_atom(tokens::keyword::SUSPEND);
             block.push_space()
         }
 
@@ -61,7 +61,7 @@ impl RenderKotlin for FunctionType {
         });
 
         block.push_space();
-        block.push_atom(tokens::ARROW);
+        block.push_static_atom(tokens::ARROW);
         block.push_space();
         block.push_renderable(self.returns.as_ref());
     }

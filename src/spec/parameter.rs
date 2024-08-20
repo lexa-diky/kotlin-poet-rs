@@ -15,12 +15,12 @@ impl RenderKotlin for Parameter {
     fn render_into(&self, block: &mut CodeBlock) {
         block.push_renderable(&self.annotation_slot);
         block.push_renderable(&self.name);
-        block.push_atom(tokens::COLON);
+        block.push_static_atom(tokens::COLON);
         block.push_space();
         block.push_renderable(&self.parameter_type);
         if let Some(default_value) = &self.default_value {
             block.push_space();
-            block.push_atom(tokens::ASSIGN);
+            block.push_static_atom(tokens::ASSIGN);
             block.push_space();
             block.push_renderable(default_value);
         }

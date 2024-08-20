@@ -60,9 +60,9 @@ impl RenderKotlin for SecondaryConstructor {
 
         block.push_renderable(&pc);
         block.push_space();
-        block.push_atom(tokens::COLON);
+        block.push_static_atom(tokens::COLON);
         block.push_space();
-        block.push_atom(tokens::keyword::THIS);
+        block.push_static_atom(tokens::keyword::THIS);
         block.push_round_brackets(|params_block| {
             params_block.push_comma_separated(&self.delegate_parameters);
         });

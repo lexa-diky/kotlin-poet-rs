@@ -51,7 +51,7 @@ impl GenericParameter {
             &self.type_boundaries.iter().map(|boundary| {
                 let mut inner = CodeBlock::empty();
                 inner.push_renderable(&self.name);
-                inner.push_atom(tokens::COLON);
+                inner.push_static_atom(tokens::COLON);
                 inner.push_space();
                 inner.push_renderable(boundary);
                 inner
@@ -72,7 +72,7 @@ impl GenericParameter {
         }
 
         let mut code = CodeBlock::empty();
-        code.push_atom(tokens::keyword::WHERE);
+        code.push_static_atom(tokens::keyword::WHERE);
         code.push_space();
         code.push_comma_separated(&boundary_code_blocks);
         code.push_space();

@@ -40,7 +40,7 @@ impl From<&str> for KDoc {
 
 impl RenderKotlin for KDoc {
     fn render_into(&self, block: &mut CodeBlock) {
-        block.push_atom(tokens::KDOC_COMMENT_START);
+        block.push_static_atom(tokens::KDOC_COMMENT_START);
         block.push_new_line();
         let split = self.content.split(tokens::NEW_LINE)
             .enumerate().collect::<Vec<_>>();
@@ -50,12 +50,12 @@ impl RenderKotlin for KDoc {
                 break;
             }
 
-            block.push_atom(tokens::KDOC_COMMENT_MIDDLE);
+            block.push_static_atom(tokens::KDOC_COMMENT_MIDDLE);
             block.push_space();
             block.push_atom(line);
             block.push_new_line();
         }
-        block.push_atom(tokens::KDOC_COMMENT_END);
+        block.push_static_atom(tokens::KDOC_COMMENT_END);
     }
 }
 

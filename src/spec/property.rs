@@ -15,13 +15,13 @@ impl RenderKotlin for PropertyInitializer {
         match self {
             PropertyInitializer::Value(initializer) => {
                 block.push_space();
-                block.push_atom(tokens::ASSIGN);
+                block.push_static_atom(tokens::ASSIGN);
                 block.push_space();
                 block.push_renderable(initializer)
             }
             PropertyInitializer::Delegate(delegate) => {
                 block.push_space();
-                block.push_atom(tokens::keyword::BY);
+                block.push_static_atom(tokens::keyword::BY);
                 block.push_space();
                 block.push_renderable(delegate)
             }
@@ -66,15 +66,15 @@ impl PropertyGetter {
 impl RenderKotlin for PropertyGetter {
     fn render_into(&self, block: &mut CodeBlock) {
         block.push_renderable(&self.annotation_slot);
-        block.push_atom(tokens::keyword::GET);
+        block.push_static_atom(tokens::keyword::GET);
         block.push_round_brackets(|_| {});
         block.push_space();
-        block.push_atom(tokens::CURLY_BRACKET_LEFT);
+        block.push_static_atom(tokens::CURLY_BRACKET_LEFT);
         block.push_new_line();
         block.push_indent();
         block.push_renderable(&self.code);
         block.push_unindent();
-        block.push_atom(tokens::CURLY_BRACKET_RIGHT);
+        block.push_static_atom(tokens::CURLY_BRACKET_RIGHT);
         block.push_new_line();
     }
 }
@@ -106,9 +106,9 @@ impl PropertySetter {
 impl RenderKotlin for PropertySetter {
     fn render_into(&self, block: &mut CodeBlock) {
         block.push_renderable(&self.annotation_slot);
-        block.push_atom(tokens::keyword::SET);
+        block.push_static_atom(tokens::keyword::SET);
         block.push_round_brackets(|parameters_code| {
-            parameters_code.push_atom(tokens::CONV_VAR_VALUE);
+            parameters_code.push_static_atom(tokens::CONV_VAR_VALUE);
         });
         block.push_space();
         block.push_curly_brackets(|set_body| {
@@ -208,24 +208,24 @@ impl RenderKotlin for Property {
         block.push_space();
 
         if self.is_const {
-            block.push_atom(tokens::keyword::CONST);
+            block.push_static_atom(tokens::keyword::CONST);
             block.push_space()
         }
 
         if self.is_override {
-            block.push_atom(tokens::keyword::OVERRIDE);
+            block.push_static_atom(tokens::keyword::OVERRIDE);
             block.push_space();
         }
 
         if self.is_mutable {
-            block.push_atom(tokens::keyword::VAR);
+            block.push_static_atom(tokens::keyword::VAR);
         } else {
-            block.push_atom(tokens::keyword::VAL);
+            block.push_static_atom(tokens::keyword::VAL);
         }
         block.push_space();
 
         block.push_renderable(&self.name);
-        block.push_atom(tokens::COLON);
+        block.push_static_atom(tokens::COLON);
         block.push_space();
         block.push_renderable(&self.returns);
         block.push_indent();

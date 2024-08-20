@@ -61,7 +61,7 @@ impl RenderKotlin for Argument {
         if let Some(name) = &self.name {
             block.push_renderable(name);
             block.push_space();
-            block.push_atom(tokens::ASSIGN);
+            block.push_static_atom(tokens::ASSIGN);
             block.push_space();
         }
         block.push_atom(self.value.to_string().as_str());

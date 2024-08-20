@@ -119,7 +119,7 @@ impl RenderKotlin for KotlinFile {
         }
 
         if let Some(package) = &self.package {
-            block.push_atom(tokens::keyword::PACKAGE);
+            block.push_static_atom(tokens::keyword::PACKAGE);
             block.push_space();
             block.push_renderable(package);
             block.push_new_line();

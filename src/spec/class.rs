@@ -29,7 +29,7 @@ impl RenderKotlin for ClassMemberNode {
                 block.push_renderable(secondary_constructor);
             }
             ClassMemberNode::InitBlock(code) => {
-                block.push_atom(tokens::keyword::INIT);
+                block.push_static_atom(tokens::keyword::INIT);
                 block.push_curly_brackets(|block| {
                     block.push_renderable(code);
                 });
@@ -199,7 +199,7 @@ impl RenderKotlin for Class {
         block.push_renderable(&self.visibility_modifier);
         block.push_space();
         if self.is_inner {
-            block.push_atom(tokens::keyword::INNER);
+            block.push_static_atom(tokens::keyword::INNER);
             block.push_space();
         }
         block.push_renderable(&self.inheritance_modifier);
@@ -209,7 +209,7 @@ impl RenderKotlin for Class {
             ClassInheritanceModifier::Interface |
             ClassInheritanceModifier::Object
         ) {
-            block.push_atom(tokens::keyword::CLASS);
+            block.push_static_atom(tokens::keyword::CLASS);
             block.push_space();
         }
         block.push_renderable(&self.name);
@@ -230,7 +230,7 @@ impl RenderKotlin for Class {
 
         if !self.parent_classes.is_empty() {
             block.pop_space();
-            block.push_atom(tokens::COLON);
+            block.push_static_atom(tokens::COLON);
             block.push_space();
             block.push_comma_separated(
                 &self.parent_classes
@@ -255,12 +255,12 @@ impl RenderKotlin for Class {
                     });
 
                     if inst_idx != self.enum_instances.len() - 1 {
-                        class_body_code.push_atom(tokens::COMMA);
+                        class_body_code.push_static_atom(tokens::COMMA);
                         class_body_code.push_new_line();
                     }
                 }
 
-                class_body_code.push_atom(tokens::SEMICOLON);
+                class_body_code.push_static_atom(tokens::SEMICOLON);
             }
 
             for node in &self.member_nodes {

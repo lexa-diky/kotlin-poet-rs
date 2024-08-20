@@ -55,17 +55,17 @@ impl RenderKotlin for TypeAlias {
         block.push_renderable(&self.annotation_slot);
         block.push_renderable(&self.visibility_modifier);
         block.push_space();
-        block.push_atom(tokens::keyword::TYPEALIAS);
+        block.push_static_atom(tokens::keyword::TYPEALIAS);
         block.push_space();
         block.push_renderable(&self.name);
         if !self.generic_parameters.is_empty() {
-            block.push_atom(tokens::ANGLE_BRACKET_LEFT);
+            block.push_static_atom(tokens::ANGLE_BRACKET_LEFT);
             block.push_comma_separated(&self.generic_parameters);
-            block.push_atom(tokens::ANGLE_BRACKET_RIGHT);
+            block.push_static_atom(tokens::ANGLE_BRACKET_RIGHT);
         }
 
         block.push_space();
-        block.push_atom(tokens::ASSIGN);
+        block.push_static_atom(tokens::ASSIGN);
         block.push_space();
         block.push_renderable(&self.actual);
     }

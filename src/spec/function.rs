@@ -110,26 +110,26 @@ impl RenderKotlin for Function {
         block.push_space();
 
         if self.is_suspended {
-            block.push_atom(tokens::keyword::SUSPEND);
+            block.push_static_atom(tokens::keyword::SUSPEND);
             block.push_space();
         }
 
         if self.is_inline {
-            block.push_atom(tokens::keyword::INLINE);
+            block.push_static_atom(tokens::keyword::INLINE);
             block.push_space();
         }
 
         if self.is_operator {
-            block.push_atom(tokens::keyword::OPERATOR);
+            block.push_static_atom(tokens::keyword::OPERATOR);
             block.push_space();
         }
 
         if self.is_override {
-            block.push_atom(tokens::keyword::OVERRIDE);
+            block.push_static_atom(tokens::keyword::OVERRIDE);
             block.push_space();
         }
 
-        block.push_atom(tokens::keyword::FUN);
+        block.push_static_atom(tokens::keyword::FUN);
         block.push_space();
 
         if !self.generic_parameters.is_empty() {
@@ -144,7 +144,7 @@ impl RenderKotlin for Function {
 
         if let Some(receiver) = &self.receiver {
             block.push_renderable(receiver);
-            block.push_atom(tokens::DOT);
+            block.push_static_atom(tokens::DOT);
         }
         block.push_renderable(&self.name);
 
@@ -153,13 +153,13 @@ impl RenderKotlin for Function {
             for (index, parameter) in self.parameters.iter().enumerate() {
                 parameters_code.push_renderable(parameter);
                 if index != total_parameters - 1 {
-                    parameters_code.push_atom(tokens::COMMA);
+                    parameters_code.push_static_atom(tokens::COMMA);
                     parameters_code.push_space()
                 }
             }
         });
 
-        block.push_atom(tokens::COLON);
+        block.push_static_atom(tokens::COLON);
         block.push_space();
         block.push_renderable(&self.returns);
 

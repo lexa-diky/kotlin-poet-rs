@@ -78,13 +78,13 @@ impl RenderKotlin for ClassLikeTypeName {
     fn render_into(&self, block: &mut CodeBlock) {
         if !self.package.parts.is_empty() {
             block.push_renderable(&self.package);
-            block.push_atom(tokens::DOT);
+            block.push_static_atom(tokens::DOT);
         }
 
         for (index, part) in self.names.iter().enumerate() {
             block.push_renderable(part);
             if index != self.names.len() - 1 {
-                block.push_atom(tokens::DOT);
+                block.push_static_atom(tokens::DOT);
             }
         }
     }

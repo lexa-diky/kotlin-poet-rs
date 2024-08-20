@@ -104,10 +104,10 @@ impl Annotation {
 
 impl RenderKotlin for Annotation {
     fn render_into(&self, block: &mut CodeBlock) {
-        block.push_atom(tokens::AT);
+        block.push_static_atom(tokens::AT);
         if let Some(target) = &self.target {
             block.push_renderable(target);
-            block.push_atom(tokens::COLON);
+            block.push_static_atom(tokens::COLON);
         }
         block.push_renderable(&self.type_name);
         block.push_round_brackets(|inner_code| {

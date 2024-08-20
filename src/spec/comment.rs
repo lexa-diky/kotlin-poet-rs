@@ -57,7 +57,7 @@ impl FromStr for Comment {
 impl RenderKotlin for Comment {
     fn render_into(&self, block: &mut CodeBlock) {
         if self.is_block_render {
-            block.push_atom(tokens::BLOCK_COMMENT_START);
+            block.push_static_atom(tokens::BLOCK_COMMENT_START);
             block.push_new_line();
             let split = self.content.split(tokens::NEW_LINE)
                 .enumerate().collect::<Vec<_>>();
@@ -67,14 +67,14 @@ impl RenderKotlin for Comment {
                     break;
                 }
 
-                block.push_atom(tokens::BLOCK_COMMENT_MIDDLE);
+                block.push_static_atom(tokens::BLOCK_COMMENT_MIDDLE);
                 block.push_space();
                 block.push_atom(line);
                 block.push_new_line();
             }
-            block.push_atom(tokens::BLOCK_COMMENT_END)
+            block.push_static_atom(tokens::BLOCK_COMMENT_END)
         } else {
-            block.push_atom(tokens::INLINE_COMMENT_START);
+            block.push_static_atom(tokens::INLINE_COMMENT_START);
             block.push_space();
             block.push_atom(self.content.as_str());
         }

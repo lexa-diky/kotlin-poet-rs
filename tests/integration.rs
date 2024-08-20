@@ -111,12 +111,14 @@ pub fn assert_rendered(
     if !expected_path.exists() {
         std::fs::write(
             expected_path,
-            code,
+            code.replace("\r\n", "\n"),
         ).unwrap();
     } else {
-        let expected_code = std::fs::read_to_string(expected_path);
+        let expected_code_raw = std::fs::read_to_string(expected_path)
+            .unwrap();
+        let expected_code_win_fix = expected_code_raw.replace("\r\n", "\n");
         assert_eq!(
-            expected_code.unwrap(),
+            expected_code_win_fix,
             code,
         );
     }

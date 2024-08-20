@@ -2,20 +2,16 @@
 
 ## Road to 1.0
 
-Currently library is in heavy development.
-This roadmap might change daily, contracts will be broken.
-Please, don't use this library in production.
-
 There is currently no estimate when `1.0` release will come.
 
-## Planned features
+### Planned features
 
-### High priority
+#### High priority
 
 - Annotations
 - Comments / KDoc
 
-### Low priority
+#### Low priority
 
 - Context parameters
 - `CodeBlock` builders
@@ -24,7 +20,7 @@ There is currently no estimate when `1.0` release will come.
 - Parsing of some `spec` types from strings
 - Code generate complete bindings for Kotlin standard library
 
-### Researching
+#### Researching
 
 - Linting of build specs to ensure that generated code is semantically correct.
 - Code formatting

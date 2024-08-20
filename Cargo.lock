@@ -225,7 +225,7 @@ dependencies = [
 
 [[package]]
 name = "kotlin-poet-rs"
-version = "0.8.0-indev"
+version = "0.9.0"
 dependencies = [
  "criterion",
 ]

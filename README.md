@@ -8,9 +8,6 @@
 ![Crates.io License](https://img.shields.io/crates/l/kotlin-poet-rs?logo=apache)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/lexa-diky/kotlin-poet-rs?logo=github)
 
-> Currently, this project is in heavy development and not ready for any serious use.
-> **API might be extremely unstable.**
-
 ## Get Started
 
 ### Add dependency

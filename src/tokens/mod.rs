@@ -124,6 +124,8 @@ pub mod keyword {
     pub const WHERE: &str = "where";
     pub const IN: &str = "in";
     pub const OUT: &str = "out";
+    /// `reified`
+    pub const REIFIED: &str = "reified";
 
     // Annotation target
     pub const FILE: &str = "file";

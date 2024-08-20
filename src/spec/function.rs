@@ -293,4 +293,19 @@ mod tests {
             block.render_string()
         )
     }
+
+    #[test]
+    fn test_with_reified_generic() {
+        let function = Function::new("sayHello")
+            .inline(true)
+            .generic_parameter(
+                GenericParameter::new("T")
+                    .reified(true)
+            );
+
+        assert_eq!(
+            "public inline fun <reified T> sayHello(): kotlin.Unit",
+            function.render_string()
+        )
+    }
 }

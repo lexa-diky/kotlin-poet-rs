@@ -10,6 +10,7 @@ pub struct GenericParameter {
     /// Invariance of the generic parameter, only available for function's generic parameters
     invariance: Option<GenericInvariance>,
     type_boundaries: Vec<Type>,
+    is_reified: bool
 }
 
 impl GenericParameter {
@@ -19,6 +20,7 @@ impl GenericParameter {
             name: name.into(),
             invariance: None,
             type_boundaries: Vec::new(),
+            is_reified: false
         }
     }
 
@@ -35,10 +37,19 @@ impl GenericParameter {
         self
     }
 
+    pub fn reified(mut self, flag: bool) -> Self {
+        self.is_reified = flag;
+        self
+    }
+
     pub(crate) fn render_definition(&self) -> CodeBlock {
         let mut code = CodeBlock::empty();
         if let Some(invariance) = &self.invariance {
             code.push_renderable(invariance);
+            code.push_space();
+        }
+        if self.is_reified {
+            code.push_static_atom(tokens::keyword::REIFIED);
             code.push_space();
         }
         code.push_renderable(&self.name);

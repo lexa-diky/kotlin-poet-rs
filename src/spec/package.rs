@@ -1,8 +1,9 @@
-use std::str::FromStr;
-use crate::io::{RenderKotlin};
-use crate::tokens::DOT;
+use crate::io::RenderKotlin;
 use crate::spec::{CodeBlock, Name};
-use crate::util::{SemanticConversionError, yolo_from_str};
+use crate::tokens::DOT;
+use crate::util::{yolo_from_str, SemanticConversionError};
+use std::path::PathBuf;
+use std::str::FromStr;
 
 /// Fully qualified package name, may be parsed from [&str]
 ///
@@ -68,6 +69,17 @@ impl Package {
     pub fn root() -> Package {
         Package { parts: Vec::new() }
     }
+
+    /// Converts package to Java-like folder structure path
+    pub fn to_path(&self) -> PathBuf {
+        let mut buf = PathBuf::new();
+        for part in &self.parts {
+            let part_str: String = part.clone().into();
+            buf.push(part_str)
+        }
+
+        buf
+    }
 }
 
 yolo_from_str!(Package);
@@ -96,9 +108,10 @@ impl RenderKotlin for Package {
 
 #[cfg(test)]
 mod tests {
-    use std::str::FromStr;
     use crate::io::RenderKotlin;
     use crate::spec::{Name, Package};
+    use std::path::PathBuf;
+    use std::str::FromStr;
 
     #[test]
     fn parse_package() {
@@ -126,5 +139,25 @@ mod tests {
     fn render_empty() {
         let package: Package = Package::from(vec![]);
         assert_eq!(package.render_string(), "");
+    }
+
+    #[test]
+    fn test_path_conversion() {
+        let package = Package::from_str("a.b.c");
+        let expected_path = PathBuf::from_str("a/b/c");
+        assert_eq!(
+            package.unwrap().to_path(),
+            expected_path.unwrap()
+        )
+    }
+
+    #[test]
+    fn test_path_empty_conversion() {
+        let package = Package::root();
+        let expected_path = PathBuf::from_str("");
+        assert_eq!(
+            package.to_path(),
+            expected_path.unwrap()
+        )
     }
 }

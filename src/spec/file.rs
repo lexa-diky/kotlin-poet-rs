@@ -159,8 +159,8 @@ impl RenderKotlin for KotlinFile {
 
 #[cfg(test)]
 mod tests {
-    use crate::spec::{Comment, Function, KotlinFile};
     use crate::io::RenderKotlin;
+    use crate::spec::{Comment, Function, KotlinFile};
 
     #[test]
     fn test_root_file() {

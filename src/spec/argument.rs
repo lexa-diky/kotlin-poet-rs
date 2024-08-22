@@ -79,7 +79,6 @@ mod tests {
         assert_eq!(argument.render_string(), "value");
 
         let argument = Argument::new_named(Name::from("name"), CodeBlock::atom("value"), );
-        println!("{}", argument.render_string());
         assert_eq!(argument.render_string(), "name = value");
     }
 }

@@ -72,6 +72,12 @@ impl RenderKotlin for Name {
     }
 }
 
+impl Into<String> for Name {
+    fn into(self) -> String {
+        self.value
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use std::str::FromStr;

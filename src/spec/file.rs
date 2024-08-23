@@ -13,7 +13,7 @@ enum KotlinFileNode {
 /// Represents a Kotlin file.
 #[derive(Debug, Clone)]
 pub struct KotlinFile {
-    package: Option<Package>,
+    package: Package,
     imports: Vec<Import>,
     nodes: Vec<KotlinFileNode>,
     annotations: Vec<Annotation>,
@@ -24,7 +24,7 @@ impl KotlinFile {
     /// Creates file in specified [package]
     pub fn new<PackageLike: Into<Package>>(package: PackageLike) -> Self {
         KotlinFile {
-            package: Some(package.into()),
+            package: package.into(),
             imports: Vec::new(),
             nodes: Vec::new(),
             annotations: Vec::new(),
@@ -35,7 +35,7 @@ impl KotlinFile {
     /// Creates new file without package statement
     pub fn root() -> Self {
         KotlinFile {
-            package: None,
+            package: Package::root(),
             imports: Vec::new(),
             nodes: Vec::new(),
             annotations: Vec::new(),
@@ -118,10 +118,10 @@ impl RenderKotlin for KotlinFile {
             block.push_new_line();
         }
 
-        if let Some(package) = &self.package {
+        if !self.package.is_root() {
             block.push_static_atom(tokens::keyword::PACKAGE);
             block.push_space();
-            block.push_renderable(package);
+            block.push_renderable(&self.package);
             block.push_new_line();
         }
 

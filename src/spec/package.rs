@@ -1,8 +1,8 @@
+use std::path::PathBuf;
 use crate::io::RenderKotlin;
 use crate::spec::{CodeBlock, Name};
 use crate::tokens::DOT;
 use crate::util::{yolo_from_str, SemanticConversionError};
-use std::path::PathBuf;
 use std::str::FromStr;
 
 /// Fully qualified package name, may be parsed from [&str]
@@ -71,6 +71,7 @@ impl Package {
     }
 
     /// Converts package to Java-like folder structure path
+    #[cfg(feature = "experimental")]
     pub fn to_path(&self) -> PathBuf {
         let mut buf = PathBuf::new();
         for part in &self.parts {
@@ -79,6 +80,10 @@ impl Package {
         }
 
         buf
+    }
+
+    pub(crate) fn is_root(&self) -> bool {
+        self.parts.is_empty()
     }
 }
 
@@ -142,6 +147,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "experimental")]
     fn test_path_conversion() {
         let package = Package::from_str("a.b.c");
         let expected_path = PathBuf::from_str("a/b/c");
@@ -152,6 +158,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "experimental")]
     fn test_path_empty_conversion() {
         let package = Package::root();
         let expected_path = PathBuf::from_str("");

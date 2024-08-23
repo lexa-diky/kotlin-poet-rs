@@ -43,15 +43,22 @@ Will print:
 public final const val name: kotlin.String = "Alex"
 ```
 
-## Supported features
+## Roadmap
 
 To see what features are currently supported and planned for the future, check [roadmap](ROADMAP.md).
+
+## Features
+
+### Experimental
+
+Some library functions are under `experimental` feature flag.
+These features are unstable and could be changed in the near future, use it at your own risk.
 
 ## Philosophy
 
 ### Explicit better then implicit
 
-RustPoet will not generate code that you did not asked it to generate.
+RustPoet will not generate code that you did not ask it to generate.
 No magic import resolution, no magic type inference, no magic anything.
 
 For example, as you can see in example in `Get Started` section generated code will have
@@ -71,7 +78,7 @@ It aims to fix them and provide better API for generating Kotlin code. We don't 
 
 #### No built-in IO
 
-Rust IO is very versatile and comes in many shapes. Thus this project does not suggest any IO implementation.
+Rust IO is very versatile and comes in many shapes. Thus, this project does not suggest any IO implementation.
 
 ### No dependencies
 

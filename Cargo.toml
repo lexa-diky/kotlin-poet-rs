@@ -11,6 +11,9 @@ description = "Kotlin code generation library for Rust"
 keywords = ["kotlin", "codegen"]
 categories = ["template-engine"]
 
+[features]
+experimental = []
+
 [dependencies]
 
 [dev-dependencies]

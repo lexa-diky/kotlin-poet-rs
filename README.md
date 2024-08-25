@@ -43,10 +43,6 @@ Will print:
 public final const val name: kotlin.String = "Alex"
 ```
 
-## Roadmap
-
-To see what features are currently supported and planned for the future, check [roadmap](ROADMAP.md).
-
 ## Features
 
 ### Experimental

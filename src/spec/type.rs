@@ -184,7 +184,7 @@ mod tests {
         let new_type = Type::from_str("() -> String");
         assert!(matches!(
             new_type,
-            Err(_)
+            Err(SemanticConversionError)
         ));
     }
 
